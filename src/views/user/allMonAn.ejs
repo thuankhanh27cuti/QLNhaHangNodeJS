@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Danh mục món ăn</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="" name="keywords"/>
+    <meta content="" name="description"/>
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
+    <%- include('../partials/user/css-libraries') %>
+</head>
+<body>
+<div class="container-fluid position-relative p-0">
+    <%- include('../partials/user/navbar') %>
+    <!-- Menu Start -->
+    <section id="menu"
+             style="padding: 60px 0; background: linear-gradient(rgba(139, 0, 0, 0.7), rgba(44, 62, 80, 0.7)), url(/img/bg-hero.jpg) center center / cover no-repeat;">
+        <div class="container">
+            <div class="text-center my-5">
+                <p class="section-title wow fadeInUp text-white h1" data-wow-delay="0.1s">Thực Đơn</p>
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-3">
+                    <div class="row">
+                        <div class="col-12 col-sm-6 col-lg-12">
+                            <div class="mb-3 shadow py-3 bg-white">
+                                <p class="fw-bold h5 mb-3 px-3">Loại món ăn</p>
+                                <div class="d-flex flex-column mb-0">
+                                    <div class="px-3">
+                                        <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3"
+                                           href="/danh-sach-mon-an">
+                                            <i class="fa fa-coffee fa-2x text-primary"></i>
+                                            <div class="ps-3">
+                                                <h6 class="mt-n1 mb-0">Tất cả món ăn</h6>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <% loaiSpList.forEach((loaisp) => { %>
+                                        <div class="px-3">
+                                            <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3"
+                                               href="/danh-sach-mon-an">
+                                                <i class="fa fa-coffee fa-2x text-primary"></i>
+                                                <div class="ps-3">
+                                                    <h6 class="mt-n1 mb-0"><%= loaisp.TenLoai %></h6>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-12">
+                        <div class="mb-3 shadow py-3 bg-white">
+                            <p class="fw-bold h5 mb-3 px-3">Sắp xếp theo</p>
+                            <div class="d-flex px-3">
+                                <label for="sort" class="d-none"></label>
+                                <div class="mb-2" style="width: max-content">
+                                    <select name="sort" id="sort" class="form-select">
+                                        <option selected value="">Mặc định</option>
+                                        <option value="TenSP">Sắp xếp theo tên (A-Z)</option>
+                                        <option value="TenSP,desc">Sắp xếp theo tên (Z-A)</option>
+                                        <option value="GiaBan">Sắp xếp theo giá (Thấp nhất - Cao nhất)</option>
+                                        <option value="GiaBan,desc">Sắp xếp theo giá (Cao nhất - Thấp nhất)</option>
+                                        <option value="MaSP">Sắp xếp theo món mới (Cũ nhất - Mới nhất)</option>
+                                        <option value="MaSP,desc">Sắp xếp theo món mới (Mới nhất - Cũ nhất)</option>
+                                        <option value="SoLuong,desc">Sắp xếp theo số lượng bán (Nhiều nhất - Ít nhất)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-9">
+                <div class="shadow p-3 bg-white">
+                    <div class="row">
+                        <% monAnList.forEach((monAn) => { %>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+                            <div class="ratio ratio-1x1">
+                                <img style="object-fit: cover" src="/img/<%= monAn.Anh %>" alt="">
+                            </div>
+                            <div class="py-2">
+                                <h5 class="mb-1"><%= monAn.TenSP %></h5>
+                                <small class="mb-2 d-block"><%= monAn.GioiThieuSP %></small>
+                                <p><%= parseInt(monAn.GiaBan).toLocaleString("en-US") %> đồng</p>
+                                <div class="row">
+                                    <div class="pe-0 me-1" style="flex-basis: min-content">
+                                        <a class="d-block" href="#">
+                                            <button type="button" class="btn btn-success">+</button>
+                                        </a>
+                                    </div>
+                                    <div class="col ps-0 ms-1">
+                                        <a class="d-block w-100" href="#">
+                                            <button type="button" class="d-block w-100 btn btn-success">Chi tiết</button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <% }) %>
+                    </div>
+                    <div class="pagination">
+                        <?php
+                            $sqlCount = "";
+                            if (isset($_GET['loaisp'])) {
+                                $loaisp = $_GET['loaisp'];
+                                $sqlCount .= "SELECT COUNT(*) AS count FROM `danhmucsp` LEFT JOIN loaisp l on l.LoaiSP = danhmucsp.MaLoai WHERE MaLoai = $loaisp";
+                            } else {
+                                $sqlCount .= "SELECT COUNT(*) AS count FROM `danhmucsp`";
+                            }
+                            $queryCount = mysqli_query($conn, $sqlCount);
+                            $resultCount = mysqli_fetch_assoc($queryCount);
+                            $count = $resultCount["count"];
+                            $pages = ceil($count / 8);
+                            if ($pages > 1) {
+                        for ($i = 1; $i <= $pages; $i++) {
+                        echo '
+                        <div class="bg-main px-3 py-2 me-2 cursor-pointer">
+                            <p class="text-white mb-0 fw-bold fs-5">' . $i . '</p>
+                        </div>
+                        ';
+                        }
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Menu End -->
+    <%- include('../partials/user/footer') %>
+</div>
+<%- include('../partials/user/js-libraries') %>
+<script src="/js/allMonAn.js"></script>
+<%- include('../partials/user/ai-chat') %>
+</body>
+</html>
+
+
+
