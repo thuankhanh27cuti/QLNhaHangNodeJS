@@ -19,43 +19,38 @@
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-body">
-                        <p class="h4 mb-2">Danh sách món ăn</p>
-                        <a href="/admin/add/mon-an" class="btn" style="background-color: aliceblue; margin-bottom: 10px;" type="button">Thêm</a>
+                        <a class="btn-create btn btn-success" href="/admin/add/nha-cung-cap">Thêm sản phẩm</a>
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
                                 <tr>
-                                    <th scope="col">Mã Món Ăn</th>
-                                    <th scope="col">Tên Loại</th>
-                                    <th scope="col">Tên Món</th>
-                                    <th scope="col">Giá Bán</th>
-                                    <th scope="col">Giới Thiệu Sản Phẩm</th>
-                                    <th scope="col">Bài viết</th>
+                                    <th scope="col">Mã nhà cung cấp</th>
+                                    <th scope="col">Tên nhà cung cấp</th>
+                                    <th scope="col">Địa Chỉ</th>
+                                    <th scope="col">Ghi chú</th>
                                     <th scope="col">Sửa/Xóa</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <% allMonAn.forEach((monAn) => { %>
+                                <% data.forEach((row) => { %>
                                 <tr>
-                                    <th scope="col"><%= monAn.MaSP %></th>
-                                    <th scope="col"><%= monAn.TenLoai %></th>
-                                    <th scope="col"><%= monAn.TenSP %></th>
-                                    <th scope="col"><%= monAn.GiaBan %></th>
-                                    <th scope="col"><%= monAn.GioiThieuSP %></th>
-                                    <th scope="col">
-                                        <a href="/admin/add/bai-viet?MaSP=<%= monAn.MaSP %>">Quản lý bài viết</a>
-                                    </th>
-                                    <th scope="col">
-                                        <a class="btn btn-primary" href="/admin/update/bai-viet" type="button">Sửa</a>
-                                        <a class="btn btn-danger" href="/admin/delete/bai-viet">Xóa</a>
-                                    </th>
+                                    <td><%= row.MaNCC %></td>
+                                    <td><%= row.TenNCC %></td>
+                                    <td><%= row.DiaChi %></td>
+                                    <td><%= row.GhiChu %></td>
+                                    <td>
+                                        <a href="/admin/update/nha-cung-cap?id=<%= row.MaNCC %>" id="btnUpdate" class="btn btn-primary">Sửa
+                                        </a>
+                                        <a href="/admin/delete/nha-cung-cap?id=<%= row.MaNCC %>" id="btnDelete" class="btn btn-danger">Xóa
+                                        </a>
+                                    </td>
                                 </tr>
                                 <% }) %>
                                 </tbody>
                             </table>
                         </div>
                         <%
-                        for (let i = 0; i < count; i++) {
+                        for (let i = 0; i < pages; i++) {
                         %>
                             <a href="?page=<%= i + 1 %>" class="btn btn-primary" style="color:white;"><%= i + 1 %></a>
                         <%

@@ -25,7 +25,9 @@ app.set('views', './src/views');
 app.use(express.static('public'));
 app.use('/', userViewRoutes);
 app.use('/admin', adminViewRoutes);
-app.use('/api/v1/mon-an', monAnRoutes);
+
+
+// app.use('/api/v1/mon-an', monAnRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

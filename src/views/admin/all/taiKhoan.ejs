@@ -19,43 +19,43 @@
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-body">
-                        <p class="h4 mb-2">Danh sách món ăn</p>
-                        <a href="/admin/add/mon-an" class="btn" style="background-color: aliceblue; margin-bottom: 10px;" type="button">Thêm</a>
+                        <h5 class="card-title">Quản lý tài khoản</h5>
+                        <button type="submit" class="btn btn-light btn-round px-5">
+                            <a href="/admin/add/user">Thêm</a>
+                        </button>
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
                                 <tr>
-                                    <th scope="col">Mã Món Ăn</th>
-                                    <th scope="col">Tên Loại</th>
-                                    <th scope="col">Tên Món</th>
-                                    <th scope="col">Giá Bán</th>
-                                    <th scope="col">Giới Thiệu Sản Phẩm</th>
-                                    <th scope="col">Bài viết</th>
-                                    <th scope="col">Sửa/Xóa</th>
+                                    <th scope="col">UserName</th>
+                                    <th scope="col">LoaiUser</th>
+                                    <th scope="col">Họ Và Tên</th>
+                                    <th scope="col">Số điện thoại</th>
+                                    <th scope="col">Địa Chỉ</th>
+                                    <th scope="col">Ngay Sinh</th>
+                                    <th scope="col">Sửa | Xóa</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <% allMonAn.forEach((monAn) => { %>
+                                <% data.forEach((row) => { %>
                                 <tr>
-                                    <th scope="col"><%= monAn.MaSP %></th>
-                                    <th scope="col"><%= monAn.TenLoai %></th>
-                                    <th scope="col"><%= monAn.TenSP %></th>
-                                    <th scope="col"><%= monAn.GiaBan %></th>
-                                    <th scope="col"><%= monAn.GioiThieuSP %></th>
-                                    <th scope="col">
-                                        <a href="/admin/add/bai-viet?MaSP=<%= monAn.MaSP %>">Quản lý bài viết</a>
-                                    </th>
-                                    <th scope="col">
-                                        <a class="btn btn-primary" href="/admin/update/bai-viet" type="button">Sửa</a>
-                                        <a class="btn btn-danger" href="/admin/delete/bai-viet">Xóa</a>
-                                    </th>
+                                    <th scope="row"><%= row.UserName %></th>
+                                    <td><%= row.LoaiUser %></td>
+                                    <td><%= row.Ho + " " + row.Ten %></td>
+                                    <td><%= row.SDT %></td>
+                                    <td><%= row.DiaChi %></td>
+                                    <td><%= row.NgaySinh %></td>
+                                    <td>
+                                        <a class="btn btn-primary" href="/admin/update/user?id=<%= row.userId %>">Sửa</a>
+                                        <a class="btn btn-danger" href="/admin/delete/user?id=<%= row.userId %>">Xóa</a>
+                                    </td>
                                 </tr>
                                 <% }) %>
                                 </tbody>
                             </table>
                         </div>
                         <%
-                        for (let i = 0; i < count; i++) {
+                        for (let i = 0; i < pages; i++) {
                         %>
                             <a href="?page=<%= i + 1 %>" class="btn btn-primary" style="color:white;"><%= i + 1 %></a>
                         <%
