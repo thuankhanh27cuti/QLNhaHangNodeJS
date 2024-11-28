@@ -17,7 +17,48 @@
     <div class="clearfix">
         <div class="content-wrapper">
             <div class="container-fluid">
-
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Quản lý công thức món</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Mã sản phẩm</th>
+                                        <th scope="col">Tên sản phẩm</th>
+                                        <th scope="col">Công thức món</th>
+                                        <th scope="col">Sửa/Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <% data.forEach((row) => { %>
+                                    <tr>
+                                        <th scope="row"><%= row.MaSP %></th>
+                                        <td><%=  row.TenSP %></td>
+                                        <td>
+                                            <%
+                                                let congThuc = row.congThuc;
+                                                congThuc.forEach((ct) => {
+                                            %>
+                                                <%= ct.TenNL %> x <%= ct.SoLuongCanDung %> <br>
+                                            <% }) %>
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-primary" href="/admin/update/cong-thuc-mon?id=<%= row.MaSP %>">Sửa</a></td>
+                                    </tr>
+                                <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <%
+                        for (let i = 0; i < pages; i++) {
+                        %>
+                            <a href="?page=<%= i + 1 %>" class="btn btn-primary" style="color:white;"><%= i + 1 %></a>
+                        <%
+                        }
+                        %>
+                    </div>
+                </div>
             </div>
         </div>
         <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>

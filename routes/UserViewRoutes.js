@@ -2,8 +2,23 @@ const express = require('express');
 const router = express.Router();
 const userViewController = require('../controllers/userViewController');
 
-router.get("/", userViewController.index);
-router.get("/danh-sach-mon-an", userViewController.danhSachMonAn);
-router.post("/dat-ban", userViewController.datBan);
+let middleware = (req, res, next) => {
+    let session = req.session.session;
+    if (session) {
+        if ([0, 1].includes(session.LoaiUser)) {
+            res.redirect('/admin');
+        }
+        else {
+            next();
+        }
+    }
+    else {
+        next();
+    }
+}
+
+router.get("/", [middleware], userViewController.index);
+router.get("/danh-sach-mon-an", [middleware], userViewController.danhSachMonAn);
+router.post("/dat-ban", [middleware], userViewController.datBan);
 
 module.exports = router;

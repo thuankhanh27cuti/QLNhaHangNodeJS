@@ -17,7 +17,44 @@
     <div class="clearfix">
         <div class="content-wrapper">
             <div class="container-fluid">
-
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Lịch sử trừ nguyên liệu</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Thời gian</th>
+                                    <th scope="col">Số lượng</th>
+                                    <th scope="col">Mã nguyên liệu</th>
+                                    <th scope="col">Tên nguyên liệu</th>
+                                    <th scope="col">Đơn giá nhập</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <% data.forEach((row) => { %>
+                                <tr>
+                                    <th scope="row"><%= row.id %></th>
+                                    <td><%= row.time.toLocaleString("en-US") %></td>
+                                    <td><%= row.quantity %></td>
+                                    <td><%= row.MaNL %></td>
+                                    <td><%= row.TenNL %></td>
+                                    <td><%= parseInt(row.DonGiaNhap).toLocaleString("en-US") %> đồng</td>
+                                </tr>
+                                <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <%
+                        for (let i = 0; i < pages; i++) {
+                        %>
+                            <a href="?page=<%= i + 1 %>" class="btn btn-primary" style="color:white;"><%= i + 1 %></a>
+                        <%
+                        }
+                        %>
+                    </div>
+                </div>
             </div>
         </div>
         <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>

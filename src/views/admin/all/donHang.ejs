@@ -17,7 +17,52 @@
     <div class="clearfix">
         <div class="content-wrapper">
             <div class="container-fluid">
-
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Quản lý đơn hàng</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Mã hoá đơn</th>
+                                    <th scope="col">Ngày lập</th>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Mã bàn</th>
+                                    <th scope="col">Giảm giá</th>
+                                    <th scope="col">Phương thức thanh toán</th>
+                                    <th scope="col">Ghi chú</th>
+                                    <th scope="col">Trạng thái</th>
+                                    <th scope="col">Sửa | Xóa</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <% data.forEach((row) => { %>
+                                <tr>
+                                    <th scope="row"><%= row.MaHoaDon %></th>
+                                    <td><%= row.NgayLap.toLocaleString("en-US") %></td>
+                                    <td><%= row.UserName %></td>
+                                    <td><%= row.MaBan %></td>
+                                    <td><%= row.MaGiamGia %></td>
+                                    <td><%= row.PhuongThucTT === 0 ? "Tiền mặt" : (row.PhuongThucTT === 1 ? "Chuyển khoản" : "") %></td>
+                                    <td><%= row.GhiChu %></td>
+                                    <td><%= row.trangthai === 0 ? "Chờ xác nhận" : (row.trangthai === 1 ? "Đã xác nhận" : (row.trangthai === 2 ? "Đã huỷ" : "")) %></td>
+                                    <td>
+                                        <a class="btn btn-primary" href="/admin/update/don-hang?id=<%= row.MaHoaDon %>">Sửa</a>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <%
+                        for (let i = 0; i < pages; i++) {
+                        %>
+                            <a href="?page=<%= i + 1 %>" class="btn btn-primary" style="color:white;"><%= i + 1 %></a>
+                        <%
+                        }
+                        %>
+                    </div>
+                </div>
             </div>
         </div>
         <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>

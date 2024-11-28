@@ -17,7 +17,51 @@
     <div class="clearfix">
         <div class="content-wrapper">
             <div class="container-fluid">
-
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Quản lý đặt bàn</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Người đặt bàn</th>
+                                    <th scope="col">Số điện thoại</th>
+                                    <th scope="col">Số người</th>
+                                    <th scope="col">Yêu cầu</th>
+                                    <th scope="col">Thời gian</th>
+                                    <th scope="col">Trạng thái</th>
+                                    <th scope="col">Sửa/Xóa</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <% data.forEach((row) => { %>
+                                <tr>
+                                    <th scope="row"><%= row.id %></th>
+                                    <td><%= row.ten %></td>
+                                    <td><%= row.email %></td>
+                                    <td><%= row.soNguoi %></td>
+                                    <td><%= row.yeuCau %></td>
+                                    <td><%= row.thoiGian %></td>
+                                    <td><%= row.trangThai === "0" ? "Chờ xác nhận" : "Đã xác nhận" %></td>
+                                    <td>
+                                        <a class="btn btn-primary" href="/admin/update/dat-ban?id=1">Sửa</a>
+                                        <a class="btn btn-danger" href="/admin/update/dat-ban?id=1">Xóa</a>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <%
+                        for (let i = 0; i < pages; i++) {
+                        %>
+                            <a href="?page=<%= i + 1 %>" class="btn btn-primary" style="color:white;"><%= i + 1 %></a>
+                        <%
+                        }
+                        %>
+                    </div>
+                </div>
             </div>
         </div>
         <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>

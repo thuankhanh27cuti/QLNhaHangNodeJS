@@ -19,7 +19,6 @@ exports.selectAllWithParams = async (sql, params) => {
     return data;
 }
 
-
 /**
  *
  * @param {String} sql

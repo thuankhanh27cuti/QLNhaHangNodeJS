@@ -17,7 +17,51 @@
     <div class="clearfix">
         <div class="content-wrapper">
             <div class="container-fluid">
-
+                <div class="card">
+                    <div class="card-body">
+                        <p class="h4 mb-2">Quản lý bài viết</p>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                    <th scope="col">Mã sản phẩm</th>
+                                    <th scope="col">Tiêu đề blog</th>
+                                    <th scope="col">Tóm tắt blog</th>
+                                    <th scope="col">Ngày viết blog</th>
+                                    <th scope="col">Người viết blog</th>
+                                    <th scope="col">Bình luận chưa phản hồi</th>
+                                    <th scope="col">Sửa/Xóa</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <% data.forEach((row) => { %>
+                                    <tr>
+                                        <th scope="col"><%= row.MaSP %></th>
+                                        <th scope="col"><%= row.blog_tieu_de %></th>
+                                        <th scope="col"><%= row.blog_tom_tat %></th>
+                                        <th scope="col"><%= row.blog_uploaded_at.toLocaleString() %></th>
+                                        <th scope="col"><%= row.UserName %></th>
+                                        <th scope="col">
+                                            <a href="/admin/all/binh-luan-bai-viet?id=<%= row.MaSP %>"><%= row.need_reply %> bình luận</a>
+                                        </th>
+                                        <th scope="col">
+                                            <a class="btn btn-primary" href="/admin/update/bai-viet?id=<%= row.MaSP %>" type="button">Sửa</a>
+                                            <a class="btn btn-danger" href="/admin/delete/bai-viet?id=<%= row.MaSP %>">Xóa</a>
+                                        </th>
+                                    </tr>
+                                <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <%
+                        for (let i = 0; i < pages; i++) {
+                        %>
+                            <a href="?page=<%= i + 1 %>" class="btn btn-primary" style="color:white;"><%= i + 1 %></a>
+                        <%
+                        }
+                        %>
+                    </div>
+                </div>
             </div>
         </div>
         <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
