@@ -4,6 +4,7 @@ const loginRoutes = require('./routes/loginRoutes');
 const monAnRoutes = require('./routes/MonAnRoutes');
 const userViewRoutes = require('./routes/UserViewRoutes');
 const adminViewRoutes = require('./routes/AdminViewRoutes');
+const adminViewAddRoutes = require("./routes/AdminViewAddRoutes");
 const chartApiRoutes = require("./routes/chartApiRoutes");
 const bodyParser = require('body-parser');
 const {join} = require("node:path");
@@ -33,6 +34,8 @@ app.use(express.static('public'));
 app.use('/', loginRoutes);
 app.use('/', userViewRoutes);
 app.use('/admin', adminViewRoutes);
+app.use('/admin/add', adminViewAddRoutes);
+
 app.use('/api/v1/chart', chartApiRoutes);
 app.use('/api/v1/mon-an', monAnRoutes);
 

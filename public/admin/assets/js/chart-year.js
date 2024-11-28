@@ -1,9 +1,12 @@
 let urlSearchParams = new URLSearchParams(window.location.search);
 let yearParam = urlSearchParams.get("year");
 
+let selectYear = 0;
+
 let url = "/api/v1/chart/year";
 if (yearParam !== "" && yearParam !== null) {
     url = url + `?year=${yearParam}`;
+    selectYear = parseInt(yearParam);
 }
 
 let revenueByYear = await fetch(url)
@@ -19,7 +22,8 @@ const parseDate = (date) => {
 
 let labels = [];
 let date = new Date();
-let year = date.getFullYear();
+let year = !isNaN(selectYear) ? selectYear : date.getFullYear();
+
 let loop = new Date(year, 0, 1);
 while (loop.getFullYear() === year) {
     labels.push(parseDate(new Date(loop)));

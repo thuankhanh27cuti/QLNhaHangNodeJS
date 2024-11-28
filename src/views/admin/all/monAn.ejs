@@ -40,10 +40,10 @@
                                     <th scope="col"><%= row.MaSP %></th>
                                     <th scope="col"><%= row.TenLoai %></th>
                                     <th scope="col"><%= row.TenSP %></th>
-                                    <th scope="col"><%= row.GiaBan %></th>
+                                    <th scope="col"><%= parseInt(row.GiaBan).toLocaleString() %> đồng</th>
                                     <th scope="col"><%= row.GioiThieuSP %></th>
                                     <th scope="col">
-                                        <a href="/admin/add/bai-viet?id=<%= row.MaSP %>">Quản lý bài viết</a>
+                                        <a href="/admin/update/bai-viet?id=<%= row.MaSP %>">Quản lý bài viết</a>
                                     </th>
                                     <th scope="col">
                                         <a class="btn btn-primary" href="/admin/update/mon-an?id=<%= row.MaSP %>" type="button">Sửa</a>

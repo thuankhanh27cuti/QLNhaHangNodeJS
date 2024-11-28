@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Dashtreme Admin</title>
+    <link rel="icon" href="/admin/assets/images/favicon.ico" type="image/x-icon">
+    <%- include('../../partials/admin/css-libraries') %>
+</head>
+<body class="bg-theme bg-theme1">
+<div id="wrapper">
+    <%- include('../../partials/admin/navigation') %>
+    <%- include('../../partials/admin/header') %>
+    <div class="clearfix">
+        <div class="content-wrapper">
+            <div class="container-fluid">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST" action="/admin/add/loai-san-pham">
+                            <div class="form-group">
+                                <label for="tenLoai">Tên loại</label>
+                                <input type="text" class="form-control" id="tenLoai" name="tenLoai" required>
+                            </div>
+                            <button class="btn btn-primary" type="submit">Thêm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
+    </div>
+    <%- include('../../partials/admin/footer') %>
+    <%- include('../../partials/admin/right-sidebar') %>
+    <%- include('../../partials/admin/js-libraries') %>
+</div>
+</body>
+</html>

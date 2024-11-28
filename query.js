@@ -36,3 +36,52 @@ exports.selectAll = async (sql) => {
     }
     return data;
 }
+
+/**
+ *
+ * @param {String} sql
+ * @param {*[]} params
+ * @returns {Promise<number> | Promise<undefined>}
+ */
+exports.insertAndGetId = async (sql, params) => {
+    let id;
+
+    try {
+        let result = await db.query(sql, params);
+        id = result[0].insertId;
+    }
+    catch (err) {
+        console.log(err);
+    }
+
+    return id;
+}
+
+/**
+ *
+ * @param {String} sql
+ * @returns {Promise<void>}
+ */
+exports.query = async (sql) => {
+    try {
+        await db.query(sql);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+/**
+ *
+ * @param {String} sql
+ * @param {*[]} params
+ * @returns {Promise<void>}
+ */
+exports.queryWithParams = async (sql, params) => {
+    try {
+        await db.query(sql, params);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}

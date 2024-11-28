@@ -79,7 +79,27 @@ exports.allTaiKhoan = async (req, res) => {
 }
 
 exports.allNguyenLieu = async (req, res) => {
-    res.render('admin/all/nguyenLieu');
+    let {page} = req.query;
+    let currentPage = 1;
+
+    let parsePage = parseInt(page);
+    if (!isNaN(parsePage)) {
+        currentPage = parseInt(page);
+    }
+
+    let start = (currentPage - 1) * perPages;
+
+    let sql = "SELECT * FROM nguyenlieu ORDER BY MaNL LIMIT ?, ?";
+
+    let data = await query.selectAllWithParams(sql, [start, perPages]);
+
+    let sqlCount = "SELECT COUNT(*) AS total FROM nguyenlieu";
+    let queryCount = await query.selectAll(sqlCount);
+    let dataCount = queryCount[0].total;
+
+    let pages = Math.ceil(dataCount / perPages);
+
+    res.render('admin/all/nguyenLieu', {data: data, pages: pages});
 }
 
 exports.allHoaDonBan = async (req, res) => {

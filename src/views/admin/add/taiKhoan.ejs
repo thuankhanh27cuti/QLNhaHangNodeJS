@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Dashtreme Admin</title>
+    <link rel="icon" href="/admin/assets/images/favicon.ico" type="image/x-icon">
+    <%- include('../../partials/admin/css-libraries') %>
+</head>
+<body class="bg-theme bg-theme1">
+<div id="wrapper">
+    <%- include('../../partials/admin/navigation') %>
+    <%- include('../../partials/admin/header') %>
+    <div class="clearfix">
+        <div class="content-wrapper">
+            <div class="container-fluid">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">Thêm Tài Khoản</div>
+                            <form method="POST" action="/admin/add/user">
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input name="username" type="text" class="form-control form-control-rounded" id="username" placeholder="Enter Your UserName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input name="password" type="text" class="form-control form-control-rounded" id="password" placeholder="Enter Your Password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ho">Họ</label>
+                                    <input name="ho" type="text" class="form-control form-control-rounded" id="ho" placeholder="Enter Your Họ" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ten">Tên</label>
+                                    <input name="ten" type="text" class="form-control form-control-rounded" id="ten" placeholder="Enter Your Tên" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="role">Loại User</label>
+                                    <select name="role" class="form-control form-control-rounded" id="role" required>
+                                        <option value="0">Admin</option>
+                                        <option value="1">Nhân viên</option>
+                                        <option value="2">Khách hàng</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input name="email" type="email" class="form-control form-control-rounded" id="email" placeholder="Enter Your Email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">SDT</label>
+                                    <input name="phone" type="text" class="form-control form-control-rounded" id="phone" placeholder="Enter Your SDT">
+                                </div>
+                                <div class="form-group">
+                                    <label for="diaChi">Địa Chỉ</label>
+                                    <input name="diaChi" type="text" class="form-control form-control-rounded" id="diaChi" placeholder="Enter Your Địa Chỉ" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ngaySinh">Ngày Sinh</label>
+                                    <input name="ngaySinh" class="form-control form-control-rounded" id="ngaySinh" type="date">
+                                </div>
+                                <button type="submit" class="btn btn-light btn-round px-5">Thêm</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
+    </div>
+    <%- include('../../partials/admin/footer') %>
+    <%- include('../../partials/admin/right-sidebar') %>
+    <%- include('../../partials/admin/js-libraries') %>
+</div>
+</body>
+</html>
