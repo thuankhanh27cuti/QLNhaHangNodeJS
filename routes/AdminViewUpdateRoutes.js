@@ -17,7 +17,7 @@ router.get('/user',
     adminViewUpdateController.updateUser);
 
 router.post('/user',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware, upload.single('file')],
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewUpdateController.handleUpdateUser);
 
 router.get('/nguyen-lieu',
@@ -25,7 +25,7 @@ router.get('/nguyen-lieu',
     adminViewUpdateController.updateNguyenLieu);
 
 router.post('/nguyen-lieu',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware, upload.single('file')],
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewUpdateController.handleUpdateNguyenLieu);
 
 router.get('/so-luong-nguyen-lieu',
@@ -33,7 +33,7 @@ router.get('/so-luong-nguyen-lieu',
     adminViewUpdateController.updateSoLuongNguyenLieu);
 
 router.post('/so-luong-nguyen-lieu',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware, upload.single('file')],
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewUpdateController.handleUpdateSoLuongNguyenLieu);
 
 router.get('/giam-gia',
@@ -41,7 +41,39 @@ router.get('/giam-gia',
     adminViewUpdateController.updateGiamGia);
 
 router.post('/giam-gia',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware, upload.single('file')],
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewUpdateController.handleUpdateGiamGia);
+
+router.get('/loai-san-pham',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewUpdateController.updateLoaiSanPham);
+
+router.post('/loai-san-pham',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewUpdateController.handleUpdateLoaiSanPham);
+
+router.get('/nha-cung-cap',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewUpdateController.updateNhaCungCap);
+
+router.post('/nha-cung-cap',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewUpdateController.handleUpdateNhaCungCap);
+
+router.get('/dat-ban',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewUpdateController.updateDatBan);
+
+router.post('/dat-ban',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewUpdateController.handleUpdateDatBan);
+
+router.get('/don-hang',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewUpdateController.updateDonHang);
+
+router.post('/don-hang',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewUpdateController.handleUpdateDonHang);
 
 module.exports = router;

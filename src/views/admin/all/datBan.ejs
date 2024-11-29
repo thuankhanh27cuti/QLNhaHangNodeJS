@@ -42,11 +42,11 @@
                                     <td><%= row.email %></td>
                                     <td><%= row.soNguoi %></td>
                                     <td><%= row.yeuCau %></td>
-                                    <td><%= row.thoiGian %></td>
+                                    <td><%= row.thoiGian.toLocaleString() %></td>
                                     <td><%= row.trangThai === "0" ? "Chờ xác nhận" : "Đã xác nhận" %></td>
                                     <td>
-                                        <a class="btn btn-primary" href="/admin/update/dat-ban?id=1">Sửa</a>
-                                        <a class="btn btn-danger" href="/admin/update/dat-ban?id=1">Xóa</a>
+                                        <a class="btn btn-primary" href="/admin/update/dat-ban?id=<%= row.id %>">Sửa</a>
+                                        <a class="btn btn-danger" href="/admin/update/dat-ban?id=<%= row.id %>">Xóa</a>
                                     </td>
                                 </tr>
                                 <% }) %>

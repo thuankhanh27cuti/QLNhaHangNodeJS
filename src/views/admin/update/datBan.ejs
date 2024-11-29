@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Dashtreme Admin</title>
+    <link rel="icon" href="/admin/assets/images/favicon.ico" type="image/x-icon">
+    <%- include('../../partials/admin/css-libraries') %>
+</head>
+<body class="bg-theme bg-theme1">
+<div id="wrapper">
+    <%- include('../../partials/admin/navigation') %>
+    <%- include('../../partials/admin/header') %>
+    <div class="clearfix">
+        <div class="content-wrapper">
+            <div class="container-fluid">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST" action="/admin/update/dat-ban">
+                            <div class="form-group">
+                                <label for="id">Id</label>
+                                <input readonly name="id" value="<%= data.id %>" type="text" class="form-control form-control-rounded" id="id">
+                            </div>
+                            <div class="form-group">
+                                <label for="username">Tài khoản đặt bàn</label>
+                                <input readonly value="<%= data.UserName %>" type="text" class="form-control form-control-rounded" id="username">
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Tên người đặt bàn</label>
+                                <input readonly value="<%= data.ten %>" type="text" class="form-control form-control-rounded" id="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Số điện thoại</label>
+                                <input value="<%= data.email %>" type="tel" class="form-control form-control-rounded" id="phone" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="soNguoi">Số người</label>
+                                <select name="soNguoi" id="soNguoi" class="form-control form-control-rounded">
+                                    <option value="1-2 người"<%= data.soNguoi === "1-2 người" ? " selected": "" %>>1-2 người</option>
+                                    <option value="3-4 người"<%= data.soNguoi === "3-4 người" ? " selected": "" %>>3-4 người</option>
+                                    <option value="4-6 người"<%= data.soNguoi === "4-6 người" ? " selected" : ""%>>4-6 người</option>
+                                    <option value=">6 người"<%= data.soNguoi === ">6 người" ? " selected": "" %>> >6 người</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="yeuCau">Yêu cầu</label>
+                                <input name="yeuCau" value="<%= data.yeuCau %>" type="text" class="form-control form-control-rounded" id="yeuCau" placeholder="Enter yêu cầu">
+                            </div>
+                            <div class="form-group">
+                                <label for="thoiGian">Thời gian</label>
+                                <input name="thoiGian" value="<%= data.thoiGian %>" type="datetime-local" class="form-control form-control-rounded" id="thoiGian">
+                            </div>
+                            <div class="form-group">
+                                <label for="trangThai">Trạng thái</label>
+                                <select name="trangThai" id="trangThai" class="form-control form-control-rounded">
+                                    <option value="0"<%= data.trangThai === "0" ? " selected": "" %>>Chờ xác nhận</option>
+                                    <option value="1"<%= data.trangThai === "1" ? " selected": "" %>>Đã xác nhận</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-light btn-round px-5">Sửa</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
+    </div>
+    <%- include('../../partials/admin/footer') %>
+    <%- include('../../partials/admin/right-sidebar') %>
+    <%- include('../../partials/admin/js-libraries') %>
+</div>
+</body>
+</html>

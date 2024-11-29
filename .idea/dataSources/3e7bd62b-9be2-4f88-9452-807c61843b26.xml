@@ -1071,7 +1071,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     </schema>
     <schema id="313" parent="1" name="qlnhahang2">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2024-11-27.08:07:39</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2024-11-29.14:12:11</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <user id="314" parent="1" name="mysql.infoschema">
@@ -1627,7 +1627,7 @@ userId</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="428" parent="328" name="MaSP">
-      <AutoIncrement>43</AutoIncrement>
+      <AutoIncrement>53</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -1702,7 +1702,7 @@ userId</ColNames>
       <Position>5</Position>
     </column>
     <column id="443" parent="329" name="thoiGian">
-      <DasType>varchar(255)|0s</DasType>
+      <DasType>datetime|0s</DasType>
       <Position>6</Position>
     </column>
     <column id="444" parent="329" name="trangThai">
@@ -1838,7 +1838,7 @@ userId</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="471" parent="332" name="MaHoaDonNhap">
-      <AutoIncrement>77</AutoIncrement>
+      <AutoIncrement>80</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -1933,7 +1933,7 @@ userId</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="490" parent="334" name="LoaiSP">
-      <AutoIncrement>7</AutoIncrement>
+      <AutoIncrement>9</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -1955,7 +1955,7 @@ userId</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="494" parent="335" name="MaNL">
-      <AutoIncrement>14</AutoIncrement>
+      <AutoIncrement>15</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -1987,7 +1987,7 @@ userId</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="500" parent="336" name="MaNCC">
-      <AutoIncrement>7</AutoIncrement>
+      <AutoIncrement>8</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -2019,7 +2019,7 @@ userId</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="506" parent="337" name="userId">
-      <AutoIncrement>25</AutoIncrement>
+      <AutoIncrement>31</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>

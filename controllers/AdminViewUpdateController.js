@@ -143,10 +143,104 @@ exports.updateGiamGia = async (req, res) => {
 }
 
 exports.handleUpdateGiamGia = async (req, res) => {
-    console.log(req.body);
     let { maGiamGia, giamGia} = req.body;
 
+    let sql = "UPDATE giamgia SET GiamGia = ? WHERE MaGiamGia = ?";
+    await query.queryWithParams(sql, [giamGia, maGiamGia]);
+
     res.redirect('/admin/giam-gia');
+}
+
+exports.updateLoaiSanPham = async (req, res) => {
+    let {id} = req.query;
+
+    let sql = "SELECT * FROM loaisp WHERE LoaiSP = ?";
+    let select = await query.selectAllWithParams(sql, [id]);
+    let data = select[0];
+
+    res.render('admin/update/loaiSanPham', {data: data});
+}
+
+exports.handleUpdateLoaiSanPham = async (req, res) => {
+    let {id, ten} = req.body;
+
+    let sql = "UPDATE loaisp SET TenLoai = ? WHERE LoaiSP = ?";
+    await query.queryWithParams(sql, [ten, id]);
+
+    res.redirect('/admin/loai-san-pham');
+}
+
+exports.updateNhaCungCap = async (req, res) => {
+    let {id} = req.query;
+
+    let sql = "SELECT * FROM nhacungcap WHERE MaNCC = ?";
+    let select = await query.selectAllWithParams(sql, [id]);
+    let data = select[0];
+
+    res.render('admin/update/nhaCungCap', {data: data});
+}
+
+exports.handleUpdateNhaCungCap = async (req, res) => {
+    let {id, ten, diaChi, ghiChu} = req.body;
+
+    let sql = "UPDATE nhacungcap SET TenNCC = ?, DiaChi = ?, GhiChu = ? WHERE MaNCC = ?";
+    await query.queryWithParams(sql, [ten, diaChi, ghiChu, id]);
+
+    res.redirect('/admin/nha-cung-cap');
+}
+
+exports.updateDatBan = async (req, res) => {
+    let {id} = req.query;
+
+    let sql = "SELECT d.id, d.ten, d.email, d.soNguoi, d.yeuCau, d.thoiGian, d.trangThai, d.userId, u.UserName FROM datban d LEFT JOIN user u on u.userId = d.userId WHERE d.id = ?";
+    let select = await query.selectAllWithParams(sql, [id]);
+    let data = select[0];
+
+    let thoiGian = data.thoiGian;
+
+    data.thoiGian = `${thoiGian.getFullYear()}-${padStart(thoiGian.getMonth() + 1)}-${padStart(thoiGian.getDate())}T${padStart(thoiGian.getHours())}:${padStart(thoiGian.getMinutes())}`;
+
+    res.render('admin/update/datBan', {data: data});
+}
+
+exports.handleUpdateDatBan = async (req, res) => {
+    let {id, soNguoi, yeuCau, thoiGian, trangThai} = req.body;
+
+    let sql = "UPDATE datban SET soNguoi = ?, yeuCau = ?, thoiGian = ?, trangThai = ? WHERE id = ?";
+    await query.queryWithParams(sql, [soNguoi, yeuCau, thoiGian, trangThai, id]);
+
+    res.redirect('/admin/dat-ban');
+}
+
+exports.updateDonHang = async (req, res) => {
+    let {id} = req.query;
+
+    let sql = "SELECT MaHoaDon, NgayLap, PhuongThucTT, h.GhiChu, trangthai, h.MaGiamGia, h.userId, UserName, GiamGia FROM hoadonban h LEFT JOIN qlnhahang2.user u on h.userId = u.userId LEFT JOIN qlnhahang2.giamgia g on h.MaGiamGia = g.MaGiamGia WHERE MaHoaDon = ?";
+
+    let select = await query.selectAllWithParams(sql, [id]);
+    let data = select[0];
+
+    let thoiGian = data.NgayLap;
+    data.NgayLap = `${thoiGian.getFullYear()}-${padStart(thoiGian.getMonth() + 1)}-${padStart(thoiGian.getDate())}T${padStart(thoiGian.getHours())}:${padStart(thoiGian.getMinutes())}`;
+
+    res.render('admin/update/donHang', {data: data});
+}
+
+exports.handleUpdateDonHang = async (req, res) => {
+    let {id, trangThai} = req.body;
+    console.log(req.body);
+
+    let sqlSelect = "SELECT trangthai FROM hoadonban WHERE MaHoaDon = ?";
+    let dataSelect = await query.selectAllWithParams(sqlSelect, [id]);
+    if (dataSelect[0].trangthai === 0) {
+        let sqlUpdate = "UPDATE hoadonban SET trangthai = ? WHERE MaHoaDon = ?";
+        await query.queryWithParams(sqlUpdate, [trangThai, id]);
+
+        res.redirect('/admin/don-hang');
+    }
+    else {
+        res.redirect('/admin/don-hang');
+    }
 }
 
 const padStart = (number) => {
