@@ -19,14 +19,14 @@
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-body">
-                        <form method="POST" action="/admin/add/giam-gia">
+                        <form method="POST" action="/admin/update/giam-gia">
                             <div class="form-group">
                                 <label for="maGiamGia">Mã giảm giá</label>
-                                <input name="maGiamGia" type="number" class="form-control form-control-rounded" id="maGiamGia" min="0" required>
+                                <input name="maGiamGia" value="<%= data.MaGiamGia %>" type="number" class="form-control form-control-rounded" id="maGiamGia" min="0" readonly>
                             </div>
                             <div class="form-group">
                                 <label for="giamGia">Giảm giá</label>
-                                <input name="giamGia" type="number" class="form-control form-control-rounded" id="giamGia" value="0" min="0" max="100" required>
+                                <input name="giamGia" value="<%= data.GiamGia %>" type="number" class="form-control form-control-rounded" id="giamGia" placeholder="Nhập giảm giá" min="0" max="100" required>
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-light btn-round px-5">Thêm</button>

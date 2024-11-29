@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Dashtreme Admin</title>
+    <link rel="icon" href="/admin/assets/images/favicon.ico" type="image/x-icon">
+    <%- include('../../partials/admin/css-libraries') %>
+</head>
+<body class="bg-theme bg-theme1">
+<div id="wrapper">
+    <%- include('../../partials/admin/navigation') %>
+    <%- include('../../partials/admin/header') %>
+    <div class="clearfix">
+        <div class="content-wrapper">
+            <div class="container-fluid">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">Sửa Tài Khoản</div>
+                        <form method="POST" action="/admin/update/user">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input readonly name="username" value="<%= data.UserName %>" type="text" class="form-control form-control-rounded" id="username" placeholder="Enter Your UserName">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input name="password" value="<%= data.PassWord %>" type="password" class="form-control form-control-rounded" id="password" placeholder="Enter Your Password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ho">Họ</label>
+                                <input name="ho" value="<%= data.Ho %>" type="text" class="form-control form-control-rounded" id="ho" placeholder="Enter Your Họ" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ten">Tên</label>
+                                <input name="ten" value="<%= data.Ten %>" type="text" class="form-control form-control-rounded" id="ten" placeholder="Enter Your Tên" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input name="email" value="<%= data.email %>" type="email" class="form-control form-control-rounded" id="email" placeholder="Enter Your Email">
+                            </div>
+                            <div class="form-group">
+                                <label for="loaiUser">Loại User</label>
+                                <select name="loaiUser" class="form-control form-control-rounded" id="loaiUser" required>
+                                    <option value="0" <%= data.LoaiUser === 0 ? " selected" : "" %>>Admin</option>
+                                    <option value="1" <%= data.LoaiUser === 1 ? " selected" : "" %>>Nhân viên</option>
+                                    <option value="2" <%= data.LoaiUser === 2 ? " selected"  : "" %>>Khách hàng</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">SDT</label>
+                                <input name="phone" value="<%= data.SDT %>" type="text" class="form-control form-control-rounded" id="phone" placeholder="Enter Your SDT">
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Địa Chỉ</label>
+                                <input name="address" value="<%= data.DiaChi %>" type="text" class="form-control form-control-rounded" id="address" placeholder="Enter Your Địa Chỉ">
+                            </div>
+                            <div class="form-group">
+                                <label for="ngaySinh">Ngày Sinh</label>
+                                <input name="ngaySinh" value="<%= data.NgaySinh %>" class="form-control form-control-rounded" id="ngaySinh" type="date">
+                            </div>
+                            <button type="submit" class="btn btn-light btn-round px-5">Sửa</button>
+                            <a class="btn btn-light btn-round px-5" href="/admin/tai-khoan">Quay lại</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
+    </div>
+    <%- include('../../partials/admin/footer') %>
+    <%- include('../../partials/admin/right-sidebar') %>
+    <%- include('../../partials/admin/js-libraries') %>
+</div>
+</body>
+</html>

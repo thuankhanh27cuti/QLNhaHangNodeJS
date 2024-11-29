@@ -19,17 +19,25 @@
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-body">
-                        <form method="POST" action="/admin/add/giam-gia">
+                        <form method="POST" action="/admin/update/nguyen-lieu">
                             <div class="form-group">
-                                <label for="maGiamGia">Mã giảm giá</label>
-                                <input name="maGiamGia" type="number" class="form-control form-control-rounded" id="maGiamGia" min="0" required>
+                                <label for="maNL">Mã Nguyên Liệu</label>
+                                <input id="maNL" type="text" name="maNL" value="<%= data.MaNL %>" class="form-control" readonly>
                             </div>
                             <div class="form-group">
-                                <label for="giamGia">Giảm giá</label>
-                                <input name="giamGia" type="number" class="form-control form-control-rounded" id="giamGia" value="0" min="0" max="100" required>
+                                <label for="tenNL">Tên Nguyên Liệu</label>
+                                <input id="tenNL" type="text" name="tenNL" value="<%= data.TenNL %>" class="form-control" required>
                             </div>
                             <div class="form-group">
-                                <button type="submit" class="btn btn-light btn-round px-5">Thêm</button>
+                                <label for="donGiaNhap">Đơn giá nhập</label>
+                                <input id="donGiaNhap" type="number" name="donGiaNhap" value="<%= data.DonGiaNhap %>" class="form-control" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="soLuongCon">Số lượng còn</label>
+                                <input id="soLuongCon" type="number" name="soLuongCon" value="<%= data.SoLuongCon %>" class="form-control" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Sửa</button>
                             </div>
                         </form>
                     </div>
