@@ -1,13 +1,13 @@
 let urlSearchParams = new URLSearchParams(window.location.search);
 let sortElement = document.querySelector("#sort");
-let loaisp = urlSearchParams.get("loaisp");
+let maLoai = urlSearchParams.get("maLoai");
 let paginationElements = document.querySelectorAll(".pagination > div");
 
 const createUrl = (loaisp, page, sort) => {
-    let href = "./danhmucmonan.php";
+    let href = "/danh-sach-mon-an";
     let array = [];
     if (loaisp) {
-        array.push(`loaisp=${loaisp}`);
+        array.push(`maLoai=${maLoai}`);
     }
     if (page) {
         array.push(`page=${page}`);
@@ -18,12 +18,9 @@ const createUrl = (loaisp, page, sort) => {
     return array.length === 0 ? href : href + "?" + array.join("&");
 }
 
-if (loaisp !== null) {
-    console.log(loaisp);
-}
 sortElement.onchange = () => {
     let sort = sortElement.value;
-    window.location.href = createUrl(loaisp, 0, sort);
+    window.location.href = createUrl(maLoai, 0, sort);
 };
 
 paginationElements.forEach((element) => {
@@ -34,6 +31,6 @@ paginationElements.forEach((element) => {
         let page = parseInt(innerHTML);
         let sort = sortElement.value;
 
-        window.location.href = createUrl(loaisp, page, sort);
+        window.location.href = createUrl(maLoai, page, sort);
     };
 });

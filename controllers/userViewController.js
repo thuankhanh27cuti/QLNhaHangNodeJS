@@ -20,8 +20,11 @@ exports.danhSachMonAn = async (req, res) => {
 
     let sql = "SELECT d.MaSP AS MaSP, TenSP, GiaBan, Anh, GioiThieuSP, COALESCE(SUM(SoLuong), 0) AS SoLuong FROM danhmucsp d LEFT JOIN chitiethoadon c ON d.MaSP = c.MaSP";
 
+    let sqlPages = "SELECT COUNT(*) AS count FROM danhmucsp";
+
     if (maLoai) {
         sql += ` WHERE MaLoai = ${maLoai}`;
+        sqlPages += ` WHERE MaLoai = ${maLoai}`;
     }
     sql += " GROUP BY MaSP, TenSP, GiaBan";
     if (sort) {
@@ -47,7 +50,13 @@ exports.danhSachMonAn = async (req, res) => {
     let monAn = await db.query(sql);
     let monAnList = monAn[0];
 
-    res.render('user/allMonAn', { loaiSpList: loaiSpList, monAnList: monAnList});
+    let queryTotalPage = await db.query(sqlPages);
+    let totalPages = queryTotalPage[0][0].count;
+    let pages = Math.ceil(totalPages / 8);
+    console.log(totalPages);
+    console.log(pages);
+
+    res.render('user/allMonAn', { loaiSpList: loaiSpList, monAnList: monAnList, pages: pages});
 }
 
 exports.datBan = async (req, res) => {

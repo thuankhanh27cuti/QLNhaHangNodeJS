@@ -19,33 +19,40 @@
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-body">
-                        <form method="POST" action="/admin/add/mon-an" enctype="multipart/form-data">
+                        <form method="POST" action="/admin/update/mon-an" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="maSP">Mã Sản Phẩm</label>
+                                <input type="number" id="maSP" name="maSP" class="form-control" value="<%= monAn.MaSP %>" readonly>
+                            </div>
                             <div class="form-group">
                                 <label for="maLoai">Loại Sản Phẩm</label>
                                 <select name="maLoai" id="maLoai" class="form-control">
                                     <% loaiSP.forEach((row) => { %>
-                                        <option value="<%= row.LoaiSP %>"><%= row.TenLoai %></option>
+                                        <option value="<%= row.LoaiSP %>"<%= row.LoaiSP === monAn.MaLoai ? " selected": "" %>><%= row.TenLoai %></option>
                                     <% }) %>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="tenSP">Tên Món</label>
-                                <input type="text" id="tenSP" name="tenSP" class="form-control" required>
+                                <input type="text" id="tenSP" name="tenSP" class="form-control" required value="<%= monAn.TenSP %>">
                             </div>
                             <div class="form-group">
                                 <label for="giaBan">Giá Bán</label>
-                                <input type="number" id="giaBan" name="giaBan" class="form-control" required>
+                                <input type="number" id="giaBan" name="giaBan" class="form-control" value="<%= monAn.GiaBan %>" required>
                             </div>
                             <div class="form-group">
                                 <label for="gioiThieuSP">Giới Thiệu Sản Phẩm</label>
-                                <input type="text" id="gioiThieuSP" name="gioiThieuSP" class="form-control" required>
+                                <input type="text" id="gioiThieuSP" name="gioiThieuSP" class="form-control" value="<%= monAn.GioiThieuSP %>" required>
                             </div>
                             <div class="form-group">
                                 <label for="file">File Ảnh</label>
-                                <input type="file" name="file" class="form-control" placeholder="">
+                                <input type="file" id="file" name="file" class="form-control mb-2">
+                                <div class="w-50">
+                                    <img id="previewImage" class="w-100 object-fit-cover" src="/img/<%= monAn.Anh %>" alt="">
+                                </div>
                             </div>
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary">Thêm</button>
+                                <button type="submit" class="btn btn-primary">Sửa</button>
                             </div>
                         </form>
                     </div>
@@ -57,6 +64,7 @@
     <%- include('../../partials/admin/footer') %>
     <%- include('../../partials/admin/right-sidebar') %>
     <%- include('../../partials/admin/js-libraries') %>
+    <script src="/admin/assets/js/updateMonAn.js"></script>
 </div>
 </body>
 </html>
