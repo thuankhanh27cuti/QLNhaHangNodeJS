@@ -91,3 +91,18 @@ exports.queryWithParams = async (sql, params) => {
         console.log(err);
     }
 }
+
+/**
+ *
+ * @param {String} sql
+ * @param {*[]} params
+ * @returns {Promise<void>}
+ */
+exports.update = async (sql, params) => {
+    try {
+        await db.query(sql, params);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}

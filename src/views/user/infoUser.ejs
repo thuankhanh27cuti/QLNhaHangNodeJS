@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>Nhà hàng</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="" name="keywords"/>
+    <meta content="" name="description"/>
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
+    <%- include('../partials/user/css-libraries') %>
+    <style>
+        .d-flex.align-items-center img {
+            transition: transform 0.3s ease;
+        }
+
+        .d-flex.align-items-center:hover img {
+            transform: scale(1.8);
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid position-relative p-0">
+<%- include('../partials/user/navbar') %>
+<section id="menu py-5">
+    <div class="container">
+        <div class="text-center my-3">
+            <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s">User</h2>
+        </div>
+        <div>
+            <div class="row mb-5">
+                <div class="col-3">
+                    <nav class="shadow-lg">
+                        <ul class="d-flex flex-column list-unstyled">
+                            <li class="nav-item">
+                                <a class="py-2 nav-link position-relative" href="./user.php">
+                                    <i class="me-2 nav-icon fas fa-user"></i>
+                                    <p class="d-inline">User</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="py-2 nav-link position-relative" href="/thong-tin-nguoi-dung/doi-mat-khau">
+                                    <i class="me-2 nav-icon fas fa-receipt"></i>
+                                    <p class="d-inline">Đổi mật khẩu</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="py-2 nav-link position-relative" href="../controller/index.php?page_layout=logout">
+                                    <i class="me-2 nav-icon fas fa-arrow-right"></i>
+                                    <p class="d-inline">Log Out</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-9">
+                    <div class="user-card card border-0 shadow">
+                        <div class="card-header bg-orange bg-gradient">
+                            <p class="card-title mb-0">
+                                <i class="me-2 fa-light fa-user"></i>
+                                User Info
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div>
+                                        <p>
+                                            <i class="me-2 fas fa-user"></i>
+                                            <span id="user__username"><%= user.UserName %></span>
+                                        </p>
+                                        <p>
+                                            <i class="me-2 fas fa-signature"></i>
+                                            <span id="user__full-name"><%= user.Ho ? user.Ho : '' + ' ' + user.Ten %></span>
+                                        </p>
+                                        <p>
+                                            <i class="me-2 fas fa-phone"></i>
+                                            <span id="user__phone"> <%= user.SDT ? user.SDT : 'Chưa có' %></span>
+                                        </p>
+                                        <p>
+                                            <i class="me-2 fas fa-pen"></i>
+                                            <a href="./edit-info.php">Edit info</a>
+                                        </p>
+                                        <p>
+                                            <i class="me-2 fas fa-lock"></i>
+                                            <a href="/thong-tin-nguoi-dung/doi-mat-khau">Đổi mật khẩu</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%- include('../partials/user/footer') %>
+</section>
+</div>
+</body>
