@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Nhà hàng</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="" name="keywords"/>
+    <meta content="" name="description"/>
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
+    <%- include('../partials/user/css-libraries') %>
+</head>
+<body>
+<div class="container-fluid position-relative p-0">
+    <%- include('../partials/user/navbar') %>
+    <!-- Menu Start -->
+    <section id="menu" style="padding: 60px 0;">
+        <div class="container mt-5">
+            <div class="text-center">
+                <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">Thanh toán</h2>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-9">
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <div class="card border-0 shadow">
+                                <div class="bg-main card-header bg-orange bg-gradient">
+                                    <p class="card-title text-white mb-0">
+                                        HÓA ĐƠN
+                                    </p>
+                                </div>
+                                <div class="card-body">
+                                    <form class="needs-validation" method="post" novalidate="" action="./cart/xong.php">
+                                        <div class="d-none">
+                                            <input required="" name="username" type="hidden" value="tuanit10">
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <label class="form-label" for="payment-method">
+                                                        <span>Phương thức thanh toán</span>
+                                                    </label>
+                                                    <select class="form-select" id="payment-method" name="paymentMethod">
+                                                        <option value="0" selected="">Thanh toán bằng tài khoản ngân hàng</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="ghichu">
+                                                <span>Ghi chú:</span>
+                                            </label>
+                                            <input autocomplete="true" class="form-control" id="ghichu" name="ghichu" placeholder="" type="text">
+                                        </div>
+                                        <div class="d-none">
+                                            <input required="" id="discount" name="discount" type="hidden" value="">
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            <div class="card border-0 shadow mb-3">
+                                <div class="bg-main card-header bg-orange bg-gradient">
+                                    <p class="card-title text-white mb-0">
+                                        MÓN ĂN ORDER
+                                    </p>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="border-bottom">
+                                        <div class="px-4 py-3" id="billing__products">
+                                            <div class="px-0 my-2 d-flex flex-wrap align-items-center">
+                                                <img class="object-fit-cover" src="../views/img/pate.jpg" style="width: 64px; height: 64px;" alt="">
+                                                <div class="ms-2 col">
+                                                    <p class="mb-0 fw-bold">Pâté</p>
+                                                    <p class="mb-0 small fw-light">x1</p>
+                                                </div>
+                                                <div>
+                                                    <small class="h6 mb-1 me-3">200,000 đồng</small>
+                                                </div>
+                                            </div>                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card border-0 shadow mb-3">
+                                <div class="bg-main card-header bg-orange bg-gradient">
+                                    <p class="card-title text-white mb-0">
+                                        MÃ GIẢM
+                                    </p>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="px-4 py-3">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="discountInput">
+                                                <span>Nhập mã ( nếu có )</span>
+                                            </label>
+                                            <div class="d-flex">
+                                                <div class="col pe-3">
+                                                    <input class="form-control" id="discountInput" placeholder="Nhập mã ở đây" type="number">
+                                                </div>
+                                                <div>
+                                                    <button id="discountSubmit" class="btn btn-primary">Đồng ý</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card border-0 shadow">
+                                <div class="bg-main card-header bg-orange bg-gradient">
+                                    <p class="card-title text-white mb-0">
+                                        THÀNH TIỀN
+                                    </p>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="my-2 border-bottom">
+                                        <div class="px-4 py-2">
+                                            <div class="row justify-content-end">
+                                                <div class="col">
+                                                    <p class="d-block mb-0 fw-light fs-5" id="billing__payment-method">Phương thức thanh toán: <span class="fw-normal">Chuyển khoản</span></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="my-2">
+                                        <div class="px-4 py-2">
+                                            <div class="row py-2">
+                                                <div class="col d-flex justify-content-end">
+                                                    <table class="table table-borderless w-auto mb-0">
+                                                        <tbody>
+                                                        <tr>
+                                                            <td class="px-4 py-2">
+                                                                <p class="mb-0">Tổng tiền hàng</p>
+                                                            </td>
+                                                            <td class="px-4 py-2">
+                                                                <p class="mb-0 fw-bold text-end" id="billing__sub-total">
+                                                        <span>
+                                                            200,000                                                        </span> đồng</p>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="px-4 py-2">
+                                                                <p class="mb-0">Số tiền giảm</p>
+                                                            </td>
+                                                            <td class="px-4 py-2">
+                                                                <p class="mb-0 fw-bold text-end" id="billing__amount-discount">
+                                                                    <span>0</span> đồng
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="px-4 py-2">
+                                                                <p class="mb-0">Thành tiền</p>
+                                                            </td>
+                                                            <td class="px-4 py-2">
+                                                                <p class="mb-0 fw-bold text-end" id="billing__total-price">
+                                                        <span>
+                                                            200,000                                                        </span> đồng
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <button id="submitBtn" class="btn btn-primary text-white w-100 border-0 py-2 px-4 my-3 bg-gradient" type="submit">
+                                                        ĐỒNG Ý THANH TOÁN
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <%- include('../partials/user/footer') %>
+</div>
+<%- include('../partials/user/js-libraries') %>
+<%- include('../partials/user/ai-chat') %>
+</body>
+</html>

@@ -11,7 +11,7 @@ exports.selectAllWithParams = async (sql, params) => {
     let data = [];
 
     try {
-        console.log(mysql.format(sql, params));
+        // console.log(mysql.format(sql, params));
         let query = await db.query(sql, params);
         data = query[0];
     }
@@ -30,7 +30,7 @@ exports.selectAll = async (sql) => {
     let data = [];
 
     try {
-        console.log(mysql.format(sql));
+        // console.log(mysql.format(sql));
         let query = await db.query(sql);
         data = query[0];
     }

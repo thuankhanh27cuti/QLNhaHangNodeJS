@@ -138,6 +138,69 @@ exports.handleXoaDanhGiaMonAn = async (req, res) => {
     res.redirect(`/chi-tiet-mon-an?id=${id}`);
 }
 
+exports.handleAddToCart = async (req, res) => {
+    let id = parseInt(req.body.id);
+    let cart = req.session.session.cart || [];
+
+    let needAdd = true;
+
+    for (let i = 0; i < cart.length; i++) {
+        let current = cart[i];
+        if (current.id === id) {
+            needAdd = false;
+            current.quantity = current.quantity + 1;
+            break;
+        }
+    }
+
+    if (needAdd) {
+        cart.push({
+            id: id,
+            quantity: 1
+        });
+    }
+
+    console.log(cart);
+
+    req.session.session.cart = cart;
+    res.redirect(`/chi-tiet-mon-an?id=${id}`);
+}
+
+exports.cart = async (req, res) => {
+    let cart = req.session.session.cart || [];
+    let cartData = [];
+    let totalPrice = 0;
+    for (let i = 0; i < cart.length; i++) {
+        let element = cart[i];
+        let id = element.id;
+        let quantity = element.quantity;
+        let sql = "SELECT TenSP, GiaBan, Anh FROM danhmucsp WHERE MaSP = ?";
+        let dataSelect = await query.selectAllWithParams(sql, [id]);
+        let data = dataSelect[0];
+        cartData.push({
+            id: id,
+            name: data.TenSP,
+            price: data.GiaBan,
+            image: data.Anh,
+            quantity: quantity
+        });
+        totalPrice = totalPrice + data.GiaBan * quantity;
+    }
+    console.log(cartData);
+
+    res.render('user/cart', {cart: cartData, totalPrice: totalPrice});
+}
+
+exports.handleUpdateCart = async (req, res) => {
+    let {cart} = req.body;
+    req.session.session.cart = JSON.parse(cart);
+    res.redirect("/cart");
+}
+
+exports.thanhToan = async (req, res) => {
+    res.render("user/thanhToan");
+}
+
 exports.thongTinNguoiDung = async (req, res) => {
     const userId = req.session.session.userId; // Lấy userId từ session
     console.log(userId); // Kiểm tra userId

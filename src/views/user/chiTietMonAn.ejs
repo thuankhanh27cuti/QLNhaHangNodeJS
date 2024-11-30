@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
-    <title>Danh mục món ăn</title>
+    <title>Chi tiết món ăn</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta content="" name="keywords"/>
     <meta content="" name="description"/>
@@ -145,11 +145,7 @@
                                 } %>
                             </p>
                             <p class="fs-5 text-white"><%= data.GioiThieuSP %></p>
-                            <div class="ps-0 mb-3" style="width: max-content">
-                                <a class="d-block" href="/">
-                                    <button type="button" class="btn btn-success">Thêm vào giỏ hàng</button>
-                                </a>
-                            </div>
+                            <button type="button" class="btn btn-success" id="addToCartBtn">Thêm vào giỏ hàng</button>
                             <div>
                                 <p class="fw-bold h4 mb-0 text-white">Đánh giá sản phẩm</p>
                                 <p class="star-rating mb-0" id="star-rating">
@@ -221,6 +217,21 @@
     let pageId = parseInt(urlSearchParams.get("id"));
 
     let downloadBtnElement = document.querySelector("#download-btn");
+    let addToCartBtnElement = document.querySelector("#addToCartBtn");
+
+    addToCartBtnElement.onclick = () => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/add-to-cart";
+
+        const idField = document.createElement("input");
+        idField.name = "id";
+        idField.value = `${pageId}`;
+        form.appendChild(idField);
+
+        document.body.appendChild(form);
+        form.submit();
+    };
 
     document.getElementById("generate-btn").addEventListener("click", function () {
         let text = window.location.href;

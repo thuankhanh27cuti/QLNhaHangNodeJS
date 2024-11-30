@@ -39,7 +39,7 @@ exports.isUserMiddleware = (req, res, next) => {
         return res.redirect('/admin');
     }
     else {
-        return res.redirect('/');
+        return res.redirect('/login');
     }
 }
 
@@ -53,5 +53,20 @@ exports.isUnAuthenticateMiddleware = (req, res, next) => {
     }
     else {
         return res.redirect('/');
+    }
+}
+
+exports.isUserOrUnauthenticatedMiddleware = (req, res, next) => {
+    let session = req.session.session;
+    if (session) {
+        if ([0, 1].includes(session.LoaiUser)) {
+            res.redirect('/admin');
+        }
+        else {
+            next();
+        }
+    }
+    else {
+        next();
     }
 }

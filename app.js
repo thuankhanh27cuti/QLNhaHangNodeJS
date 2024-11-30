@@ -36,7 +36,10 @@ app.use((req, res, next) => {
     // if (!req.session.session) {
     //     req.session.session = {}; // Khởi tạo nếu chưa có
     // }
-    // console.log(req.session);
+    if (req.session.session) {
+        req.session.session.cart = req.session.session.cart || [];
+    }
+    console.log(req.session);
     res.locals.session = req.session.session;
     next();
 });

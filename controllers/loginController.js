@@ -141,7 +141,7 @@ exports.handleConfirmOTPForgetPassword = async (req, res) => {
         res.render("user/otpConfirm", { session: req.session.session});
     } else { 
         // Kiểm tra mã OTP
-        if (otp == req.session.session.otp) {
+        if (otp === req.session.session.otp) {
             req.session.session.otp_verified = true; 
             res.redirect("/change-password");
         } else {
@@ -153,7 +153,7 @@ exports.handleConfirmOTPForgetPassword = async (req, res) => {
 
 //change password
 exports.changePasswordWithForgetPassword = async (req, res) => {
-    if(req.session.session.otp_verified = true){
+    if(req.session.session.otp_verified === true){
         res.render("user/changePassword");
     }else{
         res.redirect("/");
