@@ -1,22 +1,22 @@
-const db = require('../config/db');
+const query = require('../query');
 
 exports.index = async (req, res) => {
-    let data = await db.query("SELECT LoaiSP, TenLoai FROM loaisp");
-    let loaiSpList = data[0];
+    let sqlLoaiSanPham = "SELECT LoaiSP, TenLoai FROM loaisp";
+    let loaiSpList = await query.selectAll(sqlLoaiSanPham);
     for (const element of loaiSpList) {
         let id = element.LoaiSP;
-        let data = await db.query("SELECT MaSP, TenSP, GiaBan, GioiThieuSP, Anh FROM danhmucsp WHERE MaLoai = ? LIMIT 5", [id]);
-        element.monAnList = data[0];
+        let sql = "SELECT MaSP, TenSP, GiaBan, GioiThieuSP, Anh FROM danhmucsp WHERE MaLoai = ? LIMIT 5";
+        element.monAnList = await query.selectAllWithParams(sql, [id]);
     }
-    // res.json(loaiSpList);
+
     res.render('user/index', { loaiSpList: loaiSpList });
 }
 
 exports.danhSachMonAn = async (req, res) => {
     let {maLoai, sort, page} = req.query;
 
-    let loaiSp = await db.query("SELECT LoaiSP, TenLoai FROM loaisp");
-    let loaiSpList = loaiSp[0];
+    let sqlLoaiSanPham = "SELECT LoaiSP, TenLoai FROM loaisp";
+    let loaiSpList = await query.selectAll(sqlLoaiSanPham);
 
     let sql = "SELECT d.MaSP AS MaSP, TenSP, GiaBan, Anh, GioiThieuSP, COALESCE(SUM(SoLuong), 0) AS SoLuong FROM danhmucsp d LEFT JOIN chitiethoadon c ON d.MaSP = c.MaSP";
 
@@ -47,24 +47,36 @@ exports.danhSachMonAn = async (req, res) => {
         sql += ` LIMIT 8`;
     }
 
-    let monAn = await db.query(sql);
-    let monAnList = monAn[0];
+    let monAnList = await query.selectAll(sql);
 
-    let queryTotalPage = await db.query(sqlPages);
-    let totalPages = queryTotalPage[0][0].count;
+    let queryTotalPage = await query.selectAll(sqlPages);
+    let totalPages = queryTotalPage[0].count;
     let pages = Math.ceil(totalPages / 8);
-    console.log(totalPages);
-    console.log(pages);
 
     res.render('user/allMonAn', { loaiSpList: loaiSpList, monAnList: monAnList, pages: pages});
 }
 
 exports.datBan = async (req, res) => {
-    let {ten, email, thoiGian, soNguoi, yeuCau} = req.body;
-    let required = ten !== "" && email !== "" && thoiGian !== "" && soNguoi !== "";
+    let {ten, phone, thoiGian, soNguoi, yeuCau} = req.body;
+    let userId = req.session.session.userId;
+
+    let required = ten !== "" && phone !== "" && thoiGian !== "" && soNguoi !== "";
     if (required) {
-        await db.query("INSERT INTO datban SET ten = ?, email = ?, soNguoi = ?, yeuCau = ?, thoiGian = ?, trangThai = ?, userId = ?", [ten, email, soNguoi, yeuCau, thoiGian, 0, 6]);
+        let sql = "INSERT INTO datban SET ten = ?, soDienThoai = ?, soNguoi = ?, yeuCau = ?, thoiGian = ?, trangThai = ?, userId = ?";
+        await query.queryWithParams(sql, [ten, phone, soNguoi, yeuCau, thoiGian, 0, userId]);
     }
-    // Todo: Need session id
+
     res.redirect("/");
+}
+
+exports.chiTietMonAn = async (req, res) => {
+    let {id} = req.query;
+
+    let sql = "SELECT * FROM danhmucsp d LEFT JOIN loaisp ON d.MaLoai = loaisp.LoaiSP WHERE MaSP = ?";
+    let data = await query.selectAllWithParams(sql, [id]);
+    let monAn = data[0];
+
+    console.log(data);
+
+    res.render('user/chiTietMonAn', {data: monAn});
 }

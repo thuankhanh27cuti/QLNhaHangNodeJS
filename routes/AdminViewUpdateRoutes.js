@@ -76,4 +76,12 @@ router.post('/don-hang',
     [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewUpdateController.handleUpdateDonHang);
 
+router.get('/cong-thuc-mon',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewUpdateController.updateCongThucMon);
+
+router.post('/cong-thuc-mon',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewUpdateController.handleUpdateCongThucMon);
+
 module.exports = router;

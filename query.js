@@ -1,3 +1,4 @@
+const mysql = require("mysql2");
 const db = require("./config/db");
 
 /**
@@ -10,6 +11,7 @@ exports.selectAllWithParams = async (sql, params) => {
     let data = [];
 
     try {
+        console.log(mysql.format(sql, params));
         let query = await db.query(sql, params);
         data = query[0];
     }
@@ -28,6 +30,7 @@ exports.selectAll = async (sql) => {
     let data = [];
 
     try {
+        console.log(mysql.format(sql));
         let query = await db.query(sql);
         data = query[0];
     }
@@ -47,6 +50,7 @@ exports.insertAndGetId = async (sql, params) => {
     let id;
 
     try {
+        console.log(mysql.format(sql, params));
         let result = await db.query(sql, params);
         id = result[0].insertId;
     }
@@ -64,6 +68,7 @@ exports.insertAndGetId = async (sql, params) => {
  */
 exports.query = async (sql) => {
     try {
+        console.log(mysql.format(sql));
         await db.query(sql);
     }
     catch (err) {
@@ -79,6 +84,7 @@ exports.query = async (sql) => {
  */
 exports.queryWithParams = async (sql, params) => {
     try {
+        console.log(mysql.format(sql, params));
         await db.query(sql, params);
     }
     catch (err) {

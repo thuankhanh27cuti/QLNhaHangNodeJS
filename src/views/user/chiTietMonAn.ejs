@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Danh mục món ăn</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="" name="keywords"/>
+    <meta content="" name="description"/>
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
+    <%- include('../partials/user/css-libraries') %>
+
+    <style>
+        /* Ngôi sao đánh giá */
+        .has-rating i, .star-rating i {
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(#ff6a00, #ffb700);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .star-rating i:hover {
+            transform: scale(1.2); /* Tăng kích thước khi hover */
+        }
+
+        /* Nút bấm */
+        .btn-primary {
+            background-image: linear-gradient(#ff6a00, #ffb700);
+            border: none;
+            border-radius: 25px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-success {
+            border-radius: 25px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            box-shadow: 0 4px 8px rgba(41, 128, 185, 0.5);
+        }
+
+        #chitietmonan > div:first-child {
+            order: 2;
+        }
+        #chitietmonan > div:nth-child(2) {
+            order: 1;
+        }
+        #chitietmonan > div:nth-child(3) {
+            order: 3;
+        }
+
+        @media (min-width: 992px) {
+            /* lg */
+            #chitietmonan > div {
+                order: initial !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid position-relative p-0">
+    <%- include('../partials/user/navbar') %>
+    <section id="menu" style="padding: 60px 0; background: linear-gradient(rgba(139, 0, 0, 0.7), rgba(44, 62, 80, 0.7)), url(./img/bg-hero.jpg) center center / cover no-repeat;">
+        <div class="container">
+            <div class="text-center my-3">
+                <h2 class="section-title wow fadeInUp text-white" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">Chi tiết món ăn</h2>
+            </div>
+            <div class="row" id="chitietmonan">
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="mb-3">
+                        <p class="fw-bold mb-0 text-white">Các món liên quan</p>
+                    </div>
+                    <div>
+                        <a href="/chi-tiet-mon-an?id=3" class="d-block w-100 d-flex py-2 align-items-center text-decoration-none text-white">
+                            <div>
+                                <img style="width: 60px; height: 60px; object-fit: cover" src="/img/2470569356.jpg" alt="">
+                            </div>
+                            <div class="px-2">
+                                <p class="mb-0 fw-bold fs-5">Soupe à loignon</p>
+                                <p class="mb-0">120,000 đồng</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="row">
+                        <div class="col-12 col-md-5">
+                            <div class="row justify-content-center">
+                                <div class="col-12 col-sm-8 col-md-12">
+                                    <div class="ratio ratio-1x1 bg-black bg-gradient overflow-hidden mb-3">
+                                        <img alt="" style="object-fit: cover" class="product-details-image w-100 object-fit-cover transition" src="/img/<%= data.Anh %>">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-7">
+                            <nav>
+                                <ol class="breadcrumb" id="book-details__breadcrump">
+                                    <li class="breadcrumb-item">
+                                        <a class="transition text-white" href="/">Trang chủ</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a class="transition text-white" href="/danh-sach-mon-an">Thực đơn</a>
+                                    </li>
+                                    <li aria-current="page" class="breadcrumb-item active">
+                                        <a class="transition text-white" href="/chi-tiet-mon-an?id=<%= data.MaSP %>"><%= data.TenSP %></a>
+                                    </li>
+                                </ol>
+                            </nav>
+                            <h1 class="fw-bold mb-3 text-white"><%= data.TenSP %></h1>
+                            <p class="fw-bold fs-5 mb-3 w-auto text-white">Chi tiết món ăn</p>
+                            <p>
+                                <span class="fw-bold text-white">Loại sản phẩm:
+                                    <a class="ms-1 text-white" href="/danh-sach-mon-an?maLoai=<%= data.LoaiSP %>"><%= data.TenLoai %></a>
+                                </span>
+                            </p>
+                            <p class="fs-5 fw-bold text-white">Giá: <%= data.GiaBan.toLocaleString() %> đồng</p>
+                            <p class="fs-5 fw-bold text-white">Rating: 4.5</p>
+                            <p class="star-rating">
+                                <i class="fas fa-star fs-5"></i>
+                                <i class="fas fa-star fs-5"></i>
+                                <i class="fas fa-star fs-5"></i>
+                                <i class="fas fa-star fs-5"></i>
+                                <i class="fas fa-star-half-alt fs-5"></i>
+                            </p>
+                            <p class="fs-5 text-white"><%= data.GioiThieuSP %></p>
+                            <div class="ps-0 mb-3" style="width: max-content">
+                                <a class="d-block" href="/">
+                                    <button type="button" class="btn btn-success">Thêm vào giỏ hàng</button>
+                                </a>
+                            </div>
+                            <div>
+                                <p class="fw-bold h4 mb-0 text-white">Đánh giá sản phẩm</p>
+                                <p class="star-rating mb-0" id="star-rating">
+                                    <i class="far fa-star fs-5"></i>
+                                    <i class="far fa-star fs-5"></i>
+                                    <i class="far fa-star fs-5"></i>
+                                    <i class="far fa-star fs-5"></i>
+                                    <i class="far fa-star fs-5"></i>
+                                </p>
+                                <label for="review"></label>
+                                <textarea class="form-control mb-2" name="review" id="review"></textarea>
+                                <button type="button" class="btn btn-primary" id="submitDanhGia">Gửi đánh giá</button>
+                            </div>
+                            <hr>
+                            <div>
+                                <div class="mb-4 has-rating">
+                                    <p class="fw-bold mb-0 text-white">tuanit10</p>
+                                    <p class="mb-0">
+                                        <i class="fas fa-star text-white"></i>
+                                        <i class="fas fa-star text-white"></i>
+                                        <i class="fas fa-star text-white"></i>
+                                        <i class="fas fa-star text-white"></i>
+                                        <i class="fas fa-star text-white"></i>
+                                    </p>
+                                    <p class="mb-0 text-white">123</p>
+                                    <p class="mb-0 small text-white">2024-11-09 15:06:23</p>
+                                    <div class="d-flex">
+                                        <a class="d-block me-2 text-white" href="/">Xoá đánh giá</a>
+                                    </div>
+                                </div>
+                                <div class="mb-4 has-rating">
+                                    <p class="fw-bold mb-0 text-white">tuannhanvien</p>
+                                    <p class="mb-0">
+                                        <i class="fas fa-star text-white"></i>
+                                        <i class="fas fa-star text-white"></i>
+                                        <i class="fas fa-star text-white"></i>
+                                        <i class="fas fa-star text-white"></i>
+                                        <i class="far fa-star text-white"></i>
+                                    </p>
+                                    <p class="mb-0 text-white">12345</p>
+                                    <p class="mb-0 small text-white">2024-11-09 15:06:23</p></div>
+                                <div class="mb-4 has-rating">
+                                    <p class="fw-bold mb-0 text-white">MinHo</p>
+                                    <p class="mb-0">
+                                        <i class="fas fa-star text-white"></i>
+                                        <i class="fas fa-star text-white"></i>
+                                        <i class="fas fa-star text-white"></i>
+                                        <i class="fas fa-star text-white"></i>
+                                        <i class="far fa-star text-white"></i>
+                                    </p>
+                                    <p class="mb-0 text-white">123</p>
+                                    <p class="mb-0 small text-white">2024-11-13 08:23:15</p>
+                                </div>
+                            </div>
+                            <div class="pagination">
+                                <a type="btn" href="/" class="bg-main px-3 py-2 me-2 cursor-pointer text-white mb-0 fw-bold fs-5">1</a>
+                                <a type="btn" href="/" class="bg-main px-3 py-2 me-2 cursor-pointer text-white mb-0 fw-bold fs-5">2</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="qr-container mb-3" id="qr-result"></div>
+                    <canvas id="qrCanvas" style="display: none;"></canvas>
+                    <button id="generate-btn" class="btn btn-primary me-2">Tạo mã QR</button>
+                    <button id="download-btn" class="btn btn-primary d-none me-2">Tải QR</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <%- include('../partials/user/footer') %>
+</div>
+<%- include('../partials/user/js-libraries') %>
+<%- include('../partials/user/ai-chat') %>
+</body>
+</html>
+
+
+

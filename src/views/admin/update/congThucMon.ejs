@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Dashtreme Admin</title>
+    <link rel="icon" href="/admin/assets/images/favicon.ico" type="image/x-icon">
+    <%- include('../../partials/admin/css-libraries') %>
+</head>
+<body class="bg-theme bg-theme1">
+<div id="wrapper">
+    <%- include('../../partials/admin/navigation') %>
+    <%- include('../../partials/admin/header') %>
+    <div class="clearfix">
+        <div class="content-wrapper">
+            <div class="container-fluid">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">Sửa công thức món</div>
+                        <div id="listNguyenLieu">
+                            <% data.forEach((row) => { %>
+                            <div class="row mb-2 aic">
+                                <div class="col">
+                                    <p><%= row.TenNL %></p>
+                                </div>
+                                <div class="col">
+                                    <label class="d-none" for="quantity-<%= row.MaNL %>"></label>
+                                    <input class="form-control" onchange="changeQuantity(this)" id="quantity-<%= row.MaNL %>" type="number" min="0" value="<%= row.SoLuongCanDung %>">
+                                </div>
+                                <div class="col">
+                                    <p type="button"
+                                       onclick="deleteNguyenLieu(<%= row.MaNL %>);">
+                                        Xoá nguyên liệu
+                                    </p>
+                                </div>
+                            </div>
+                            <% }) %>
+                        </div>
+                        <button class="btn btn-light btn-round px-5" data-toggle="modal" data-target="#exampleModal">Thêm nguyên liệu</button>
+                        <button id="submit" type="submit" class="btn btn-light btn-round px-5">Lưu lại thay đổi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
+    </div>
+    <div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Danh sách nguyên liệu</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <% dataNguyenLieu.forEach((row) => { %>
+                        <div class="row">
+                            <div class="col"><p class="text-black-50"><%= row.MaNL %></p></div>
+                            <div class="col"><p class="text-black-50"><%= row.TenNL %></p></div>
+                            <div class="col"><p class="text-black-50"><%= row.SoLuongCon %></p></div>
+                            <div class="col"><p class="text-black-50" data-dismiss="modal" onclick="addNguyenLieu(<%= row.MaNL %>)">Thêm nguyên liệu</p></div>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+    <%- include('../../partials/admin/footer') %>
+    <%- include('../../partials/admin/right-sidebar') %>
+    <%- include('../../partials/admin/js-libraries') %>
+    <script type="module" src="/admin/assets/js/updateCongThucMon.js"></script>
+</div>
+</body>
+</html>

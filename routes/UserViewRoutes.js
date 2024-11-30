@@ -19,6 +19,7 @@ let middleware = (req, res, next) => {
 
 router.get("/", [middleware], userViewController.index);
 router.get("/danh-sach-mon-an", [middleware], userViewController.danhSachMonAn);
+router.get("/chi-tiet-mon-an", [middleware], userViewController.chiTietMonAn);
 router.post("/dat-ban", [middleware], userViewController.datBan);
 
 module.exports = router;

@@ -15,6 +15,10 @@ router.get('/bai-viet',
     [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewSelectController.allBaiViet);
 
+router.get('/binh-luan-bai-viet',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewSelectController.allBinhLuanBaiViet);
+
 router.get('/tai-khoan',
     [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewSelectController.allTaiKhoan);

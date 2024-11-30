@@ -40,7 +40,7 @@
                                     <% loaiSpList.forEach((loaisp) => { %>
                                         <div class="px-3">
                                             <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3"
-                                               href="/danh-sach-mon-an">
+                                               href="/danh-sach-mon-an?maLoai=<%= loaisp.LoaiSP %>">
                                                 <i class="fa fa-coffee fa-2x text-primary"></i>
                                                 <div class="ps-3">
                                                     <h6 class="mt-n1 mb-0"><%= loaisp.TenLoai %></h6>
@@ -92,7 +92,7 @@
                                                 </a>
                                             </div>
                                             <div class="col ps-0 ms-1">
-                                                <a class="d-block w-100" href="#">
+                                                <a class="d-block w-100" href="/chi-tiet-mon-an?id=<%= monAn.MaSP %>">
                                                     <button type="button" class="d-block w-100 btn btn-success">Chi tiết</button>
                                                 </a>
                                             </div>
