@@ -84,4 +84,13 @@ router.post('/cong-thuc-mon',
     [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewUpdateController.handleUpdateCongThucMon);
 
+
+router.get('/bai-viet',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewUpdateController.updateBaiViet);
+
+router.post('/bai-viet',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewUpdateController.handleUpdateBaiViet);
+
 module.exports = router;

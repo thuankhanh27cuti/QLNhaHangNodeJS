@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userViewController = require('../controllers/userViewController');
+const {isUserMiddleware} = require("../middlewares/RolesMiddleware");
 
 let middleware = (req, res, next) => {
     let session = req.session.session;
@@ -30,5 +31,7 @@ router.post("/thong-tin-nguoi-dung/doi-mat-khau-moi", [middleware], userViewCont
 router.get("/danh-sach-mon-an", [middleware], userViewController.danhSachMonAn);
 router.get("/chi-tiet-mon-an", [middleware], userViewController.chiTietMonAn);
 router.post("/dat-ban", [middleware], userViewController.datBan);
+router.post("/danh-gia-mon-an", [isUserMiddleware], userViewController.handleDanhGiaMonAn);
+router.get("/xoa-danh-gia-mon-an", [isUserMiddleware], userViewController.handleXoaDanhGiaMonAn);
 
 module.exports = router;

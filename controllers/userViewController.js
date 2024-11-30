@@ -1,4 +1,3 @@
-const db = require('../config/db');
 const query = require("../query");
 const { sendEmail } = require('../sendEmail');
 
@@ -72,15 +71,71 @@ exports.datBan = async (req, res) => {
 }
 
 exports.chiTietMonAn = async (req, res) => {
-    let {id} = req.query;
+    let {id, commentPage} = req.query;
 
-    let sql = "SELECT * FROM danhmucsp d LEFT JOIN loaisp ON d.MaLoai = loaisp.LoaiSP WHERE MaSP = ?";
+    let sql = "SELECT MaSP, TenSP, GiaBan, GioiThieuSP, Anh, LoaiSP, TenLoai FROM danhmucsp d LEFT JOIN loaisp ON d.MaLoai = loaisp.LoaiSP WHERE MaSP = ?";
     let data = await query.selectAllWithParams(sql, [id]);
     let monAn = data[0];
 
-    console.log(data);
+    let idLoaiSanPham = monAn.LoaiSP;
+    let sqlLienQuan = "SELECT MaSP, TenSP, GiaBan, Anh FROM danhmucsp WHERE MaLoai = ? LIMIT 5";
+    let dataLienQuan = await query.selectAllWithParams(sqlLienQuan, [idLoaiSanPham]);
 
-    res.render('user/chiTietMonAn', {data: monAn});
+    let sqlAverage = "SELECT COALESCE(AVG(star), 0) AS star FROM danhgiasp WHERE MaSP = ?";
+    let dataAverage = await query.selectAllWithParams(sqlAverage, [id]);
+    let star = dataAverage[0].star;
+
+    let currentPage = 1;
+
+    let parsePage = parseInt(commentPage);
+    if (!isNaN(parsePage)) {
+        currentPage = parsePage;
+    }
+
+    let start = (currentPage - 1) * 3;
+
+    let sqlDanhGia = "SELECT MaSP, time, noidung, star, UserName, u.userId FROM danhgiasp LEFT JOIN user u on u.userId = danhgiasp.userId WHERE MaSP = ? LIMIT ?, 3";
+    let dataDanhGia = await query.selectAllWithParams(sqlDanhGia, [id, start]);
+
+    let sqlCountDanhGia = "SELECT COUNT(*) AS count FROM danhgiasp WHERE MaSP = ?";
+    let dataCountDanhGia = await query.selectAllWithParams(sqlCountDanhGia, [id]);
+
+    let count = dataCountDanhGia[0].count;
+    let pages = Math.ceil(count / 3);
+
+    res.render('user/chiTietMonAn', {data: monAn, dataLienQuan: dataLienQuan, star: star, dataDanhGia: dataDanhGia, pages: pages});
+}
+
+exports.handleDanhGiaMonAn = async (req, res) => {
+    let id = parseInt(req.query.id);
+    let {rating} = req.body;
+    let object = JSON.parse(rating);
+
+    let noiDung = object.noidung;
+    let star = object.star;
+
+    let userId = req.session.session.userId;
+
+    let sqlCount = "SELECT COUNT(*) AS count FROM danhgiasp WHERE MaSP = ? AND userId = ?";
+    let dataCount = await query.selectAllWithParams(sqlCount, [id, userId]);
+    let count = dataCount[0].count;
+
+    if (count === 0) {
+        let sql = "INSERT INTO danhgiasp(MaSP, userId, time, noidung, star) VALUES (?, ?, NOW(), ?, ?)";
+        await query.queryWithParams(sql, [id, userId, noiDung, star]);
+    }
+
+    res.redirect(`/chi-tiet-mon-an?id=${id}`);
+};
+
+exports.handleXoaDanhGiaMonAn = async (req, res) => {
+    let id = parseInt(req.query.id);
+    let userId = req.session.session.userId;
+
+    let sql = "DELETE FROM danhgiasp WHERE MaSP = ? AND userId = ?";
+    await query.queryWithParams(sql, [id, userId]);
+
+    res.redirect(`/chi-tiet-mon-an?id=${id}`);
 }
 
 exports.thongTinNguoiDung = async (req, res) => {
@@ -118,7 +173,7 @@ exports.xacNhanEmailDoiMatKhau = async (req, res) => {
 
     } else {
         //trùng email đang đăng nhập
-        if (email == req.session.session.email) {
+        if (email === req.session.session.email) {
             let sqlGetUser = "SELECT * FROM user WHERE email = ?";
             let userData = await query.selectAllWithParams(sqlGetUser, [email]);
 
@@ -130,7 +185,7 @@ exports.xacNhanEmailDoiMatKhau = async (req, res) => {
                 req.session.session.otpConfirmChangePassword = otp; // Lưu mã OTP
                 req.session.session.email = user.email; // Lưu email
                 // Gửi email
-                sendEmail(
+                await sendEmail(
                     user.email,
                     'Yêu cầu đổi mật khẩu mới', // Tiêu đề email
                     `Xin chào ${user.UserName},\n\nMã OTP của bạn là: ${otp}`
@@ -150,7 +205,7 @@ exports.xacNhanEmailDoiMatKhau = async (req, res) => {
 };
 
 exports.xacNhanOTPDoiMatKhau = async (req, res) => {
-    if(req.session.session.otpConfirmChangePassword != undefined){
+    if(req.session.session.otpConfirmChangePassword !== undefined){
         res.render("user/changePassword/otpConfirmWithLogin");
     }else{
         res.redirect("/");
@@ -164,7 +219,7 @@ exports.kiemTraOTPDoiMatKhauDaDangNhap = async (req, res) => {
         res.render("user/changePassword/otpConfirmWithLogin", { session: req.session.session});
     } else { 
         // Kiểm tra mã OTP
-        if (otp == req.session.session.otpConfirmChangePassword) {
+        if (otp === req.session.session.otpConfirmChangePassword) {
             req.session.session.otp_verified_changePassword = true; 
             res.redirect("/thong-tin-nguoi-dung/doi-mat-khau-moi");
         } else {
@@ -176,7 +231,7 @@ exports.kiemTraOTPDoiMatKhauDaDangNhap = async (req, res) => {
 
 //chuyển trang đổi mật khẩu mới sau khi đã xác nhận otp
 exports.chuyenTrangDoiMatKhauKhiDaCheckOtp = async (req, res) => {
-    if(req.session.session.otp_verified_changePassword = true){
+    if(req.session.session.otp_verified_changePassword === true){
         res.render("user/changePassword/changePasswordHavedCheckOtp");
     }else{
         res.redirect("/");
@@ -203,7 +258,7 @@ exports.xacNhanDoiMatKhauKhiDaCheckOtp = async (req, res) => {
         if (userData.length > 0) {
             if(userData[0].PassWord === password){
                 let sqlUpdatePassword = "UPDATE user SET password = ? WHERE email = ?";
-                await query.update(sqlUpdatePassword, [newPassword, email]); // Cập nhật mật khẩu mới
+                await query.queryWithParams(sqlUpdatePassword, [newPassword, email]); // Cập nhật mật khẩu mới
                 req.session.session.notification = "Mật khẩu đã được cập nhật thành công!";
                 // Xóa thông tin trong session 
                 req.session.session.otp_verified_changePassword = null;

@@ -296,6 +296,55 @@ exports.handleUpdateCongThucMon = async (req, res) => {
     res.redirect('/admin/cong-thuc-mon');
 }
 
+exports.updateBaiViet = async (req, res) => {
+    let id = parseInt(req.query.id);
+
+    let sqlSelectSanPham = "SELECT MaSP, TenSP FROM danhmucsp WHERE MaSP = ?";
+    let dataSanPham = await query.selectAllWithParams(sqlSelectSanPham, [id]);
+    let data = dataSanPham[0];
+
+    let sqlCountBlogById = "SELECT COUNT(*) AS count FROM baiviet WHERE MaSP = ?";
+    let dataCountBlogById = await query.selectAllWithParams(sqlCountBlogById, [id]);
+    let countBlogById = dataCountBlogById[0].count;
+
+    let inputTieuDe = "";
+    let inputTomTat = "";
+    let inputNoiDung = "";
+    let inputAnh = "";
+
+    if (countBlogById === 1) {
+        let sqlSelectBlogById = "SELECT MaSP, blog_tieu_de, blog_tom_tat, blog_image_url, blog_noi_dung, blog_uploaded_at, blog_author_id FROM baiviet WHERE MaSP = ?";
+        let dataSelectBlogById = await query.selectAllWithParams(sqlSelectBlogById, [id]);
+
+        let selectBlogById = dataSelectBlogById[0];
+
+        console.log(selectBlogById);
+
+        inputTieuDe = selectBlogById.blog_tieu_de;
+        inputTomTat = selectBlogById.blog_tom_tat;
+        inputNoiDung = selectBlogById.blog_noi_dung;
+        inputAnh = selectBlogById.blog_image_url;
+    }
+
+    console.log(data);
+    console.log(inputTieuDe);
+    console.log(inputTomTat);
+    console.log(inputNoiDung);
+    console.log(inputAnh);
+
+    res.render('admin/update/baiViet', {
+        data: data,
+        inputTieuDe: inputTieuDe,
+        inputTomTat: inputTomTat,
+        inputNoiDung: inputNoiDung,
+        inputAnh: inputAnh
+    });
+}
+
+exports.handleUpdateBaiViet = async (req, res) => {
+
+}
+
 const padStart = (number) => {
     return number.toString().padStart(2, "0");
 };

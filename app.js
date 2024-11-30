@@ -33,10 +33,10 @@ app.set('view engine', 'ejs');
 app.set('views', './src/views');
 
 app.use((req, res, next) => {
-    if (!req.session.session) {
-        req.session.session = {}; // Khởi tạo nếu chưa có
-    }
-    console.log(req.session); 
+    // if (!req.session.session) {
+    //     req.session.session = {}; // Khởi tạo nếu chưa có
+    // }
+    // console.log(req.session);
     res.locals.session = req.session.session;
     next();
 });

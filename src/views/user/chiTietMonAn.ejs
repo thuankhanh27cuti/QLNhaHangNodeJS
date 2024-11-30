@@ -75,15 +75,17 @@
                         <p class="fw-bold mb-0 text-white">Các món liên quan</p>
                     </div>
                     <div>
-                        <a href="/chi-tiet-mon-an?id=3" class="d-block w-100 d-flex py-2 align-items-center text-decoration-none text-white">
+                        <% dataLienQuan.forEach((row) => { %>
+                        <a href="/chi-tiet-mon-an?id=<%= row.MaSP %>" class="d-block w-100 d-flex py-2 align-items-center text-decoration-none text-white">
                             <div>
-                                <img style="width: 60px; height: 60px; object-fit: cover" src="/img/2470569356.jpg" alt="">
+                                <img style="width: 60px; height: 60px; object-fit: cover" src="/img/<%= row.Anh %>" alt="">
                             </div>
                             <div class="px-2">
-                                <p class="mb-0 fw-bold fs-5">Soupe à loignon</p>
-                                <p class="mb-0">120,000 đồng</p>
+                                <p class="mb-0 fw-bold fs-5"><%= row.TenSP %></p>
+                                <p class="mb-0"><%= row.GiaBan.toLocaleString() %> đồng</p>
                             </div>
                         </a>
+                        <% }) %>
                     </div>
                 </div>
                 <div class="col-12 col-lg-6">
@@ -119,13 +121,28 @@
                                 </span>
                             </p>
                             <p class="fs-5 fw-bold text-white">Giá: <%= data.GiaBan.toLocaleString() %> đồng</p>
-                            <p class="fs-5 fw-bold text-white">Rating: 4.5</p>
+                            <p class="fs-5 fw-bold text-white">Rating: <%= star.toFixed(1) %></p>
                             <p class="star-rating">
+                            <%
+                                let doubleStar = Math.floor(star * 2);
+                                for (let i = 0; i < 5; i++) {
+                                    if (doubleStar > 0) {
+                                        if (doubleStar >= 2) { %>
                                 <i class="fas fa-star fs-5"></i>
-                                <i class="fas fa-star fs-5"></i>
-                                <i class="fas fa-star fs-5"></i>
-                                <i class="fas fa-star fs-5"></i>
+                            <%
+                                            doubleStar = doubleStar - 2;
+                                        }
+                                        else if (doubleStar === 1) { %>
                                 <i class="fas fa-star-half-alt fs-5"></i>
+                            <%
+                                            doubleStar = 0;
+                                        }
+                                    }
+                                    else { %>
+                                <i class="far fa-star fs-5"></i>
+                                <%
+                                    }
+                                } %>
                             </p>
                             <p class="fs-5 text-white"><%= data.GioiThieuSP %></p>
                             <div class="ps-0 mb-3" style="width: max-content">
@@ -148,48 +165,41 @@
                             </div>
                             <hr>
                             <div>
+                                <%
+                                let userId = session ? session.userId : null;
+                                dataDanhGia.forEach((row) => {
+                                %>
                                 <div class="mb-4 has-rating">
-                                    <p class="fw-bold mb-0 text-white">tuanit10</p>
+                                    <p class="fw-bold mb-0 text-white"><%= row.UserName %></p>
                                     <p class="mb-0">
-                                        <i class="fas fa-star text-white"></i>
-                                        <i class="fas fa-star text-white"></i>
-                                        <i class="fas fa-star text-white"></i>
-                                        <i class="fas fa-star text-white"></i>
-                                        <i class="fas fa-star text-white"></i>
+                                        <%
+                                            let star = row.star;
+                                            for (let i = 0; i < 5; i++) {
+                                                if (i < star) { %>
+                                            <i class="fas fa-star"></i>
+                                        <%
+                                                }
+                                                else {  %>
+                                            <i class="far fa-star"></i>
+                                        <%
+                                                }
+                                            }
+                                        %>
                                     </p>
-                                    <p class="mb-0 text-white">123</p>
-                                    <p class="mb-0 small text-white">2024-11-09 15:06:23</p>
+                                    <p class="mb-0 text-white"><%= row.noidung %></p>
+                                    <p class="mb-0 small text-white"><%= row.time.toLocaleString() %></p>
+                                    <% if (row.userId === userId ) { %>
                                     <div class="d-flex">
-                                        <a class="d-block me-2 text-white" href="/">Xoá đánh giá</a>
+                                        <a class="d-block me-2 text-white" href="/xoa-danh-gia-mon-an?id=<%= data.MaSP %>">Xoá đánh giá</a>
                                     </div>
+                                    <% } %>
                                 </div>
-                                <div class="mb-4 has-rating">
-                                    <p class="fw-bold mb-0 text-white">tuannhanvien</p>
-                                    <p class="mb-0">
-                                        <i class="fas fa-star text-white"></i>
-                                        <i class="fas fa-star text-white"></i>
-                                        <i class="fas fa-star text-white"></i>
-                                        <i class="fas fa-star text-white"></i>
-                                        <i class="far fa-star text-white"></i>
-                                    </p>
-                                    <p class="mb-0 text-white">12345</p>
-                                    <p class="mb-0 small text-white">2024-11-09 15:06:23</p></div>
-                                <div class="mb-4 has-rating">
-                                    <p class="fw-bold mb-0 text-white">MinHo</p>
-                                    <p class="mb-0">
-                                        <i class="fas fa-star text-white"></i>
-                                        <i class="fas fa-star text-white"></i>
-                                        <i class="fas fa-star text-white"></i>
-                                        <i class="fas fa-star text-white"></i>
-                                        <i class="far fa-star text-white"></i>
-                                    </p>
-                                    <p class="mb-0 text-white">123</p>
-                                    <p class="mb-0 small text-white">2024-11-13 08:23:15</p>
-                                </div>
+                                <% }) %>
                             </div>
                             <div class="pagination">
-                                <a type="btn" href="/" class="bg-main px-3 py-2 me-2 cursor-pointer text-white mb-0 fw-bold fs-5">1</a>
-                                <a type="btn" href="/" class="bg-main px-3 py-2 me-2 cursor-pointer text-white mb-0 fw-bold fs-5">2</a>
+                                <% for (let i = 0; i < pages; i++) { %>
+                                <a type="btn" href="/chi-tiet-mon-an?id=<%= data.MaSP %>&commentPage=<%= i + 1 %>" class="bg-main px-3 py-2 me-2 cursor-pointer text-white mb-0 fw-bold fs-5"><%= i + 1 %></a>
+                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -206,6 +216,124 @@
     <%- include('../partials/user/footer') %>
 </div>
 <%- include('../partials/user/js-libraries') %>
+<script>
+    let urlSearchParams = new URLSearchParams(window.location.search);
+    let pageId = parseInt(urlSearchParams.get("id"));
+
+    let downloadBtnElement = document.querySelector("#download-btn");
+
+    document.getElementById("generate-btn").addEventListener("click", function () {
+        let text = window.location.href;
+        if (text) {
+            let url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(text);
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    let qrResultElement = document.getElementById("qr-result");
+                    qrResultElement.innerHTML = '<img src="' + url + '" alt="QR Code" id="qr-image" crossorigin="anonymous">';
+
+                    if (downloadBtnElement.classList.contains("d-none")) {
+                        downloadBtnElement.classList.remove("d-none");
+                    }
+
+                    downloadBtnElement.onclick = async function () {
+                        const qrImage = document.getElementById('qr-image');
+                        const canvas = document.getElementById('qrCanvas');
+                        const ctx = canvas.getContext('2d');
+
+                        // Đặt kích thước canvas theo kích thước ảnh
+                        canvas.width = qrImage.naturalWidth;
+                        canvas.height = qrImage.naturalHeight;
+
+                        // Vẽ ảnh lên canvas
+                        ctx.drawImage(qrImage, 0, 0);
+
+                        // Chuyển đổi canvas sang URL hình ảnh
+                        const imageURL = canvas.toDataURL('image/png');
+
+                        // Tạo thẻ <a> để tải xuống
+                        const link = document.createElement('a');
+                        link.href = imageURL;
+                        link.download = 'qr-code.png'; // Tên tệp tải xuống
+                        link.click();
+
+                        alert('QR Code đã được tải xuống!');
+                    };
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Mã QR đã được tạo thành công!',
+                        text: 'Bạn có thể tải mã QR xuống hoặc chia sẻ nó.',
+                        confirmButtonColor: '#3498db'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Có lỗi xảy ra khi tạo mã QR.',
+                        confirmButtonColor: '#e74c3c'
+                    });
+                }
+            };
+            xhr.send();
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Cảnh báo!',
+                text: 'Vui lòng nhập dữ liệu để tạo mã QR.',
+                confirmButtonColor: '#f39c12'
+            });
+        }
+    });
+
+    // Thiết lập đánh giá sao
+    let starRatingElement = document.querySelector("#star-rating");
+    let starElements = starRatingElement.querySelectorAll("i");
+    [...starElements].forEach((element, index) => {
+        element.onclick = () => {
+            let number = index + 1;
+            for (let i = 0; i < 5; i++) {
+                let el = starElements.item(i);
+                if (i < number) {
+                    el.classList.add("fas");
+                    el.classList.remove("far");
+                } else {
+                    el.classList.add("far");
+                    el.classList.remove("fas");
+                }
+            }
+        };
+    });
+
+    // Gửi đánh giá với SweetAlert
+    document.getElementById("submitDanhGia").onclick = (e) => {
+        e.preventDefault();
+        let selectedStars = document.querySelectorAll("#star-rating .fas").length;
+        let reviewContent = document.getElementById("review").value;
+
+        if (selectedStars > 0) {
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = `/danh-gia-mon-an?id=${pageId}`;
+
+            const input = document.createElement("input");
+            input.name = "rating";
+            input.value = JSON.stringify({noidung: reviewContent, star: selectedStars});
+
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Vui lòng chọn số sao!',
+                text: 'Bạn cần chọn số sao trước khi gửi đánh giá.',
+                confirmButtonColor: '#f39c12'
+            });
+        }
+    };
+</script>
 <%- include('../partials/user/ai-chat') %>
 </body>
 </html>

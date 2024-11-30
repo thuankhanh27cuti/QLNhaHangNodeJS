@@ -65,9 +65,11 @@ exports.allBinhLuanBaiViet = async (req, res) => {
 
     let start = (currentPage - 1) * perPages;
 
-    let sql = `SELECT u.userId, u.UserName, comment_text, comment_text, u2.userId, u2.UserName, reply_text, reply_time FROM binhluanbaiviet b LEFT JOIN baiviet b2 on b2.MaSP = b.blog_id LEFT JOIN user u on u.userId = b.user_id LEFT JOIN traloibinhluan t on b.blog_id = t.blog_id and b.user_id = t.user_id LEFT JOIN user u2 on u2.userId = t.user_reply_id WHERE b.blog_id = ? LIMIT ?, ?`;
+    let sql = `SELECT b.blog_id, u.userId AS user_comment_id, u.UserName AS user_comment_username, comment_text, comment_time, u2.userId AS user_reply_id, u2.UserName AS user_reply_username, reply_text, reply_time FROM binhluanbaiviet b LEFT JOIN baiviet b2 on b2.MaSP = b.blog_id LEFT JOIN user u on u.userId = b.user_id LEFT JOIN traloibinhluan t on b.blog_id = t.blog_id and b.user_id = t.user_id LEFT JOIN user u2 on u2.userId = t.user_reply_id WHERE b.blog_id = ? LIMIT ?, ?`;
 
     let data = await query.selectAllWithParams(sql, [id, start, perPages]);
+
+    console.log(data);
 
     let sqlCount = "SELECT COUNT(*) AS count FROM binhluanbaiviet WHERE blog_id = ?";
     let queryCount = await query.selectAllWithParams(sqlCount, [id]);
