@@ -37,7 +37,7 @@ router.get('/auth/google/callback', passport.authenticate('google', {
     req.session.session.userId = req.user.userId; 
     req.session.session.username = req.user.UserName;
     req.session.session.LoaiUser = req.user.LoaiUser;
-    req.session.session.email = user.email;
+    req.session.session.email = req.user.email;
     res.redirect('/');
 });
 
