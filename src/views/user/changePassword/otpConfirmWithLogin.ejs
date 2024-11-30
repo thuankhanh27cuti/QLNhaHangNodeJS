@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quên mật khẩu</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <%- include('../../partials/user/css-libraries') %>
+    <style>
+        .container {
+            max-width: 500px;
+            margin-top: 50px;
+        }
+
+        .error-message {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid position-relative p-0">
+        <%- include('../../partials/user/navbar') %>
+            <div class="container" , style="padding-top: 15px;padding-bottom: 15px;">
+                <h2 class="text-center">Xác nhận OTP đổi mật khẩu</h2>
+
+                <% if (session && session.error) { %>
+                    <div class="alert alert-danger">
+                        <%= session.error %>
+                    </div>
+                    <% delete session.error; %> <!-- Xóa thông báo sau khi hiển thị -->
+                        <% } %>
+                        <% if (session && session.notification) { %>
+                            <div class="alert alert-success ">
+                                <%= session.notification %>
+                            </div>
+                                <% delete session.notification; %> <!-- Xóa thông báo sau khi hiển thị -->
+                        <% } %>
+
+                            <form action="/thong-tin-nguoi-dung/doi-mat-khau/xac-nhan-otp" method="POST"
+                                style="margin-top: 20px;">
+                                <div class="form-group">
+                                    <label for="otp">Nhập mã OTP đã được gửi đến email:</label>
+                                    <input type="text" class="form-control" id="otp" name="otp" required="">
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-block">Xác nhận mã OTP</button>
+                            </form>
+            </div>
+            <%- include('../../partials/user/footer') %>
+    </div>
+</body>
+
+</html>

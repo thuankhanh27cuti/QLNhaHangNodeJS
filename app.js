@@ -12,11 +12,15 @@ const {join} = require("node:path");
 const app = express();
 const PORT = 3000;
 
+const passport = require('passport');
+
 app.use(session({
     resave: false,
     saveUninitialized: true,
     secret: "session_secret"
 }));
+
+app.use(passport.initialize());
 
 app.use(express.static(join(__dirname, 'public')));
 
@@ -27,6 +31,10 @@ app.set('view engine', 'ejs');
 app.set('views', './src/views');
 
 app.use((req, res, next) => {
+    if (!req.session.session) {
+        req.session.session = {}; // Khởi tạo nếu chưa có
+    }
+    console.log(req.session); 
     res.locals.session = req.session.session;
     next();
 });

@@ -18,6 +18,15 @@ let middleware = (req, res, next) => {
 }
 
 router.get("/", [middleware], userViewController.index);
+router.get("/thong-tin-nguoi-dung", [middleware], userViewController.thongTinNguoiDung);
+
+router.get("/thong-tin-nguoi-dung/doi-mat-khau", [middleware], userViewController.doiMatKhauDaDangNhap);
+router.post("/thong-tin-nguoi-dung/doi-mat-khau", [middleware], userViewController.xacNhanEmailDoiMatKhau);
+router.get("/thong-tin-nguoi-dung/doi-mat-khau/xac-nhan-otp", [middleware], userViewController.xacNhanOTPDoiMatKhau);
+router.post("/thong-tin-nguoi-dung/doi-mat-khau/xac-nhan-otp", [middleware], userViewController.kiemTraOTPDoiMatKhauDaDangNhap);
+router.get("/thong-tin-nguoi-dung/doi-mat-khau-moi", [middleware], userViewController.chuyenTrangDoiMatKhauKhiDaCheckOtp);
+router.post("/thong-tin-nguoi-dung/doi-mat-khau-moi", [middleware], userViewController.xacNhanDoiMatKhauKhiDaCheckOtp);
+
 router.get("/danh-sach-mon-an", [middleware], userViewController.danhSachMonAn);
 router.post("/dat-ban", [middleware], userViewController.datBan);
 
