@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Nhà hàng</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="" name="keywords"/>
+    <meta content="" name="description"/>
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
+    <%- include('../partials/user/css-libraries') %>
+</head>
+<body>
+<div class="container-fluid bg-white position-relative p-0">
+    <%- include('../partials/user/navbar') %>
+    <!-- Menu Start -->
+    <section id="menu" style="padding: 60px 0;">
+        <div class="container">
+            <div class="text-center my-3">
+                <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">Món ăn kèm theo bánh mì</h2>
+            </div>
+            <div class="mb-5">
+                <div class="d-flex justify-content-between">
+                    <p>Ngày đăng blog: <%= data.blog_uploaded_at.toLocaleString() %></p>
+                    <p>Người viết blog: <%= data.UserName %></p>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-8">
+                        <img class="w-100 ratio ratio-16x9 object-fit-cover" src="/img/<%= data.blog_image_url %>" alt="">
+                    </div>
+                </div>
+                <p><%= data.blog_noi_dung %></p>
+            </div>
+            <div class="my-3">
+                <p class="fw-bold h4">Món liên quan</p>
+                <a href="/chi-tiet-mon-an?id=<%= monAn.MaSP %>" class="d-flex align-items-center text-black mb-2">
+                    <img style="width: 120px; height: 80px;" class="object-fit-cover" src="/img/<%= monAn.Anh %>" alt="">
+                    <div class="px-2">
+                        <p class="fw-bold mb-1 h5 text-black"><%= monAn.TenSP %></p>
+                        <p class="fst-italic mb-1 text-black"><%= monAn.GioiThieuSP %></p>
+                        <p class="mb-1 text-black"><%= monAn.GiaBan.toLocaleString() %></p>
+                    </div>
+                </a>
+            </div>
+            <div class="my-3">
+                <p class="fw-bold h4">Bình luận</p>
+                <div class="mb-3">
+                    <label for="review"></label>
+                    <textarea class="form-control mb-2" name="review" id="review"></textarea>
+                    <button type="button" class="btn btn-primary" id="submitDanhGia">Gửi đánh giá</button>
+                </div>
+                <div>
+                    <% comment.forEach((row) => { %>
+                    <div class="mb-4">
+                        <div class="mb-2">
+                            <p class="fw-bold mb-0"><%= row.UserName %></p>
+                            <p class="mb-0"><%= row.comment_text %></p>
+                            <p class="mb-0 small"><%= row.comment_time.toLocaleString() %></p>
+                            <div class="d-flex">
+                                <a class="d-block me-2" href="/delete/binh-luan-blog?id=<%= row.blog_id %>">Xoá đánh giá</a>
+                            </div>
+                        </div>
+                        <% if (row.replyComment) {
+                            let replyComment = row.replyComment;
+                        %>
+                        <div class="ps-5 mb-2">
+                            <p class="fw-bold mb-0">Nhà hàng</p>
+                            <p class="mb-0"><%= replyComment.reply_text %></p>
+                            <p class="mb-0 small"><%= replyComment.reply_time.toLocaleString() %></p>
+                        </div>
+                        <% } %>
+                    </div>
+                    <% }) %>
+                </div>
+                <div class="pagination">
+                    <a type="btn" href="?id=1&comment_page=1" class="bg-main px-3 py-2 me-2 cursor-pointer text-white mb-0 fw-bold fs-5">1</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <%- include('../partials/user/footer') %>
+</div>
+<%- include('../partials/user/js-libraries') %>
+<script>
+    let urlSearchParams = new URLSearchParams(window.location.search);
+    let pageId = parseInt(urlSearchParams.get("id"));
+
+    // Gửi đánh giá với SweetAlert
+    document.getElementById("submitDanhGia").onclick = (e) => {
+        e.preventDefault();
+        let reviewContent = document.getElementById("review").value;
+
+        if (reviewContent.trim() !== "") {
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = `/add/binh-luan-blog?id=${pageId}`;
+
+            const input = document.createElement("input");
+            input.name = "rating";
+            input.value = JSON.stringify({noidung: reviewContent});
+
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Bình luận không hợp lệ!',
+                text: 'Nội dung bình luận không được trống!',
+                confirmButtonColor: '#f39c12'
+            });
+        }
+    };
+</script>
+<%- include('../partials/user/ai-chat') %>
+</body>
+</html>

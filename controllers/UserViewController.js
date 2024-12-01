@@ -81,7 +81,7 @@ exports.danhSachMonAn = async (req, res) => {
     res.render("user/allMonAn", { loaiSpList: loaiSpList, monAnList: monAnList, pages: pages });
 };
 
-exports.datBan = async (req, res) => {
+exports.handleDatBan = async (req, res) => {
     let { ten, phone, thoiGian, soNguoi, yeuCau } = req.body;
     let userId = req.session.session.userId;
 
@@ -524,6 +524,64 @@ exports.handleHuyDonHang = async (req, res) => {
 
     return res.redirect("/don-hang");
 }
+
+exports.datBan = async (req, res) => {
+    let userId = req.session.session.userId;
+
+    let sqlSelectDatBan = "SELECT id, ten, soDienThoai, soNguoi, yeuCau, thoiGian, trangThai, userId FROM datban WHERE userId = ?";
+    let dataSelectDatBan = await query.selectAllWithParams(sqlSelectDatBan, [userId]);
+
+    res.render("user/datBan", {data: dataSelectDatBan});
+};
+
+exports.blog = async (req, res) => {
+    let sql = "SELECT MaSP, blog_image_url, blog_tom_tat, blog_uploaded_at, blog_tieu_de FROM baiviet";
+    let data = await query.selectAll(sql);
+    res.render("user/blog", {data: data});
+};
+
+exports.blogInfo = async (req, res) => {
+    let id = parseInt(req.query.id);
+    let {comment_page: commentPage} = req.query;
+    let currentPage = 1;
+
+    let parsePage = parseInt(commentPage);
+    if (!isNaN(parsePage)) {
+        currentPage = parseInt(commentPage);
+    }
+
+    let sql = "SELECT MaSP, blog_image_url, blog_noi_dung, blog_uploaded_at, UserName, blog_tieu_de FROM baiviet b LEFT JOIN user u on u.userId = b.blog_author_id WHERE MaSP = ?";
+    let data = await query.selectAllWithParams(sql, [id]);
+    let blog = data[0];
+
+    let sqlSelectMonAn = "SELECT MaSP, TenSP, GiaBan, GioiThieuSP, Anh FROM danhmucsp WHERE MaSP = ?";
+    let dataSelectMonAn = await query.selectAllWithParams(sqlSelectMonAn, [id]);
+    let monAn = dataSelectMonAn[0];
+
+    let start = (currentPage - 1) * 3;
+
+    let sqlSelectComment = "SELECT blog_id, user_id, comment_text, comment_time, UserName FROM binhluanbaiviet bc LEFT JOIN user u on u.userId = bc.user_id WHERE bc.blog_id = ? ORDER BY comment_time DESC, user_id LIMIT ?, 3";
+    let dataSelectComment = await query.selectAllWithParams(sqlSelectComment, [id, start]);
+
+    let sqlSelectReplyComment = "SELECT reply_text, reply_time FROM traloibinhluan WHERE user_id = ? AND blog_id = ?";
+
+    let promises = dataSelectComment.map((element) => {
+        let blogId = element.blog_id;
+        let userId = element.user_id;
+        return query.selectAllWithParams(sqlSelectReplyComment, [userId, blogId])
+            .then(data => data[0])
+            .then(data => {
+                element.replyComment = data;
+                return element;
+            });
+    });
+
+    dataSelectComment = await Promise.all(promises);
+
+    console.log(dataSelectComment);
+
+    res.render("user/blogInfo", {data: blog, monAn: monAn, comment: dataSelectComment});
+};
 
 exports.thongTinNguoiDung = async (req, res) => {
     const userId = req.session.session.userId; // Lấy userId từ session

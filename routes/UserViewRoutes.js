@@ -15,7 +15,7 @@ router.post("/thong-tin-nguoi-dung/doi-mat-khau-moi", [isUserMiddleware], userVi
 
 router.get("/danh-sach-mon-an", [isUserOrUnauthenticatedMiddleware], userViewController.danhSachMonAn);
 router.get("/chi-tiet-mon-an", [isUserOrUnauthenticatedMiddleware], userViewController.chiTietMonAn);
-router.post("/dat-ban", [isUserMiddleware], userViewController.datBan);
+router.post("/dat-ban", [isUserMiddleware], userViewController.handleDatBan);
 router.post("/danh-gia-mon-an", [isUserMiddleware], userViewController.handleDanhGiaMonAn);
 router.get("/xoa-danh-gia-mon-an", [isUserMiddleware], userViewController.handleXoaDanhGiaMonAn);
 router.post("/add-to-cart", [isUserMiddleware], userViewController.handleAddToCart);
@@ -24,9 +24,12 @@ router.post("/cart", [isUserMiddleware], userViewController.handleUpdateCart);
 router.get("/thanh-toan", [isUserMiddleware], userViewController.thanhToan);
 router.post("/thanh-toan", [isUserMiddleware], userViewController.handleUpdateCartAndThanhToan);
 router.post("/vn-pay/create-payment", [isUserMiddleware], userViewController.handleCreateVNPayPayment);
+router.get("/vn-pay/result-payment", [isUserMiddleware], userViewController.resultVNPayPayment);
 router.get("/don-hang", [isUserMiddleware], userViewController.donHang);
 router.get("/thong-tin-don-hang", [isUserMiddleware], userViewController.thongTinDonHang);
 router.get("/huy-don-hang", [isUserMiddleware], userViewController.handleHuyDonHang);
+router.get("/dat-ban", [isUserMiddleware], userViewController.datBan);
+router.get("/blog", [isUserMiddleware], userViewController.blog);
+router.get("/blog-info", [isUserMiddleware], userViewController.blogInfo);
 
-router.get("/vn-pay/result-payment", [isUserMiddleware], userViewController.resultVNPayPayment);
 module.exports = router;
