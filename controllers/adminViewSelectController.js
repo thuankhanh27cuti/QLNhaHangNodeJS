@@ -41,17 +41,43 @@ exports.allBaiViet = async (req, res) => {
 
     let start = (currentPage - 1) * perPages;
 
-    let sql = "SELECT MaSP, blog_tieu_de, blog_tom_tat, blog_uploaded_at, UserName, SUM(IF((b2.blog_id IS NULL AND b.blog_id IS NULL) OR (b2.blog_id IS NOT NULL AND b.blog_id IS NOT NULL), 0, 1)) AS need_reply FROM blogs LEFT JOIN user u on blogs.blog_author_id = u.userId LEFT JOIN qlnhahang2.blogcomments b on blogs.MaSP = b.blog_id LEFT JOIN qlnhahang2.blogreplycomment b2 on b.blog_id = b2.blog_id and b.user_id = b2.user_id GROUP BY MaSP, blog_uploaded_at ORDER BY blog_uploaded_at LIMIT ?, ?";
+    let sql = "SELECT MaSP, blog_tieu_de, blog_tom_tat, blog_uploaded_at, UserName, SUM(IF((b2.blog_id IS NULL AND b.blog_id IS NULL) OR (b2.blog_id IS NOT NULL AND b.blog_id IS NOT NULL), 0, 1)) AS need_reply FROM baiviet LEFT JOIN user u on baiviet.blog_author_id = u.userId LEFT JOIN binhluanbaiviet b on baiviet.MaSP = b.blog_id LEFT JOIN traloibinhluan b2 on b.blog_id = b2.blog_id and b.user_id = b2.user_id GROUP BY MaSP, blog_uploaded_at ORDER BY blog_uploaded_at LIMIT ?, ?";
 
     let data = await query.selectAllWithParams(sql, [start, perPages]);
 
-    let sqlCount = "SELECT COUNT(*) AS total FROM blogs";
+    let sqlCount = "SELECT COUNT(*) AS total FROM baiviet";
     let queryCount = await query.selectAll(sqlCount);
     let dataCount = queryCount[0].total;
 
     let pages = Math.ceil(dataCount / perPages);
 
     res.render('admin/all/baiViet', {data: data, pages: pages});
+}
+
+exports.allBinhLuanBaiViet = async (req, res) => {
+    let {id, page} = req.query;
+    let currentPage = 1;
+
+    let parsePage = parseInt(page);
+    if (!isNaN(parsePage)) {
+        currentPage = parseInt(page);
+    }
+
+    let start = (currentPage - 1) * perPages;
+
+    let sql = `SELECT b.blog_id, u.userId AS user_comment_id, u.UserName AS user_comment_username, comment_text, comment_time, u2.userId AS user_reply_id, u2.UserName AS user_reply_username, reply_text, reply_time FROM binhluanbaiviet b LEFT JOIN baiviet b2 on b2.MaSP = b.blog_id LEFT JOIN user u on u.userId = b.user_id LEFT JOIN traloibinhluan t on b.blog_id = t.blog_id and b.user_id = t.user_id LEFT JOIN user u2 on u2.userId = t.user_reply_id WHERE b.blog_id = ? LIMIT ?, ?`;
+
+    let data = await query.selectAllWithParams(sql, [id, start, perPages]);
+
+    console.log(data);
+
+    let sqlCount = "SELECT COUNT(*) AS count FROM binhluanbaiviet WHERE blog_id = ?";
+    let queryCount = await query.selectAllWithParams(sqlCount, [id]);
+    let dataCount = queryCount[0].total;
+
+    let pages = Math.ceil(dataCount / perPages);
+
+    res.render('admin/all/binhLuanBaiViet', {data: data, pages: pages});
 }
 
 exports.allTaiKhoan = async (req, res) => {
@@ -273,8 +299,6 @@ exports.allCongThucMon = async (req, res) => {
         let sql = "SELECT TenNL, SoLuongCanDung FROM congthucmon c RIGHT JOIN danhmucsp d on c.MaSP = d.MaSP RIGHT JOIN nguyenlieu n on n.MaNL = c.MaNL WHERE d.MaSP = ?";
         data[i].congThuc = await query.selectAllWithParams(sql, [maSp]);
     }
-
-    console.log(data);
 
     let sqlCount = "SELECT COUNT(*) AS total FROM danhmucsp";
     let queryCount = await query.selectAll(sqlCount);

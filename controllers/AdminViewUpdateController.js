@@ -192,7 +192,7 @@ exports.handleUpdateNhaCungCap = async (req, res) => {
 exports.updateDatBan = async (req, res) => {
     let {id} = req.query;
 
-    let sql = "SELECT d.id, d.ten, d.email, d.soNguoi, d.yeuCau, d.thoiGian, d.trangThai, d.userId, u.UserName FROM datban d LEFT JOIN user u on u.userId = d.userId WHERE d.id = ?";
+    let sql = "SELECT d.id, d.ten, d.soDienThoai, d.soNguoi, d.yeuCau, d.thoiGian, d.trangThai, d.userId, u.UserName FROM datban d LEFT JOIN user u on u.userId = d.userId WHERE d.id = ?";
     let select = await query.selectAllWithParams(sql, [id]);
     let data = select[0];
 
@@ -215,7 +215,7 @@ exports.handleUpdateDatBan = async (req, res) => {
 exports.updateDonHang = async (req, res) => {
     let {id} = req.query;
 
-    let sql = "SELECT MaHoaDon, NgayLap, PhuongThucTT, h.GhiChu, trangthai, h.MaGiamGia, h.userId, UserName, GiamGia FROM hoadonban h LEFT JOIN qlnhahang2.user u on h.userId = u.userId LEFT JOIN qlnhahang2.giamgia g on h.MaGiamGia = g.MaGiamGia WHERE MaHoaDon = ?";
+    let sql = "SELECT MaHoaDon, NgayLap, PhuongThucTT, h.GhiChu, trangthai, h.MaGiamGia, h.userId, UserName, GiamGia FROM hoadonban h LEFT JOIN user u on h.userId = u.userId LEFT JOIN giamgia g on h.MaGiamGia = g.MaGiamGia WHERE MaHoaDon = ?";
 
     let select = await query.selectAllWithParams(sql, [id]);
     let data = select[0];
@@ -227,20 +227,122 @@ exports.updateDonHang = async (req, res) => {
 }
 
 exports.handleUpdateDonHang = async (req, res) => {
+    // Todo: Cập nhật số lượng còn lại bị lỗi
     let {id, trangThai} = req.body;
-    console.log(req.body);
 
     let sqlSelect = "SELECT trangthai FROM hoadonban WHERE MaHoaDon = ?";
     let dataSelect = await query.selectAllWithParams(sqlSelect, [id]);
     if (dataSelect[0].trangthai === 0) {
         let sqlUpdate = "UPDATE hoadonban SET trangthai = ? WHERE MaHoaDon = ?";
+
         await query.queryWithParams(sqlUpdate, [trangThai, id]);
+
+        // Todo: For debug only
+        // await query.queryWithParams(sqlUpdate, [0, id]);
+
+        if (parseInt(trangThai) === 1) {
+            let sqlNguyenLieu = `SELECT n.MaNL, SoLuongCanDung, SoLuongCon FROM hoadonban LEFT JOIN chitiethoadon c on hoadonban.MaHoaDon = c.MaHoaDon LEFT JOIN danhmucsp d on d.MaSP = c.MaSP LEFT JOIN congthucmon c2 on d.MaSP = c2.MaSP LEFT JOIN nguyenlieu n on n.MaNL = c2.MaNL WHERE c.MaHoaDon = ? AND c2.MaSP IS NOT NULL;`;
+            let dataNguyenLieu = await query.selectAllWithParams(sqlNguyenLieu, [id]);
+
+            let sqlLichSuNguyenLieu = "INSERT INTO lichsunguyenlieu(time, quantity, maNL) VALUES (NOW(), ?, ?);";
+            let sqlUpdateNguyenLieu = "UPDATE nguyenlieu SET SoLuongCon = ? WHERE MaNL = ?;";
+
+            for (let i = 0; i < dataNguyenLieu.length; i++) {
+                let maNl = dataNguyenLieu[i].MaNL;
+                let soLuongCon = dataNguyenLieu[i].SoLuongCon;
+                let soLuongCanDung = dataNguyenLieu[i].SoLuongCanDung;
+                let newSoLuongCon = soLuongCon - soLuongCanDung;
+
+                await query.queryWithParams(sqlLichSuNguyenLieu, [soLuongCanDung, maNl]);
+                await query.queryWithParams(sqlUpdateNguyenLieu, [newSoLuongCon, maNl]);
+            }
+        }
 
         res.redirect('/admin/don-hang');
     }
     else {
         res.redirect('/admin/don-hang');
     }
+}
+
+exports.updateCongThucMon = async (req, res) => {
+    let {id} = req.query;
+
+    let sqlSelectCongThucMon = "SELECT * FROM nguyenlieu n LEFT JOIN congthucmon c on n.MaNL = c.MaNL LEFT JOIN danhmucsp d on d.MaSP = c.MaSP WHERE d.MaSP = ?";
+
+    let data = await query.selectAllWithParams(sqlSelectCongThucMon, [id]);
+
+    let sqlNguyenLieu = "SELECT MaNL, TenNL, SoLuongCon FROM nguyenlieu";
+    let dataNguyenLieu = await query.selectAll(sqlNguyenLieu);
+
+    res.render('admin/update/congThucMon', {data: data, dataNguyenLieu: dataNguyenLieu});
+}
+
+exports.handleUpdateCongThucMon = async (req, res) => {
+    let id = parseInt(req.query.id);
+    let data = JSON.parse(req.body.update);
+
+    let sqlDelete = "DELETE FROM congthucmon WHERE MaSP = ?";
+    await query.queryWithParams(sqlDelete, [id]);
+
+    let sqlInsert = "INSERT INTO congthucmon(SoLuongCanDung, MaSP, MaNL) VALUES (?, ?, ?)";
+
+    for (let i = 0; i < data.length; i++) {
+        let el = data[i];
+        let params = [el.quantity, id, el.id]
+        await query.queryWithParams(sqlInsert, params);
+    }
+
+    res.redirect('/admin/cong-thuc-mon');
+}
+
+exports.updateBaiViet = async (req, res) => {
+    let id = parseInt(req.query.id);
+
+    let sqlSelectSanPham = "SELECT MaSP, TenSP FROM danhmucsp WHERE MaSP = ?";
+    let dataSanPham = await query.selectAllWithParams(sqlSelectSanPham, [id]);
+    let data = dataSanPham[0];
+
+    let sqlCountBlogById = "SELECT COUNT(*) AS count FROM baiviet WHERE MaSP = ?";
+    let dataCountBlogById = await query.selectAllWithParams(sqlCountBlogById, [id]);
+    let countBlogById = dataCountBlogById[0].count;
+
+    let inputTieuDe = "";
+    let inputTomTat = "";
+    let inputNoiDung = "";
+    let inputAnh = "";
+
+    if (countBlogById === 1) {
+        let sqlSelectBlogById = "SELECT MaSP, blog_tieu_de, blog_tom_tat, blog_image_url, blog_noi_dung, blog_uploaded_at, blog_author_id FROM baiviet WHERE MaSP = ?";
+        let dataSelectBlogById = await query.selectAllWithParams(sqlSelectBlogById, [id]);
+
+        let selectBlogById = dataSelectBlogById[0];
+
+        console.log(selectBlogById);
+
+        inputTieuDe = selectBlogById.blog_tieu_de;
+        inputTomTat = selectBlogById.blog_tom_tat;
+        inputNoiDung = selectBlogById.blog_noi_dung;
+        inputAnh = selectBlogById.blog_image_url;
+    }
+
+    console.log(data);
+    console.log(inputTieuDe);
+    console.log(inputTomTat);
+    console.log(inputNoiDung);
+    console.log(inputAnh);
+
+    res.render('admin/update/baiViet', {
+        data: data,
+        inputTieuDe: inputTieuDe,
+        inputTomTat: inputTomTat,
+        inputNoiDung: inputNoiDung,
+        inputAnh: inputAnh
+    });
+}
+
+exports.handleUpdateBaiViet = async (req, res) => {
+
 }
 
 const padStart = (number) => {

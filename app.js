@@ -7,6 +7,9 @@ const adminViewRoutes = require('./routes/AdminViewRoutes');
 const adminViewAddRoutes = require("./routes/AdminViewAddRoutes");
 const adminViewUpdateRoutes = require("./routes/AdminViewUpdateRoutes");
 const chartApiRoutes = require("./routes/chartApiRoutes");
+const congThucMonRoutes = require("./routes/congThucMonApiRoutes");
+const nguyenLieuRoutes = require("./routes/nguyenLieuApiRoutes");
+const giamGiaRoutes = require("./routes/giamGiaApiRoutes");
 const bodyParser = require('body-parser');
 const {join} = require("node:path");
 const app = express();
@@ -31,6 +34,10 @@ app.set('view engine', 'ejs');
 app.set('views', './src/views');
 
 app.use((req, res, next) => {
+    if (!req.session.session) {
+        req.session.session = {}; // Khởi tạo nếu chưa có
+    }
+    console.log(req.session); 
     res.locals.session = req.session.session;
     //console.log('session'+ JSON.stringify(res.locals.session));
     next();
@@ -45,6 +52,9 @@ app.use('/admin/update', adminViewUpdateRoutes);
 
 app.use('/api/v1/chart', chartApiRoutes);
 app.use('/api/v1/mon-an', monAnRoutes);
+app.use('/api/v1/cong-thuc-mon', congThucMonRoutes);
+app.use('/api/v1/nguyen-lieu', nguyenLieuRoutes);
+app.use('/api/v1/giam-gia', giamGiaRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

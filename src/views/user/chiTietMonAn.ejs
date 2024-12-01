@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Chi tiết món ăn</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="" name="keywords"/>
+    <meta content="" name="description"/>
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
+    <%- include('../partials/user/css-libraries') %>
+
+    <style>
+        /* Ngôi sao đánh giá */
+        .has-rating i, .star-rating i {
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(#ff6a00, #ffb700);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .star-rating i:hover {
+            transform: scale(1.2); /* Tăng kích thước khi hover */
+        }
+
+        /* Nút bấm */
+        .btn-primary {
+            background-image: linear-gradient(#ff6a00, #ffb700);
+            border: none;
+            border-radius: 25px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-success {
+            border-radius: 25px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            box-shadow: 0 4px 8px rgba(41, 128, 185, 0.5);
+        }
+
+        #chitietmonan > div:first-child {
+            order: 2;
+        }
+        #chitietmonan > div:nth-child(2) {
+            order: 1;
+        }
+        #chitietmonan > div:nth-child(3) {
+            order: 3;
+        }
+
+        @media (min-width: 992px) {
+            /* lg */
+            #chitietmonan > div {
+                order: initial !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid position-relative p-0">
+    <%- include('../partials/user/navbar') %>
+    <section id="menu" style="padding: 60px 0; background: linear-gradient(rgba(139, 0, 0, 0.7), rgba(44, 62, 80, 0.7)), url(./img/bg-hero.jpg) center center / cover no-repeat;">
+        <div class="container">
+            <div class="text-center my-3">
+                <h2 class="section-title wow fadeInUp text-white" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">Chi tiết món ăn</h2>
+            </div>
+            <div class="row" id="chitietmonan">
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="mb-3">
+                        <p class="fw-bold mb-0 text-white">Các món liên quan</p>
+                    </div>
+                    <div>
+                        <% dataLienQuan.forEach((row) => { %>
+                        <a href="/chi-tiet-mon-an?id=<%= row.MaSP %>" class="d-block w-100 d-flex py-2 align-items-center text-decoration-none text-white">
+                            <div>
+                                <img style="width: 60px; height: 60px; object-fit: cover" src="/img/<%= row.Anh %>" alt="">
+                            </div>
+                            <div class="px-2">
+                                <p class="mb-0 fw-bold fs-5"><%= row.TenSP %></p>
+                                <p class="mb-0"><%= row.GiaBan.toLocaleString() %> đồng</p>
+                            </div>
+                        </a>
+                        <% }) %>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="row">
+                        <div class="col-12 col-md-5">
+                            <div class="row justify-content-center">
+                                <div class="col-12 col-sm-8 col-md-12">
+                                    <div class="ratio ratio-1x1 bg-black bg-gradient overflow-hidden mb-3">
+                                        <img alt="" style="object-fit: cover" class="product-details-image w-100 object-fit-cover transition" src="/img/<%= data.Anh %>">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-7">
+                            <nav>
+                                <ol class="breadcrumb" id="book-details__breadcrump">
+                                    <li class="breadcrumb-item">
+                                        <a class="transition text-white" href="/">Trang chủ</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a class="transition text-white" href="/danh-sach-mon-an">Thực đơn</a>
+                                    </li>
+                                    <li aria-current="page" class="breadcrumb-item active">
+                                        <a class="transition text-white" href="/chi-tiet-mon-an?id=<%= data.MaSP %>"><%= data.TenSP %></a>
+                                    </li>
+                                </ol>
+                            </nav>
+                            <h1 class="fw-bold mb-3 text-white"><%= data.TenSP %></h1>
+                            <p class="fw-bold fs-5 mb-3 w-auto text-white">Chi tiết món ăn</p>
+                            <p>
+                                <span class="fw-bold text-white">Loại sản phẩm:
+                                    <a class="ms-1 text-white" href="/danh-sach-mon-an?maLoai=<%= data.LoaiSP %>"><%= data.TenLoai %></a>
+                                </span>
+                            </p>
+                            <p class="fs-5 fw-bold text-white">Giá: <%= data.GiaBan.toLocaleString() %> đồng</p>
+                            <p class="fs-5 fw-bold text-white">Rating: <%= star.toFixed(1) %></p>
+                            <p class="star-rating">
+                            <%
+                                let doubleStar = Math.floor(star * 2);
+                                for (let i = 0; i < 5; i++) {
+                                    if (doubleStar > 0) {
+                                        if (doubleStar >= 2) { %>
+                                <i class="fas fa-star fs-5"></i>
+                            <%
+                                            doubleStar = doubleStar - 2;
+                                        }
+                                        else if (doubleStar === 1) { %>
+                                <i class="fas fa-star-half-alt fs-5"></i>
+                            <%
+                                            doubleStar = 0;
+                                        }
+                                    }
+                                    else { %>
+                                <i class="far fa-star fs-5"></i>
+                                <%
+                                    }
+                                } %>
+                            </p>
+                            <p class="fs-5 text-white"><%= data.GioiThieuSP %></p>
+                            <button type="button" class="btn btn-success" id="addToCartBtn">Thêm vào giỏ hàng</button>
+                            <div>
+                                <p class="fw-bold h4 mb-0 text-white">Đánh giá sản phẩm</p>
+                                <p class="star-rating mb-0" id="star-rating">
+                                    <i class="far fa-star fs-5"></i>
+                                    <i class="far fa-star fs-5"></i>
+                                    <i class="far fa-star fs-5"></i>
+                                    <i class="far fa-star fs-5"></i>
+                                    <i class="far fa-star fs-5"></i>
+                                </p>
+                                <label for="review"></label>
+                                <textarea class="form-control mb-2" name="review" id="review"></textarea>
+                                <button type="button" class="btn btn-primary" id="submitDanhGia">Gửi đánh giá</button>
+                            </div>
+                            <hr>
+                            <div>
+                                <%
+                                let userId = session ? session.userId : null;
+                                dataDanhGia.forEach((row) => {
+                                %>
+                                <div class="mb-4 has-rating">
+                                    <p class="fw-bold mb-0 text-white"><%= row.UserName %></p>
+                                    <p class="mb-0">
+                                        <%
+                                            let star = row.star;
+                                            for (let i = 0; i < 5; i++) {
+                                                if (i < star) { %>
+                                            <i class="fas fa-star"></i>
+                                        <%
+                                                }
+                                                else {  %>
+                                            <i class="far fa-star"></i>
+                                        <%
+                                                }
+                                            }
+                                        %>
+                                    </p>
+                                    <p class="mb-0 text-white"><%= row.noidung %></p>
+                                    <p class="mb-0 small text-white"><%= row.time.toLocaleString() %></p>
+                                    <% if (row.userId === userId ) { %>
+                                    <div class="d-flex">
+                                        <a class="d-block me-2 text-white" href="/xoa-danh-gia-mon-an?id=<%= data.MaSP %>">Xoá đánh giá</a>
+                                    </div>
+                                    <% } %>
+                                </div>
+                                <% }) %>
+                            </div>
+                            <div class="pagination">
+                                <% for (let i = 0; i < pages; i++) { %>
+                                <a type="btn" href="/chi-tiet-mon-an?id=<%= data.MaSP %>&commentPage=<%= i + 1 %>" class="bg-main px-3 py-2 me-2 cursor-pointer text-white mb-0 fw-bold fs-5"><%= i + 1 %></a>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="qr-container mb-3" id="qr-result"></div>
+                    <canvas id="qrCanvas" style="display: none;"></canvas>
+                    <button id="generate-btn" class="btn btn-primary me-2">Tạo mã QR</button>
+                    <button id="download-btn" class="btn btn-primary d-none me-2">Tải QR</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <%- include('../partials/user/footer') %>
+</div>
+<%- include('../partials/user/js-libraries') %>
+<script>
+    let urlSearchParams = new URLSearchParams(window.location.search);
+    let pageId = parseInt(urlSearchParams.get("id"));
+
+    let downloadBtnElement = document.querySelector("#download-btn");
+    let addToCartBtnElement = document.querySelector("#addToCartBtn");
+
+    addToCartBtnElement.onclick = () => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/add-to-cart";
+
+        const idField = document.createElement("input");
+        idField.name = "id";
+        idField.value = `${pageId}`;
+        form.appendChild(idField);
+
+        document.body.appendChild(form);
+        form.submit();
+    };
+
+    document.getElementById("generate-btn").addEventListener("click", function () {
+        let text = window.location.href;
+        if (text) {
+            let url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(text);
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    let qrResultElement = document.getElementById("qr-result");
+                    qrResultElement.innerHTML = '<img src="' + url + '" alt="QR Code" id="qr-image" crossorigin="anonymous">';
+
+                    if (downloadBtnElement.classList.contains("d-none")) {
+                        downloadBtnElement.classList.remove("d-none");
+                    }
+
+                    downloadBtnElement.onclick = async function () {
+                        const qrImage = document.getElementById('qr-image');
+                        const canvas = document.getElementById('qrCanvas');
+                        const ctx = canvas.getContext('2d');
+
+                        // Đặt kích thước canvas theo kích thước ảnh
+                        canvas.width = qrImage.naturalWidth;
+                        canvas.height = qrImage.naturalHeight;
+
+                        // Vẽ ảnh lên canvas
+                        ctx.drawImage(qrImage, 0, 0);
+
+                        // Chuyển đổi canvas sang URL hình ảnh
+                        const imageURL = canvas.toDataURL('image/png');
+
+                        // Tạo thẻ <a> để tải xuống
+                        const link = document.createElement('a');
+                        link.href = imageURL;
+                        link.download = 'qr-code.png'; // Tên tệp tải xuống
+                        link.click();
+
+                        alert('QR Code đã được tải xuống!');
+                    };
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Mã QR đã được tạo thành công!',
+                        text: 'Bạn có thể tải mã QR xuống hoặc chia sẻ nó.',
+                        confirmButtonColor: '#3498db'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Có lỗi xảy ra khi tạo mã QR.',
+                        confirmButtonColor: '#e74c3c'
+                    });
+                }
+            };
+            xhr.send();
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Cảnh báo!',
+                text: 'Vui lòng nhập dữ liệu để tạo mã QR.',
+                confirmButtonColor: '#f39c12'
+            });
+        }
+    });
+
+    // Thiết lập đánh giá sao
+    let starRatingElement = document.querySelector("#star-rating");
+    let starElements = starRatingElement.querySelectorAll("i");
+    [...starElements].forEach((element, index) => {
+        element.onclick = () => {
+            let number = index + 1;
+            for (let i = 0; i < 5; i++) {
+                let el = starElements.item(i);
+                if (i < number) {
+                    el.classList.add("fas");
+                    el.classList.remove("far");
+                } else {
+                    el.classList.add("far");
+                    el.classList.remove("fas");
+                }
+            }
+        };
+    });
+
+    // Gửi đánh giá với SweetAlert
+    document.getElementById("submitDanhGia").onclick = (e) => {
+        e.preventDefault();
+        let selectedStars = document.querySelectorAll("#star-rating .fas").length;
+        let reviewContent = document.getElementById("review").value;
+
+        if (selectedStars > 0) {
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = `/danh-gia-mon-an?id=${pageId}`;
+
+            const input = document.createElement("input");
+            input.name = "rating";
+            input.value = JSON.stringify({noidung: reviewContent, star: selectedStars});
+
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Vui lòng chọn số sao!',
+                text: 'Bạn cần chọn số sao trước khi gửi đánh giá.',
+                confirmButtonColor: '#f39c12'
+            });
+        }
+    };
+</script>
+<%- include('../partials/user/ai-chat') %>
+</body>
+</html>
+
+
+

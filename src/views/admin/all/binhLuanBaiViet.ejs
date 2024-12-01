@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Dashtreme Admin</title>
+    <link rel="icon" href="/admin/assets/images/favicon.ico" type="image/x-icon">
+    <%- include('../../partials/admin/css-libraries') %>
+</head>
+<body class="bg-theme bg-theme1">
+<div id="wrapper">
+    <%- include('../../partials/admin/navigation') %>
+    <%- include('../../partials/admin/header') %>
+    <div class="clearfix">
+        <div class="content-wrapper">
+            <div class="container-fluid">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="h4 mb-2">Quản lý bài viết</p>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th scope="col">ID nguời bình luận</th>
+                                    <th scope="col">Username nguời bình luận</th>
+                                    <th scope="col">Nội dung</th>
+                                    <th scope="col">Thời gian bình luận</th>
+                                    <th scope="col">ID người phản hồi</th>
+                                    <th scope="col">Username nguời phản hồi</th>
+                                    <th scope="col">Nội dung phản hồi</th>
+                                    <th scope="col">Thời gian phản hồi</th>
+                                    <th scope="col">Hành động</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <% data.forEach((row) => { %>
+                                <tr>
+                                    <td><%= row.user_comment_id %></td>
+                                    <td><%= row.user_comment_username %></td>
+                                    <td><%= row.comment_text %></td>
+                                    <td><%= row.comment_time ? row.comment_time.toLocaleString() : "" %></td>
+                                    <td><%= row.user_reply_id %></td>
+                                    <td><%= row.user_reply_username %></td>
+                                    <td><%= row.reply_text %></td>
+                                    <td><%= row.reply_time ? row.reply_time.toLocaleString() : "" %></td>
+                                    <td>
+                                        <%
+                                            if (row.user_reply_id) {
+                                        %>
+                                            <a class="btn btn-secondary" href="/admin/update/phan-hoi-binh-luan?id=<%= row.blog_id %>&userId=<%= row.user_comment_id %>">Sửa phản hồi</a>
+                                            <a class="btn btn-danger" href="/admin/delete/phan-hoi-binh-luan?id=<%= row.blog_id %>&userId=<%= row.user_comment_id %>">Xoá phản hồi</a>
+                                        <%
+                                            }
+                                            else {
+                                        %>
+                                            <a class="btn btn-primary" href="/admin/add/phan-hoi-binh-luan?id=<%= row.blog_id %>&userId=<%= row.user_comment_id %>">Thêm phản hồi</a>
+                                        <%
+                                        }
+                                        %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <%
+                        for (let i = 0; i < pages; i++) {
+                        %>
+                            <a href="?page=<%= i + 1 %>" class="btn btn-primary" style="color:white;"><%= i + 1 %></a>
+                        <%
+                        }
+                        %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
+    </div>
+    <%- include('../../partials/admin/footer') %>
+    <%- include('../../partials/admin/right-sidebar') %>
+    <%- include('../../partials/admin/js-libraries') %>
+</div>
+</body>
+</html>

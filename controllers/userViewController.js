@@ -1,24 +1,23 @@
-const db = require('../config/db');
 const query = require("../query");
 const { sendEmail } = require('../sendEmail');
 
 exports.index = async (req, res) => {
-    let data = await db.query("SELECT LoaiSP, TenLoai FROM loaisp");
-    let loaiSpList = data[0];
+    let sqlLoaiSanPham = "SELECT LoaiSP, TenLoai FROM loaisp";
+    let loaiSpList = await query.selectAll(sqlLoaiSanPham);
     for (const element of loaiSpList) {
         let id = element.LoaiSP;
-        let data = await db.query("SELECT MaSP, TenSP, GiaBan, GioiThieuSP, Anh FROM danhmucsp WHERE MaLoai = ? LIMIT 5", [id]);
-        element.monAnList = data[0];
+        let sql = "SELECT MaSP, TenSP, GiaBan, GioiThieuSP, Anh FROM danhmucsp WHERE MaLoai = ? LIMIT 5";
+        element.monAnList = await query.selectAllWithParams(sql, [id]);
     }
-    // res.json(loaiSpList);
+
     res.render('user/index', { loaiSpList: loaiSpList });
 }
 
 exports.danhSachMonAn = async (req, res) => {
     let { maLoai, sort, page } = req.query;
 
-    let loaiSp = await db.query("SELECT LoaiSP, TenLoai FROM loaisp");
-    let loaiSpList = loaiSp[0];
+    let sqlLoaiSanPham = "SELECT LoaiSP, TenLoai FROM loaisp";
+    let loaiSpList = await query.selectAll(sqlLoaiSanPham);
 
     let sql = "SELECT d.MaSP AS MaSP, TenSP, GiaBan, Anh, GioiThieuSP, COALESCE(SUM(SoLuong), 0) AS SoLuong FROM danhmucsp d LEFT JOIN chitiethoadon c ON d.MaSP = c.MaSP";
 
@@ -49,26 +48,229 @@ exports.danhSachMonAn = async (req, res) => {
         sql += ` LIMIT 8`;
     }
 
-    let monAn = await db.query(sql);
-    let monAnList = monAn[0];
+    let monAnList = await query.selectAll(sql);
 
-    let queryTotalPage = await db.query(sqlPages);
-    let totalPages = queryTotalPage[0][0].count;
+    let queryTotalPage = await query.selectAll(sqlPages);
+    let totalPages = queryTotalPage[0].count;
     let pages = Math.ceil(totalPages / 8);
-    console.log(totalPages);
-    console.log(pages);
 
     res.render('user/allMonAn', { loaiSpList: loaiSpList, monAnList: monAnList, pages: pages });
 }
 
 exports.datBan = async (req, res) => {
-    let { ten, email, thoiGian, soNguoi, yeuCau } = req.body;
-    let required = ten !== "" && email !== "" && thoiGian !== "" && soNguoi !== "";
+    let {ten, phone, thoiGian, soNguoi, yeuCau} = req.body;
+    let userId = req.session.session.userId;
+
+    let required = ten !== "" && phone !== "" && thoiGian !== "" && soNguoi !== "";
     if (required) {
-        await db.query("INSERT INTO datban SET ten = ?, email = ?, soNguoi = ?, yeuCau = ?, thoiGian = ?, trangThai = ?, userId = ?", [ten, email, soNguoi, yeuCau, thoiGian, 0, 6]);
+        let sql = "INSERT INTO datban SET ten = ?, soDienThoai = ?, soNguoi = ?, yeuCau = ?, thoiGian = ?, trangThai = ?, userId = ?";
+        await query.queryWithParams(sql, [ten, phone, soNguoi, yeuCau, thoiGian, 0, userId]);
     }
-    // Todo: Need session id
+
     res.redirect("/");
+}
+
+exports.chiTietMonAn = async (req, res) => {
+    let {id, commentPage} = req.query;
+
+    let sql = "SELECT MaSP, TenSP, GiaBan, GioiThieuSP, Anh, LoaiSP, TenLoai FROM danhmucsp d LEFT JOIN loaisp ON d.MaLoai = loaisp.LoaiSP WHERE MaSP = ?";
+    let data = await query.selectAllWithParams(sql, [id]);
+    let monAn = data[0];
+
+    let idLoaiSanPham = monAn.LoaiSP;
+    let sqlLienQuan = "SELECT MaSP, TenSP, GiaBan, Anh FROM danhmucsp WHERE MaLoai = ? LIMIT 5";
+    let dataLienQuan = await query.selectAllWithParams(sqlLienQuan, [idLoaiSanPham]);
+
+    let sqlAverage = "SELECT COALESCE(AVG(star), 0) AS star FROM danhgiasp WHERE MaSP = ?";
+    let dataAverage = await query.selectAllWithParams(sqlAverage, [id]);
+    let star = dataAverage[0].star;
+
+    let currentPage = 1;
+
+    let parsePage = parseInt(commentPage);
+    if (!isNaN(parsePage)) {
+        currentPage = parsePage;
+    }
+
+    let start = (currentPage - 1) * 3;
+
+    let sqlDanhGia = "SELECT MaSP, time, noidung, star, UserName, u.userId FROM danhgiasp LEFT JOIN user u on u.userId = danhgiasp.userId WHERE MaSP = ? LIMIT ?, 3";
+    let dataDanhGia = await query.selectAllWithParams(sqlDanhGia, [id, start]);
+
+    let sqlCountDanhGia = "SELECT COUNT(*) AS count FROM danhgiasp WHERE MaSP = ?";
+    let dataCountDanhGia = await query.selectAllWithParams(sqlCountDanhGia, [id]);
+
+    let count = dataCountDanhGia[0].count;
+    let pages = Math.ceil(count / 3);
+
+    res.render('user/chiTietMonAn', {data: monAn, dataLienQuan: dataLienQuan, star: star, dataDanhGia: dataDanhGia, pages: pages});
+}
+
+exports.handleDanhGiaMonAn = async (req, res) => {
+    let id = parseInt(req.query.id);
+    let {rating} = req.body;
+    let object = JSON.parse(rating);
+
+    let noiDung = object.noidung;
+    let star = object.star;
+
+    let userId = req.session.session.userId;
+
+    let sqlCount = "SELECT COUNT(*) AS count FROM danhgiasp WHERE MaSP = ? AND userId = ?";
+    let dataCount = await query.selectAllWithParams(sqlCount, [id, userId]);
+    let count = dataCount[0].count;
+
+    if (count === 0) {
+        let sql = "INSERT INTO danhgiasp(MaSP, userId, time, noidung, star) VALUES (?, ?, NOW(), ?, ?)";
+        await query.queryWithParams(sql, [id, userId, noiDung, star]);
+    }
+
+    res.redirect(`/chi-tiet-mon-an?id=${id}`);
+};
+
+exports.handleXoaDanhGiaMonAn = async (req, res) => {
+    let id = parseInt(req.query.id);
+    let userId = req.session.session.userId;
+
+    let sql = "DELETE FROM danhgiasp WHERE MaSP = ? AND userId = ?";
+    await query.queryWithParams(sql, [id, userId]);
+
+    res.redirect(`/chi-tiet-mon-an?id=${id}`);
+}
+
+exports.handleAddToCart = async (req, res) => {
+    let id = parseInt(req.body.id);
+    let cart = req.session.session.cart || [];
+
+    let needAdd = true;
+
+    for (let i = 0; i < cart.length; i++) {
+        let current = cart[i];
+        if (current.id === id) {
+            needAdd = false;
+            current.quantity = current.quantity + 1;
+            break;
+        }
+    }
+
+    if (needAdd) {
+        cart.push({
+            id: id,
+            quantity: 1
+        });
+    }
+
+    // console.log(cart);
+
+    req.session.session.cart = cart;
+    res.redirect(`/chi-tiet-mon-an?id=${id}`);
+}
+
+exports.cart = async (req, res) => {
+    let cartSession = req.session.session.cart || [];
+    let cartData = await getCartData(cartSession);
+    let cart = cartData.cartData;
+    let totalPrice = cartData.totalPrice;
+    res.render('user/cart', {cart: cart, totalPrice: totalPrice});
+}
+
+exports.handleUpdateCart = async (req, res) => {
+    let {cart} = req.body;
+    req.session.session.cart = JSON.parse(cart);
+    res.redirect("/cart");
+}
+
+exports.thanhToan = async (req, res) => {
+    let cartSession = req.session.session.cart || [];
+    let cartData = await getCartData(cartSession);
+    let cart = cartData.cartData;
+    let totalPrice = cartData.totalPrice;
+    res.render("user/thanhToan", {cart: cart, totalPrice: totalPrice});
+}
+
+const getCartData = async (cart) => {
+    let cartData = [];
+    let totalPrice = 0;
+    for (let i = 0; i < cart.length; i++) {
+        let element = cart[i];
+        let id = element.id;
+        let quantity = element.quantity;
+        let sql = "SELECT TenSP, GiaBan, Anh FROM danhmucsp WHERE MaSP = ?";
+        let dataSelect = await query.selectAllWithParams(sql, [id]);
+        let data = dataSelect[0];
+        cartData.push({
+            id: id,
+            name: data.TenSP,
+            price: data.GiaBan,
+            image: data.Anh,
+            quantity: quantity
+        });
+        totalPrice = totalPrice + data.GiaBan * quantity;
+    }
+    // console.log(cartData);
+    return {cartData: cartData, totalPrice: totalPrice};
+}
+
+exports.handleUpdateCartAndThanhToan = async (req, res) => {
+    let {cart} = req.body;
+    req.session.session.cart = JSON.parse(cart);
+    res.redirect("/thanh-toan");
+}
+
+exports.handleCreateVNPayPayment = async (req, res) => {
+    let orderInfo = JSON.parse(req.body.orderInfo);
+    // console.log(orderInfo);
+    /*
+    {
+        products: [ { id: 3, quantity: 2 }, { id: 4, quantity: 3 } ],
+        discount: 111,
+        note: '123'
+    }
+     */
+
+    let products = orderInfo.products;
+    let discount = orderInfo.discount;
+    let note = orderInfo.note;
+
+    let sql = "SELECT * FROM danhmucsp WHERE MaSP = ?";
+    let promises = products.map((product) => {
+        let id = product.id;
+        let quantity = product.quantity;
+        return query.selectAllWithParams(sql, [id])
+            .then(data => data[0])
+            .then(data => {
+            return {
+                product: data,
+                quantity: quantity
+            };
+        });
+    });
+
+    let productDetails = await Promise.all(promises);
+
+    // Tính tổng số tiền chưa giảm giá
+    let totalPrice = productDetails.reduce((previousValue, currentValue) => {
+        let price = currentValue.product.GiaBan * currentValue.quantity;
+        return previousValue + price
+    }, 0);
+    console.log(totalPrice);
+
+    // Lấy thông tin giảm giá
+    let sqlGiamGia = "SELECT * FROM giamgia WHERE MaGiamGia = ?";
+    let dataGiamGia = await query.selectAllWithParams(sqlGiamGia, [discount]);
+    if (dataGiamGia.length === 1) {
+        let giamGia = dataGiamGia[0];
+        let soLuongGiam = giamGia.GiamGia;
+
+        // Tính tổng số tiền đã giảm giá
+        totalPrice = totalPrice / 100 * (100 - soLuongGiam);
+    }
+
+    console.log(totalPrice);
+
+    // Chuẩn bị gửi đi
+
+    res.redirect("/thanh-toan");
 }
 
 exports.thongTinNguoiDung = async (req, res) => {
@@ -106,7 +308,7 @@ exports.xacNhanEmailDoiMatKhau = async (req, res) => {
 
     } else {
         //trùng email đang đăng nhập
-        if (email == req.session.session.email) {
+        if (email === req.session.session.email) {
             let sqlGetUser = "SELECT * FROM user WHERE email = ?";
             let userData = await query.selectAllWithParams(sqlGetUser, [email]);
 
@@ -118,7 +320,7 @@ exports.xacNhanEmailDoiMatKhau = async (req, res) => {
                 req.session.session.otpConfirmChangePassword = otp; // Lưu mã OTP
                 req.session.session.email = user.email; // Lưu email
                 // Gửi email
-                sendEmail(
+                await sendEmail(
                     user.email,
                     'Yêu cầu đổi mật khẩu mới', // Tiêu đề email
                     `Xin chào ${user.UserName},\n\nMã OTP của bạn là: ${otp}`
@@ -138,7 +340,7 @@ exports.xacNhanEmailDoiMatKhau = async (req, res) => {
 };
 
 exports.xacNhanOTPDoiMatKhau = async (req, res) => {
-    if(req.session.session.otpConfirmChangePassword != undefined){
+    if(req.session.session.otpConfirmChangePassword !== undefined){
         res.render("user/changePassword/otpConfirmWithLogin");
     }else{
         res.redirect("/");
@@ -152,7 +354,7 @@ exports.kiemTraOTPDoiMatKhauDaDangNhap = async (req, res) => {
         res.render("user/changePassword/otpConfirmWithLogin", { session: req.session.session});
     } else { 
         // Kiểm tra mã OTP
-        if (otp == req.session.session.otpConfirmChangePassword) {
+        if (otp === req.session.session.otpConfirmChangePassword) {
             req.session.session.otp_verified_changePassword = true; 
             res.redirect("/thong-tin-nguoi-dung/doi-mat-khau-moi");
         } else {
@@ -164,7 +366,7 @@ exports.kiemTraOTPDoiMatKhauDaDangNhap = async (req, res) => {
 
 //chuyển trang đổi mật khẩu mới sau khi đã xác nhận otp
 exports.chuyenTrangDoiMatKhauKhiDaCheckOtp = async (req, res) => {
-    if(req.session.session.otp_verified_changePassword = true){
+    if(req.session.session.otp_verified_changePassword === true){
         res.render("user/changePassword/changePasswordHavedCheckOtp");
     }else{
         res.redirect("/");
@@ -191,7 +393,7 @@ exports.xacNhanDoiMatKhauKhiDaCheckOtp = async (req, res) => {
         if (userData.length > 0) {
             if(userData[0].PassWord === password){
                 let sqlUpdatePassword = "UPDATE user SET password = ? WHERE email = ?";
-                await query.update(sqlUpdatePassword, [newPassword, email]); // Cập nhật mật khẩu mới
+                await query.queryWithParams(sqlUpdatePassword, [newPassword, email]); // Cập nhật mật khẩu mới
                 req.session.session.notification = "Mật khẩu đã được cập nhật thành công!";
                 // Xóa thông tin trong session 
                 req.session.session.otp_verified_changePassword = null;

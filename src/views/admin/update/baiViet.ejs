@@ -19,36 +19,36 @@
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-body">
-                        <form method="POST" action="/admin/add/mon-an" enctype="multipart/form-data">
+                        <form method="POST" action="/admin/update/bai-viet?id=<% data.MaSP %>" enctype="multipart/form-data">
                             <div class="form-group">
-                                <label for="maLoai">Loại Sản Phẩm</label>
-                                <select name="maLoai" id="maLoai" class="form-control">
-                                    <% loaiSP.forEach((row) => { %>
-                                        <option value="<%= row.LoaiSP %>"><%= row.TenLoai %></option>
-                                    <% }) %>
-                                </select>
+                                <label for="id">ID Món</label>
+                                <input readonly type="number" id="id" name="id" class="form-control" value="<%= data.MaSP %>">
                             </div>
                             <div class="form-group">
-                                <label for="tenSP">Tên Món</label>
-                                <input type="text" id="tenSP" name="tenSP" class="form-control" required>
+                                <label for="TenSP">Tên Món</label>
+                                <input readonly="" type="text" id="TenSP" class="form-control" value="<%= data.TenSP %>">
                             </div>
                             <div class="form-group">
-                                <label for="giaBan">Giá Bán</label>
-                                <input type="number" id="giaBan" name="giaBan" class="form-control" required>
+                                <label for="TieuDe">Tiêu đề</label>
+                                <textarea id="TieuDe" name="TieuDe" class="form-control" required=""><%= inputTieuDe %></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="gioiThieuSP">Giới Thiệu Sản Phẩm</label>
-                                <input type="text" id="gioiThieuSP" name="gioiThieuSP" class="form-control" required>
+                                <label for="TomTat">Tóm tắt</label>
+                                <textarea id="TomTat" name="TomTat" class="form-control" required><%= inputTomTat %></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="file">File Ảnh</label>
-                                <input id="file" type="file" name="file" class="form-control" placeholder="">
+                                <label for="NoiDung">Nội dung</label>
+                                <textarea id="NoiDung" name="NoiDung" class="form-control" required=""><%= inputNoiDung %></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="hinhAnh">Hình ảnh</label>
+                                <input type="file" name="hinhAnh" id="hinhAnh" class="form-control">
                             </div>
                             <div class="form-group">
                                 <div class="w-50">
                                     <img id="previewImage"
                                          class="w-100 object-fit-cover"
-                                         src=""
+                                         src="<%= inputAnh ? `/img/${inputAnh}` : "" %>"
                                          alt=""
                                     >
                                 </div>
@@ -66,7 +66,29 @@
     <%- include('../../partials/admin/footer') %>
     <%- include('../../partials/admin/right-sidebar') %>
     <%- include('../../partials/admin/js-libraries') %>
-    <script src="/admin/assets/js/updateMonAn.js"></script>
+    <script>
+        let inputImageElement = document.querySelector("#hinhAnh");
+        let previewImageElement = document.querySelector("#previewImage");
+
+        inputImageElement.onchange = function (event) {
+            let target = event.target;
+            if (target.files) {
+                let files = target.files;
+                if (files.length !== 0) {
+                    let file = files[0];
+
+                    let reader = new FileReader();
+                    reader.onload = (e) => {
+                        if (e.target) {
+                            previewImageElement.src = e.target.result;
+                        }
+                    }
+
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+    </script>
 </div>
 </body>
 </html>
