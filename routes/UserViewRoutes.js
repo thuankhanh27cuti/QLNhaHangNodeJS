@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const userViewController = require('../controllers/userViewController');
+const userViewController = require('../controllers/UserViewController');
 const {isUserMiddleware, isUserOrUnauthenticatedMiddleware} = require("../middlewares/RolesMiddleware");
 
 router.get("/", [isUserOrUnauthenticatedMiddleware], userViewController.index);
@@ -24,5 +24,8 @@ router.post("/cart", [isUserMiddleware], userViewController.handleUpdateCart);
 router.get("/thanh-toan", [isUserMiddleware], userViewController.thanhToan);
 router.post("/thanh-toan", [isUserMiddleware], userViewController.handleUpdateCartAndThanhToan);
 router.post("/vn-pay/create-payment", [isUserMiddleware], userViewController.handleCreateVNPayPayment);
+router.get("/don-hang", [isUserMiddleware], userViewController.donHang);
+router.get("/thong-tin-don-hang", [isUserMiddleware], userViewController.thongTinDonHang);
+router.get("/huy-don-hang", [isUserMiddleware], userViewController.handleHuyDonHang);
 
 module.exports = router;

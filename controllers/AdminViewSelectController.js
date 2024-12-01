@@ -69,8 +69,6 @@ exports.allBinhLuanBaiViet = async (req, res) => {
 
     let data = await query.selectAllWithParams(sql, [id, start, perPages]);
 
-    console.log(data);
-
     let sqlCount = "SELECT COUNT(*) AS count FROM binhluanbaiviet WHERE blog_id = ?";
     let queryCount = await query.selectAllWithParams(sqlCount, [id]);
     let dataCount = queryCount[0].total;

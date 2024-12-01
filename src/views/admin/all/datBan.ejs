@@ -46,7 +46,7 @@
                                     <td><%= row.trangThai === "0" ? "Chờ xác nhận" : "Đã xác nhận" %></td>
                                     <td>
                                         <a class="btn btn-primary" href="/admin/update/dat-ban?id=<%= row.id %>">Sửa</a>
-                                        <a class="btn btn-danger" href="/admin/update/dat-ban?id=<%= row.id %>">Xóa</a>
+                                        <a class="btn btn-danger" href="/admin/delete/dat-ban?id=<%= row.id %>">Xóa</a>
                                     </td>
                                 </tr>
                                 <% }) %>

@@ -106,7 +106,7 @@ exports.handleForgotPassword = async (req, res) => {
             req.session.session.otp = otp; // Lưu mã OTP
             req.session.session.email = user.email; // Lưu email
             // Gửi email
-            sendEmail(
+            await sendEmail(
                 user.email,
                 'Yêu cầu cung cấp mật khẩu mới', // Tiêu đề email
                 `Xin chào ${user.UserName},\n\nMã OTP của bạn là: ${otp}`

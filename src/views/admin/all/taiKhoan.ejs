@@ -42,7 +42,7 @@
                                     <td><%= ((row.Ho ? row.Ho : "") + " " + (row.Ten ? row.Ten: "")).trim() %></td>
                                     <td><%= row.SDT %></td>
                                     <td><%= row.DiaChi %></td>
-                                    <td><%= row.NgaySinh ? row.NgaySinh.toLocaleDateString("en-US") : "" %></td>
+                                    <td><%= row.NgaySinh ? row.NgaySinh.toLocaleDateString() : "" %></td>
                                     <td>
                                         <a class="btn btn-primary" href="/admin/update/user?id=<%= row.userId %>">Sửa</a>
                                         <a class="btn btn-danger" href="/admin/delete/user?id=<%= row.userId %>">Xóa</a>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Nhà hàng</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="" name="keywords"/>
+    <meta content="" name="description"/>
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
+    <%- include('../partials/user/css-libraries') %>
+</head>
+<body>
+<div class="container-fluid position-relative bg-white p-0">
+    <%- include('../partials/user/navbar') %>
+    <!-- Menu Start -->
+    <section style="padding: 60px 0;">
+        <div class="container mt-5">
+            <div class="text-center">
+                <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">Đơn hàng đã mua</h2>
+            </div>
+            <div class="w-75 mx-auto">
+                <div class="card border-0">
+                    <div class="card-body">
+                        <div>
+                            <h6 class="mb-3 text-end">Số đơn hàng đã mua: 16</h6>
+                            <% data.forEach((row) => { %>
+                            <div class="mb-5 pb-3 border" style="background-color: #8b0000">
+                                <div class="px-5 py-2 border-bottom">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <p class="fw-light mb-0 me-3 text-white">
+                                                Mã đơn hàng: <%= row.MaHoaDon %>
+                                            </p>
+                                            <p class="fw-light mb-0 me-3 text-white">
+                                                Thời gian tạo đơn: <%= row.NgayLap %>
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p style="background-color: #e89000" class="fw-light mb-0 me-3 text-white font-weight-bold btn">
+                                                <%= row.trangthai === 0 ? "Chờ xác nhận" :
+                                                        (row.trangthai === 1 ? "Đã xác nhận" : (row.trangthai === 2 ? "Đã huỷ" :
+                                                                "")) %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border-bottom bg-white">
+                                    <div class="px-5 py-3">
+                                        <% let chiTiet = row.ChiTiet;
+                                        chiTiet.forEach((row) => {
+                                            %>
+                                        <div class="px-0 my-2 d-flex flex-wrap align-items-center">
+                                            <img alt="" style="object-fit: cover; width: 4rem; height: 4rem" src="/img/<%= row.Anh %>">
+                                            <div class="ms-2 col">
+                                                <p class="mb-0 fw-bold fs-5"><%= row.TenSP %></p>
+                                                <p class="mb-0 small fw-light">x<%= row.SoLuong %></p>
+                                            </div>
+                                            <div>
+                                                <small class="h6 mb-1 me-3"><%= row.TongTienHD.toLocaleString() %> đồng</small>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                                <div class="my-2">
+                                    <div class="px-5 py-2">
+                                        <div class="row justify-content-end">
+                                            <div class="col-6 d-flex justify-content-end px-0">
+                                                <table class="table table-borderless w-auto mb-0">
+                                                    <tbody>
+                                                    <tr>
+                                                        <td class="px-4 py-2"><p class="mb-0 text-white">Thành tiền</p></td>
+                                                        <td class="px-3 py-2"><p class="mb-0 text-white fw-bold text-end"><%= row.totalPrice.toLocaleString() %> đồng</p></td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="my-2 d-flex justify-content-end">
+                                    <div class="px-5 w-auto">
+                                        <% if (row.trangthai === 0) { %>
+                                        <a class="btn me-3 px-3 py-2 transition text-white bg-orange bg-gradient" href="/huy-don-hang?id=<%= row.MaHoaDon %>" type="button">
+                                            <span>Huỷ đơn hàng</span>
+                                        </a>
+                                        <% } %>
+                                        <a class="btn me-3 px-3 py-2 transition text-white bg-orange bg-gradient" href="/thong-tin-don-hang?id=<%= row.MaHoaDon %>" type="button">
+                                            <span>Thông tin đơn hàng</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }) %>
+                        </div>
+                        <div class="float-right">
+                            <a href="/">
+                                <button type="button" class="btn btn-primary border btn-lg btn-default md-btn-flat mt-2 mr-3">Quay lại</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <%- include('../partials/user/footer') %>
+</div>
+<%- include('../partials/user/js-libraries') %>
+<%- include('../partials/user/ai-chat') %>
+</body>
+</html>

@@ -19,30 +19,33 @@
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-body">
-                        <form method="POST" action="/admin/update/bai-viet?id=<% data.MaSP %>" enctype="multipart/form-data">
+                        <form method="POST" action="/admin/update/bai-viet?id=<%= data.MaSP %>" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label for="id">ID Món</label>
-                                <input readonly type="number" id="id" name="id" class="form-control" value="<%= data.MaSP %>">
+                                <input readonly type="number" id="id" class="form-control" value="<%= data.MaSP %>">
                             </div>
                             <div class="form-group">
                                 <label for="TenSP">Tên Món</label>
                                 <input readonly="" type="text" id="TenSP" class="form-control" value="<%= data.TenSP %>">
                             </div>
                             <div class="form-group">
-                                <label for="TieuDe">Tiêu đề</label>
-                                <textarea id="TieuDe" name="TieuDe" class="form-control" required=""><%= inputTieuDe %></textarea>
+                                <label for="tieuDe">Tiêu đề</label>
+                                <textarea id="tieuDe" name="tieuDe" class="form-control" required=""><%= inputTieuDe %></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="TomTat">Tóm tắt</label>
-                                <textarea id="TomTat" name="TomTat" class="form-control" required><%= inputTomTat %></textarea>
+                                <label for="tomTat">Tóm tắt</label>
+                                <textarea id="tomTat" name="tomTat" class="form-control" required><%= inputTomTat %></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="NoiDung">Nội dung</label>
-                                <textarea id="NoiDung" name="NoiDung" class="form-control" required=""><%= inputNoiDung %></textarea>
+                                <label for="noiDung">Nội dung</label>
+                                <textarea id="noiDung" name="noiDung" class="form-control" required=""><%= inputNoiDung %></textarea>
                             </div>
                             <div class="form-group">
                                 <label for="hinhAnh">Hình ảnh</label>
-                                <input type="file" name="hinhAnh" id="hinhAnh" class="form-control">
+                                <input type="file" name="hinhAnh" id="hinhAnh" class="form-control"<%= requireImage ? " required": ""%>>
+                            </div>
+                            <div class="form-group">
+                                <p class="text-danger"><%= notification %></p>
                             </div>
                             <div class="form-group">
                                 <div class="w-50">

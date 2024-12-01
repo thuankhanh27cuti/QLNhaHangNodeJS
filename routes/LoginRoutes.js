@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const loginController = require('../controllers/loginController');
+const loginController = require('../controllers/LoginController');
 const passport = require('passport');
 require('../config/passport-setup.js'); //cấu hình Passport
 

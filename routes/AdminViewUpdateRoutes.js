@@ -84,13 +84,20 @@ router.post('/cong-thuc-mon',
     [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewUpdateController.handleUpdateCongThucMon);
 
-
 router.get('/bai-viet',
     [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewUpdateController.updateBaiViet);
 
 router.post('/bai-viet',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminAndNhanVienMiddleware, upload.single('hinhAnh')],
     adminViewUpdateController.handleUpdateBaiViet);
+
+router.get('/phan-hoi-binh-luan',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewUpdateController.updatePhanHoiBinhLuan);
+
+router.post('/phan-hoi-binh-luan',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware, upload.single('hinhAnh')],
+    adminViewUpdateController.handleUpdatePhanHoiBinhLuan);
 
 module.exports = router;

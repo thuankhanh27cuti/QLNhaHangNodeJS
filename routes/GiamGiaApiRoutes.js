@@ -1,5 +1,5 @@
 const express = require('express');
-const giamGiaController = require('../controllers/giamGiaApiController');
+const giamGiaController = require('../controllers/GiamGiaApiController');
 const router = express.Router();
 
 router.get('/:id', giamGiaController.findById);

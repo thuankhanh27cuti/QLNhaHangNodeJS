@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const adminViewSelectController = require('../controllers/adminViewSelectController');
+const adminViewSelectController = require('../controllers/AdminViewSelectController');
 const rolesMiddleware = require('../middlewares/rolesMiddleware');
 
 router.get('/',

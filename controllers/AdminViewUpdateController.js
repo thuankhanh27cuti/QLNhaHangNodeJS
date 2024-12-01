@@ -227,7 +227,6 @@ exports.updateDonHang = async (req, res) => {
 }
 
 exports.handleUpdateDonHang = async (req, res) => {
-    // Todo: Cập nhật số lượng còn lại bị lỗi
     let {id, trangThai} = req.body;
 
     let sqlSelect = "SELECT trangthai FROM hoadonban WHERE MaHoaDon = ?";
@@ -237,15 +236,14 @@ exports.handleUpdateDonHang = async (req, res) => {
 
         await query.queryWithParams(sqlUpdate, [trangThai, id]);
 
-        // Todo: For debug only
-        // await query.queryWithParams(sqlUpdate, [0, id]);
-
         if (parseInt(trangThai) === 1) {
-            let sqlNguyenLieu = `SELECT n.MaNL, SoLuongCanDung, SoLuongCon FROM hoadonban LEFT JOIN chitiethoadon c on hoadonban.MaHoaDon = c.MaHoaDon LEFT JOIN danhmucsp d on d.MaSP = c.MaSP LEFT JOIN congthucmon c2 on d.MaSP = c2.MaSP LEFT JOIN nguyenlieu n on n.MaNL = c2.MaNL WHERE c.MaHoaDon = ? AND c2.MaSP IS NOT NULL;`;
+            let sqlNguyenLieu = `SELECT n.MaNL, SUM(SoLuongCanDung) AS SoLuongCanDung, SoLuongCon FROM hoadonban LEFT JOIN chitiethoadon c on hoadonban.MaHoaDon = c.MaHoaDon LEFT JOIN danhmucsp d on d.MaSP = c.MaSP LEFT JOIN congthucmon c2 on d.MaSP = c2.MaSP LEFT JOIN nguyenlieu n on n.MaNL = c2.MaNL WHERE c.MaHoaDon = ? AND c2.MaSP IS NOT NULL GROUP BY n.MaNL;`;
             let dataNguyenLieu = await query.selectAllWithParams(sqlNguyenLieu, [id]);
 
             let sqlLichSuNguyenLieu = "INSERT INTO lichsunguyenlieu(time, quantity, maNL) VALUES (NOW(), ?, ?);";
             let sqlUpdateNguyenLieu = "UPDATE nguyenlieu SET SoLuongCon = ? WHERE MaNL = ?;";
+
+            let promises = [];
 
             for (let i = 0; i < dataNguyenLieu.length; i++) {
                 let maNl = dataNguyenLieu[i].MaNL;
@@ -253,9 +251,11 @@ exports.handleUpdateDonHang = async (req, res) => {
                 let soLuongCanDung = dataNguyenLieu[i].SoLuongCanDung;
                 let newSoLuongCon = soLuongCon - soLuongCanDung;
 
-                await query.queryWithParams(sqlLichSuNguyenLieu, [soLuongCanDung, maNl]);
-                await query.queryWithParams(sqlUpdateNguyenLieu, [newSoLuongCon, maNl]);
+                promises.push(query.queryWithParams(sqlLichSuNguyenLieu, [soLuongCanDung, maNl]));
+                promises.push(query.queryWithParams(sqlUpdateNguyenLieu, [newSoLuongCon, maNl]));
             }
+
+            await Promise.all(promises);
         }
 
         res.redirect('/admin/don-hang');
@@ -298,6 +298,12 @@ exports.handleUpdateCongThucMon = async (req, res) => {
 
 exports.updateBaiViet = async (req, res) => {
     let id = parseInt(req.query.id);
+    let error = req.query.error;
+    let notification = "";
+    let requireImage = true;
+    if (error === "email") {
+        notification = "Bạn cần tải lên ảnh bìa của blog.";
+    }
 
     let sqlSelectSanPham = "SELECT MaSP, TenSP FROM danhmucsp WHERE MaSP = ?";
     let dataSanPham = await query.selectAllWithParams(sqlSelectSanPham, [id]);
@@ -318,31 +324,90 @@ exports.updateBaiViet = async (req, res) => {
 
         let selectBlogById = dataSelectBlogById[0];
 
-        console.log(selectBlogById);
-
         inputTieuDe = selectBlogById.blog_tieu_de;
         inputTomTat = selectBlogById.blog_tom_tat;
         inputNoiDung = selectBlogById.blog_noi_dung;
         inputAnh = selectBlogById.blog_image_url;
-    }
 
-    console.log(data);
-    console.log(inputTieuDe);
-    console.log(inputTomTat);
-    console.log(inputNoiDung);
-    console.log(inputAnh);
+        requireImage = false;
+    }
 
     res.render('admin/update/baiViet', {
         data: data,
         inputTieuDe: inputTieuDe,
         inputTomTat: inputTomTat,
         inputNoiDung: inputNoiDung,
-        inputAnh: inputAnh
+        inputAnh: inputAnh,
+        notification: notification,
+        requireImage: requireImage
     });
 }
 
 exports.handleUpdateBaiViet = async (req, res) => {
+    let id = parseInt(req.query.id);
+    let {tieuDe, tomTat, noiDung} = req.body;
 
+    let fileName;
+    let isUploaded = false;
+
+    if (req.file) {
+        isUploaded = true;
+        fileName = req.file.filename;
+    }
+
+    if (isUploaded) {
+        console.log(fileName);
+    }
+
+    let sqlCountBlogById = "SELECT COUNT(*) AS count FROM baiviet WHERE MaSP = ?";
+    let dataCountBlogById = await query.selectAllWithParams(sqlCountBlogById, [id]);
+    let countBlogById = dataCountBlogById[0].count;
+
+    if (countBlogById === 1) {
+        if (isUploaded) {
+            let sql = "UPDATE baiviet SET blog_image_url = ?, blog_tom_tat = ?, blog_noi_dung = ?, blog_tieu_de = ? WHERE MaSP = ?";
+            await query.queryWithParams(sql, [fileName, tomTat, noiDung, tieuDe, id]);
+        }
+        else {
+            let sql = "UPDATE baiviet SET blog_tom_tat = ?, blog_noi_dung = ?, blog_tieu_de = ? WHERE MaSP = ?";
+            await query.queryWithParams(sql, [tomTat, noiDung, tieuDe, id]);
+        }
+        return res.redirect("/admin/bai-viet");
+    }
+    else {
+        let userId = req.session.session.userId;
+
+        if (isUploaded) {
+            let sql = "INSERT INTO baiviet(MaSP, blog_image_url, blog_tom_tat, blog_noi_dung, blog_uploaded_at, blog_author_id, blog_tieu_de) VALUES (?, ?, ?, ?, NOW(), ?, ?)";
+            await query.queryWithParams(sql, [id, fileName, tomTat, noiDung, userId, tieuDe]);
+            return res.redirect("/admin/bai-viet");
+        }
+        else {
+            return res.redirect(`/admin/update/bai-viet?id=${id}&error=image`);
+        }
+    }
+}
+
+exports.updatePhanHoiBinhLuan = async (req, res) => {
+    let id = parseInt(req.query.id);
+    let userId = parseInt(req.query.userId);
+
+    let sql = "SELECT b.blog_id, b.user_id, comment_text, blog_tieu_de, UserName, reply_text FROM binhluanbaiviet b LEFT JOIN baiviet b2 on b2.MaSP = b.blog_id LEFT JOIN user u on u.userId = b.user_id LEFT JOIN traloibinhluan t on b.blog_id = t.blog_id and b.user_id = t.user_id WHERE b.blog_id = ? AND b.user_id = ?";
+    let dataBinhLuan = await query.selectAllWithParams(sql, [id, userId]);
+    let data = dataBinhLuan[0];
+
+    res.render('admin/update/phanHoiBinhLuan', {data: data});
+}
+
+exports.handleUpdatePhanHoiBinhLuan = async (req, res) => {
+    let id = parseInt(req.query.id);
+    let userId = parseInt(req.query.userId);
+    let reply = req.body.reply;
+
+    let sql = "UPDATE traloibinhluan SET reply_text = ? WHERE user_id = ? AND blog_id = ?";
+    await query.queryWithParams(sql, [reply, userId, id]);
+
+    res.redirect(`/admin/binh-luan-bai-viet?id=${id}`);
 }
 
 const padStart = (number) => {

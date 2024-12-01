@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const adminViewAddController = require("../controllers/adminViewAddController");
+const adminViewAddController = require("../controllers/AdminViewAddController");
 const rolesMiddleware = require("../middlewares/RolesMiddleware");
 const {upload} = require("../upload");
 
@@ -51,5 +51,13 @@ router.get('/nha-cung-cap',
 router.post('/nha-cung-cap',
     [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewAddController.handleAddNhaCungCap);
+
+router.get('/phan-hoi-binh-luan',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewAddController.addPhanHoiBinhLuan);
+
+router.post('/phan-hoi-binh-luan',
+    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    adminViewAddController.handleAddPhanHoiBinhLuan);
 
 module.exports = router;

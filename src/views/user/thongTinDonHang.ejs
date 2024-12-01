@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Nhà hàng</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="" name="keywords"/>
+    <meta content="" name="description"/>
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
+    <%- include('../partials/user/css-libraries') %>
+</head>
+<body>
+<div class="container-fluid position-relative bg-white p-0">
+    <%- include('../partials/user/navbar') %>
+    <!-- Menu Start -->
+    <section id="menu" style="padding: 60px 0;">
+        <div class="container mt-5">
+            <div class="text-center">
+                <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">Đơn hàng đã mua</h2>
+            </div>
+            <div class="w-75 mx-auto">
+                <div class="card border-0">
+                    <div class="card-header bg-main">
+                        <h5 class="text-white mb-0 ">Đơn hàng đã mua</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="mb-3 shadow" id="order-details__products">
+                            <div class="py-3 px-5">
+                                <% dataChiTietHoaDon.forEach((chiTietHoaDon) => { %>
+                                <div class="px-0 my-2 d-flex flex-wrap align-items-center">
+                                    <img alt="" style="object-fit: cover; width: 4rem; height: 4rem" src="/img/<%= chiTietHoaDon.Anh %>">
+                                    <div class="ms-2 col">
+                                        <p class="mb-0 fw-bold fs-5"><%= chiTietHoaDon.TenSP %></p>
+                                        <p class="mb-0 small fw-light">x<%= chiTietHoaDon.SoLuong %></p>
+                                    </div>
+                                    <div>
+                                        <small class="h6 mb-1 me-3"><%= chiTietHoaDon.TongTienHD.toLocaleString() %> đồng</small>
+                                    </div>
+                                </div>
+                                <% }) %>
+                            </div>
+                        </div>
+                        <div class="my-3 pb-3 shadow" id="order-details__info">
+                            <div class="px-5">
+                                <div class="row py-3">
+                                    <div class="col-6">
+                                        <p class="d-block mb-0">Trạng thái: <%= data.trangthai === 0 ? "Chờ xác nhận" : (data.trangthai === 1 ? "Đã xác nhận" : (data.trangthai === 2 ? "Đã huỷ" : "")) %></p>
+                                        <p class="d-block mb-0">Ghi chú: <%= data.GhiChu %></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="my-3 shadow" id="order-details__payment">
+                            <div class="px-5 py-2">
+                                <div class="row py-2">
+                                    <div class="col-6">
+                                        <p class="d-block mb-0 fw-light fs-5">Phương thức thanh toán: <span class="fw-normal"><%= data.PhuongThucTT === 0 ? "Tiền mặt" : (data.PhuongThucTT === 1 ? "Chuyển khoản" : "") %></span>
+                                        </p>
+                                        <p class="fw-light mb-0">Mã đơn hàng: <span class="fw-normal"><%= data.MaHoaDon %></span>
+                                        </p>
+                                        <p class="fw-light mb-0">Tài khoản tạo đơn: <span class="fw-normal"><%= data.UserName %></span>
+                                        </p>
+                                        <p class="fw-light mb-0">Ngày tạo đơn: <span class="fw-normal"><%= data.NgayLap.toLocaleString() %></span>
+                                        </p>
+                                    </div>
+                                    <div class="col-6 d-flex justify-content-end">
+                                        <table class="table table-borderless w-auto mb-0">
+                                            <tbody>
+                                            <tr>
+                                                <td class="px-4 py-2">
+                                                    <p class="mb-0">Thành tiền</p>
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <p class="mb-0 fw-bold text-end"><%= totalPrice.toLocaleString() %> đồng</p>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="float-right">
+                    <a href="/don-hang">
+                        <button type="button" class="btn btn-primary border btn-lg btn-default md-btn-flat mt-2 mr-3">Quay lại</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <%- include('../partials/user/footer') %>
+</div>
+<%- include('../partials/user/js-libraries') %>
+<%- include('../partials/user/ai-chat') %>
+</body>
+</html>

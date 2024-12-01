@@ -273,6 +273,75 @@ exports.handleCreateVNPayPayment = async (req, res) => {
     res.redirect("/thanh-toan");
 }
 
+exports.donHang = async (req, res) => {
+    let userId = req.session.session.userId;
+
+    let sqlDonHang = "SELECT MaHoaDon, NgayLap, PhuongThucTT, trangthai, MaGiamGia FROM hoadonban WHERE userId = ?";
+    let dataDonHang = await query.selectAllWithParams(sqlDonHang, [userId]);
+
+    for (let i = 0; i < dataDonHang.length; i++) {
+        let element = dataDonHang[i];
+        let id = element.MaHoaDon;
+        let maGiamGia = element.MaGiamGia;
+        let sqlChiTiet = "SELECT SoLuong, TongTienHD, d.MaSP, MaHoaDon, TenSP, GiaBan, Anh FROM chitiethoadon c LEFT JOIN danhmucsp d on d.MaSP = c.MaSP WHERE MaHoaDon = ?";
+        let dataChiTiet = await query.selectAllWithParams(sqlChiTiet, [id]);
+
+        let totalPrice = dataChiTiet.reduce((previousValue, currentValue) => {
+            return previousValue + currentValue.TongTienHD;
+        }, 0);
+
+        element.ChiTiet = dataChiTiet;
+        element.totalPrice = totalPrice;
+        element.NgayLap = element.NgayLap.toLocaleString();
+
+        if (maGiamGia) {
+            let sqlGiamGia = "SELECT * FROM giamgia WHERE MaGiamGia = ?";
+            let dataGiamGia = await query.selectAllWithParams(sqlGiamGia, [maGiamGia]);
+            let giamGia = dataGiamGia[0];
+            element.giamGia = giamGia.GiamGia;
+            element.totalPrice = element.totalPrice / 100 * (100 - element.giamGia);
+        }
+    }
+
+    res.render("user/donHang", {data: dataDonHang});
+}
+
+exports.thongTinDonHang = async (req, res) => {
+    let id = parseInt(req.query.id);
+
+    let sqlHoaDonBan = "SELECT MaHoaDon, NgayLap, hoadonban.userId, MaGiamGia, PhuongThucTT, hoadonban.GhiChu, trangthai, UserName FROM hoadonban LEFT JOIN user u on u.userId = hoadonban.userId WHERE MaHoaDon = ?";
+    let dataHoaDonBan = await query.selectAllWithParams(sqlHoaDonBan, [id]);
+    let hoaDonBan = dataHoaDonBan[0];
+
+    let sqlChiTietHoaDon = "SELECT SoLuong, TongTienHD, d.MaSP, TenSP, GiaBan, Anh FROM chitiethoadon LEFT JOIN danhmucsp d on d.MaSP = chitiethoadon.MaSP WHERE MaHoaDon = ?";
+    let dataChiTietHoaDon = await query.selectAllWithParams(sqlChiTietHoaDon, [id]);
+
+    let totalPrice = dataChiTietHoaDon.reduce((previousValue, currentValue) => {
+        return previousValue + currentValue.TongTienHD;
+    }, 0);
+
+    let maGiamGia = hoaDonBan.MaGiamGia;
+    if (maGiamGia) {
+        let sqlGiamGia = "SELECT GiamGia FROM giamgia WHERE MaGiamGia = ?";
+        let dataGiamGia = await query.selectAllWithParams(sqlGiamGia, [maGiamGia]);
+        let giamGia = dataGiamGia[0];
+        hoaDonBan.giamGia = giamGia.GiamGia;
+        totalPrice = totalPrice / 100 * (100 - hoaDonBan.giamGia);
+    }
+
+    res.render("user/thongTinDonHang", {dataChiTietHoaDon: dataChiTietHoaDon, data: hoaDonBan, totalPrice: totalPrice});
+}
+
+exports.handleHuyDonHang = async (req, res) => {
+    let id = parseInt(req.query.id);
+    let userId = req.session.session.userId;
+
+    let sql = "UPDATE hoadonban SET trangthai = 2 WHERE MaHoaDon = ? AND userId = ? AND trangthai = 0";
+    await query.queryWithParams(sql, [id, userId]);
+
+    return res.redirect("/don-hang");
+}
+
 exports.thongTinNguoiDung = async (req, res) => {
     const userId = req.session.session.userId; // Lấy userId từ session
     console.log(userId); // Kiểm tra userId
