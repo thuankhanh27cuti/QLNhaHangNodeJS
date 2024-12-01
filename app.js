@@ -9,6 +9,7 @@ const adminViewUpdateRoutes = require("./routes/AdminViewUpdateRoutes");
 const chartApiRoutes = require("./routes/chartApiRoutes");
 const congThucMonRoutes = require("./routes/congThucMonApiRoutes");
 const nguyenLieuRoutes = require("./routes/nguyenLieuApiRoutes");
+const giamGiaRoutes = require("./routes/giamGiaApiRoutes");
 const bodyParser = require('body-parser');
 const {join} = require("node:path");
 const app = express();
@@ -39,7 +40,7 @@ app.use((req, res, next) => {
     if (req.session.session) {
         req.session.session.cart = req.session.session.cart || [];
     }
-    console.log(req.session);
+    // console.log(req.session);
     res.locals.session = req.session.session;
     next();
 });
@@ -55,6 +56,7 @@ app.use('/api/v1/chart', chartApiRoutes);
 app.use('/api/v1/mon-an', monAnRoutes);
 app.use('/api/v1/cong-thuc-mon', congThucMonRoutes);
 app.use('/api/v1/nguyen-lieu', nguyenLieuRoutes);
+app.use('/api/v1/giam-gia', giamGiaRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

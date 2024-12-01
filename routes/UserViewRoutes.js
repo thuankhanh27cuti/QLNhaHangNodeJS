@@ -22,5 +22,7 @@ router.post("/add-to-cart", [isUserMiddleware], userViewController.handleAddToCa
 router.get("/cart", [isUserMiddleware], userViewController.cart);
 router.post("/cart", [isUserMiddleware], userViewController.handleUpdateCart);
 router.get("/thanh-toan", [isUserMiddleware], userViewController.thanhToan);
+router.post("/thanh-toan", [isUserMiddleware], userViewController.handleUpdateCartAndThanhToan);
+router.post("/vn-pay/create-payment", [isUserMiddleware], userViewController.handleCreateVNPayPayment);
 
 module.exports = router;

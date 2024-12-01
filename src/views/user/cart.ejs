@@ -127,8 +127,16 @@
     };
 
     saveElement.onclick = () => {
+        submitForm("/cart");
+    };
+
+    checkOutElement.onclick = () => {
+        submitForm("/thanh-toan");
+    }
+
+    const getCart = () => {
         let elements = document.querySelectorAll("#cart__cart-table > tbody > tr");
-        let data = [...elements].map((element) => {
+        return [...elements].map((element) => {
             let idElement = element.querySelector(".cart__id");
             let quantityElement = element.querySelector(".cart__quantity");
             let id = parseInt(idElement.innerHTML);
@@ -137,10 +145,14 @@
                 id: id, quantity: quantity
             }
         });
+    }
+
+    const submitForm = (url) => {
+        let data = getCart();
 
         const form = document.createElement("form");
         form.method = "POST";
-        form.action = "/cart";
+        form.action = `${url}`;
 
         const inputElement = document.createElement("input");
         inputElement.name = "cart";
@@ -149,10 +161,6 @@
 
         document.body.appendChild(form);
         form.submit();
-    };
-
-    checkOutElement.onclick = () => {
-        window.location.href = "/thanh-toan";
     }
 </script>
 </body>

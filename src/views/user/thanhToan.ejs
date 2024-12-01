@@ -10,6 +10,13 @@
     <!-- Favicon -->
     <link href="/img/favicon.ico" rel="icon"/>
     <%- include('../partials/user/css-libraries') %>
+    <style>
+        #billing__products img {
+            width: 64px;
+            aspect-ratio: 1;
+            object-fit: cover;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid position-relative p-0">
@@ -31,9 +38,9 @@
                                     </p>
                                 </div>
                                 <div class="card-body">
-                                    <form class="needs-validation" method="post" novalidate="" action="./cart/xong.php">
+                                    <form class="needs-validation" method="post" novalidate="" action="/">
                                         <div class="d-none">
-                                            <input required="" name="username" type="hidden" value="tuanit10">
+                                            <input required name="username" type="hidden" value="tuanit10">
                                         </div>
                                         <div class="mb-3">
                                             <div class="row">
@@ -51,10 +58,10 @@
                                             <label class="form-label" for="ghichu">
                                                 <span>Ghi chú:</span>
                                             </label>
-                                            <input autocomplete="true" class="form-control" id="ghichu" name="ghichu" placeholder="" type="text">
+                                            <input autocomplete="true" class="form-control" id="ghichu" name="ghichu" type="text">
                                         </div>
                                         <div class="d-none">
-                                            <input required="" id="discount" name="discount" type="hidden" value="">
+                                            <input required id="discount" name="discount" type="hidden">
                                         </div>
                                     </form>
                                 </div>
@@ -70,16 +77,23 @@
                                 <div class="card-body p-0">
                                     <div class="border-bottom">
                                         <div class="px-4 py-3" id="billing__products">
+                                            <% cart.forEach((row) => { %>
                                             <div class="px-0 my-2 d-flex flex-wrap align-items-center">
-                                                <img class="object-fit-cover" src="../views/img/pate.jpg" style="width: 64px; height: 64px;" alt="">
+                                                <div class="d-none">
+                                                    <span class="billing__id"><%= row.id %></span>
+                                                </div>
+                                                <img src="/img/<%= row.image %>" alt="">
                                                 <div class="ms-2 col">
-                                                    <p class="mb-0 fw-bold">Pâté</p>
-                                                    <p class="mb-0 small fw-light">x1</p>
+                                                    <p class="mb-0 fw-bold"><%= row.name %></p>
+                                                    <p class="mb-0 small fw-light">x<span class="billing_quantity"><%= row.quantity %></span>
+                                                    </p>
                                                 </div>
                                                 <div>
-                                                    <small class="h6 mb-1 me-3">200,000 đồng</small>
+                                                    <small class="h6 mb-1 me-3"><%= (row.price * row.quantity).toLocaleString() %> đồng</small>
                                                 </div>
-                                            </div>                                    </div>
+                                            </div>
+                                            <% }) %>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -92,8 +106,8 @@
                                 <div class="card-body p-0">
                                     <div class="px-4 py-3">
                                         <div class="mb-3">
-                                            <label class="form-label" for="discountInput">
-                                                <span>Nhập mã ( nếu có )</span>
+                                            <label class="form-label fw-bold" for="discountInput">
+                                                Nhập mã (nếu có)
                                             </label>
                                             <div class="d-flex">
                                                 <div class="col pe-3">
@@ -135,8 +149,8 @@
                                                             </td>
                                                             <td class="px-4 py-2">
                                                                 <p class="mb-0 fw-bold text-end" id="billing__sub-total">
-                                                        <span>
-                                                            200,000                                                        </span> đồng</p>
+                                                                    <span><%= totalPrice.toLocaleString() %></span> đồng
+                                                                </p>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -155,8 +169,7 @@
                                                             </td>
                                                             <td class="px-4 py-2">
                                                                 <p class="mb-0 fw-bold text-end" id="billing__total-price">
-                                                        <span>
-                                                            200,000                                                        </span> đồng
+                                                                    <span><%= totalPrice.toLocaleString() %></span> đồng
                                                                 </p>
                                                             </td>
                                                         </tr>
@@ -185,5 +198,78 @@
 </div>
 <%- include('../partials/user/js-libraries') %>
 <%- include('../partials/user/ai-chat') %>
+<script>
+    let discountInput = document.querySelector("#discountInput");
+    let discountSubmitButton = document.querySelector("#discountSubmit");
+    let discountFormElement = document.querySelector("#discount");
+    let noteElement = document.querySelector("#ghichu");
+
+    let billingProductElement = document.querySelector("#billing__products");
+
+    let subTotalElement = document.querySelector("#billing__sub-total > span");
+    let amountDiscountElement = document.querySelector("#billing__amount-discount > span");
+    let totalPriceElement = document.querySelector("#billing__total-price > span");
+
+    let submitBtn = document.querySelector("#submitBtn");
+    let paymentMethodElement = document.querySelector("#payment-method");
+
+    discountSubmitButton.onclick = async function (e) {
+        e.preventDefault();
+        let discountId = parseInt(discountInput.value);
+
+        let discount = await fetch(`/api/v1/giam-gia/${discountId}`).then(response => response.json());
+        if (discount) {
+            let maGiamGia = discount.MaGiamGia;
+            let giamGia = parseInt(discount.GiamGia);
+            discountFormElement.value = maGiamGia;
+
+            let subTotal = parseInt(subTotalElement.innerHTML.split(",").join(""));
+            let amountDiscount = subTotal * (giamGia / 100);
+            let totalPrice = subTotal - amountDiscount;
+            amountDiscountElement.innerHTML = `${amountDiscount.toLocaleString("en-US")}`;
+            totalPriceElement.innerHTML = `${totalPrice.toLocaleString("en-US")}`;
+        }
+
+    }
+
+    submitBtn.onclick = function (e) {
+        let productInfoElement = document.querySelectorAll("#billing__products > div");
+        let products = [...productInfoElement].map((element) => {
+            let idElement = element.querySelector(".billing__id");
+            let quantityElement = element.querySelector(".billing_quantity");
+            let id = parseInt(idElement.innerHTML);
+            let quantity = parseInt(quantityElement.innerHTML);
+            return {
+                id: id, quantity: quantity
+            };
+        });
+        let discount = parseInt(discountInput.value);
+        let note = noteElement.value;
+        let orderInfo = {
+            products: products,
+            discount: discount,
+            note: note
+        }
+
+        let value = parseInt(paymentMethodElement.value);
+        if (value === 0) {
+            e.preventDefault();
+
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/vn-pay/create-payment";
+
+            const orderInfoElement = document.createElement("input");
+            orderInfoElement.name = "orderInfo";
+            orderInfoElement.value = JSON.stringify(orderInfo);
+
+            form.appendChild(orderInfoElement);
+
+            document.body.appendChild(form);
+
+            form.submit();
+        }
+    }
+</script>
 </body>
 </html>

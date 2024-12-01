@@ -160,14 +160,35 @@ exports.handleAddToCart = async (req, res) => {
         });
     }
 
-    console.log(cart);
+    // console.log(cart);
 
     req.session.session.cart = cart;
     res.redirect(`/chi-tiet-mon-an?id=${id}`);
 }
 
 exports.cart = async (req, res) => {
-    let cart = req.session.session.cart || [];
+    let cartSession = req.session.session.cart || [];
+    let cartData = await getCartData(cartSession);
+    let cart = cartData.cartData;
+    let totalPrice = cartData.totalPrice;
+    res.render('user/cart', {cart: cart, totalPrice: totalPrice});
+}
+
+exports.handleUpdateCart = async (req, res) => {
+    let {cart} = req.body;
+    req.session.session.cart = JSON.parse(cart);
+    res.redirect("/cart");
+}
+
+exports.thanhToan = async (req, res) => {
+    let cartSession = req.session.session.cart || [];
+    let cartData = await getCartData(cartSession);
+    let cart = cartData.cartData;
+    let totalPrice = cartData.totalPrice;
+    res.render("user/thanhToan", {cart: cart, totalPrice: totalPrice});
+}
+
+const getCartData = async (cart) => {
     let cartData = [];
     let totalPrice = 0;
     for (let i = 0; i < cart.length; i++) {
@@ -186,19 +207,70 @@ exports.cart = async (req, res) => {
         });
         totalPrice = totalPrice + data.GiaBan * quantity;
     }
-    console.log(cartData);
-
-    res.render('user/cart', {cart: cartData, totalPrice: totalPrice});
+    // console.log(cartData);
+    return {cartData: cartData, totalPrice: totalPrice};
 }
 
-exports.handleUpdateCart = async (req, res) => {
+exports.handleUpdateCartAndThanhToan = async (req, res) => {
     let {cart} = req.body;
     req.session.session.cart = JSON.parse(cart);
-    res.redirect("/cart");
+    res.redirect("/thanh-toan");
 }
 
-exports.thanhToan = async (req, res) => {
-    res.render("user/thanhToan");
+exports.handleCreateVNPayPayment = async (req, res) => {
+    let orderInfo = JSON.parse(req.body.orderInfo);
+    // console.log(orderInfo);
+    /*
+    {
+        products: [ { id: 3, quantity: 2 }, { id: 4, quantity: 3 } ],
+        discount: 111,
+        note: '123'
+    }
+     */
+
+    let products = orderInfo.products;
+    let discount = orderInfo.discount;
+    let note = orderInfo.note;
+
+    let sql = "SELECT * FROM danhmucsp WHERE MaSP = ?";
+    let promises = products.map((product) => {
+        let id = product.id;
+        let quantity = product.quantity;
+        return query.selectAllWithParams(sql, [id])
+            .then(data => data[0])
+            .then(data => {
+            return {
+                product: data,
+                quantity: quantity
+            };
+        });
+    });
+
+    let productDetails = await Promise.all(promises);
+
+    // Tính tổng số tiền chưa giảm giá
+    let totalPrice = productDetails.reduce((previousValue, currentValue) => {
+        let price = currentValue.product.GiaBan * currentValue.quantity;
+        return previousValue + price
+    }, 0);
+    console.log(totalPrice);
+
+    // Lấy thông tin giảm giá
+    let sqlGiamGia = "SELECT * FROM giamgia WHERE MaGiamGia = ?";
+    let dataGiamGia = await query.selectAllWithParams(sqlGiamGia, [discount]);
+    if (dataGiamGia.length === 1) {
+        let giamGia = dataGiamGia[0];
+        let soLuongGiam = giamGia.GiamGia;
+
+        // Tính tổng số tiền đã giảm giá
+        totalPrice = totalPrice / 100 * (100 - soLuongGiam);
+    }
+
+    console.log(totalPrice);
+
+    // Chuẩn bị gửi đi
+
+    res.redirect("/thanh-toan");
 }
 
 exports.thongTinNguoiDung = async (req, res) => {
