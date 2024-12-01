@@ -28,4 +28,5 @@ router.get("/don-hang", [isUserMiddleware], userViewController.donHang);
 router.get("/thong-tin-don-hang", [isUserMiddleware], userViewController.thongTinDonHang);
 router.get("/huy-don-hang", [isUserMiddleware], userViewController.handleHuyDonHang);
 
+router.get("/vn-pay/result-payment", [isUserMiddleware], userViewController.resultVNPayPayment);
 module.exports = router;
