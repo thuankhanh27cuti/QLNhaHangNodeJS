@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const chartApiController = require('../controllers/chartApiController');
+const chartApiController = require('../controllers/ChartApiController');
 
 router.get('/date', chartApiController.date);
 router.get('/month', chartApiController.month);

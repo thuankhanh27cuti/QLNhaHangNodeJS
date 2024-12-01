@@ -24,5 +24,5 @@ router.post("/cart", [isUserMiddleware], userViewController.handleUpdateCart);
 router.get("/thanh-toan", [isUserMiddleware], userViewController.thanhToan);
 router.post("/thanh-toan", [isUserMiddleware], userViewController.handleUpdateCartAndThanhToan);
 router.post("/vn-pay/create-payment", [isUserMiddleware], userViewController.handleCreateVNPayPayment);
-
+router.get("/vn-pay/result-payment", [isUserMiddleware], userViewController.resultVNPayPayment);
 module.exports = router;
