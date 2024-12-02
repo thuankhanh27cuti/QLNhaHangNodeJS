@@ -47,6 +47,7 @@ exports.index = async (req, res) => {
     res.render("user/index", { loaiSpList: loaiSpList });
 };
 
+
 exports.danhSachMonAn = async (req, res) => {
     let { maLoai, sort, page } = req.query;
 

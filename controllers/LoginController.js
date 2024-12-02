@@ -26,7 +26,7 @@ exports.handleLogin = async (req, res) => {
 exports.handleLogout = async (req, res) => {
     req.session.session = {};
     // Ghi log giá trị sau khi gán
-    
+   
     res.redirect("/login");
 };
 

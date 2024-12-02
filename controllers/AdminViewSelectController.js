@@ -456,11 +456,18 @@ exports.get_all_user_message = async (req, res) => {
       .then((finalMessages) => {
         // Lấy các user chưa có trong tin nhắn
         const userMessIds = finalMessages.map(msg => msg.customer_user);
-        const userQuery = `
-          SELECT userId AS customer_user, Ten as customer_name
-          FROM user
-          WHERE userId NOT IN (?)
-        `;
+        if (userMessIds.length > 0) {
+          userQuery = `
+            SELECT userId AS customer_user, Ten AS customer_name
+            FROM user
+            WHERE userId NOT IN (?)
+          `;
+        } else {
+          userQuery = `
+            SELECT userId AS customer_user, Ten AS customer_name
+            FROM user
+          `;
+        }
 
         connection.query(userQuery, [userMessIds], (err, allUsers) => {
           if (err) {

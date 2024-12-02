@@ -258,23 +258,29 @@
     <div class="container-fluid bg-white p-0">
         <div class="container-fluid position-relative p-0">
             <%- include('../partials/user/navbar') %>
-            <% if (typeof session !=='undefined' && session && Object.keys(session).length> 0) { %>
-            <input type="hidden" id="customer-id-token" value="<%= session.userId %>">
-            <% } %>
-            <div class="container-fluid py-5 bg-dark hero-header mb-5">
-                <div class="container-fluid my-5 py-5">
-                    <div class="row align-items-center g-5">
-                        <div class="col-lg-6 text-center text-lg-start">
-                            <h1 class="display-3 text-white animated slideInLeft">
-                                Thưởng thức bữa ăn ngon<br />của chúng tôi
-                            </h1>
-                            <p class="text-white animated slideInLeft mb-4 pb-2">
-                                Chúng tôi tự hào mang đến trải nghiệm ẩm thực đỉnh cao của Pháp. Nguồn
-                                nguyên liệu
-                                của chúng tôi được tuyển chọn cẩn thận, đảm bảo độ tươi sạch và an toàn
-                                vệ sinh thực phẩm theo tiêu chuẩn cao nhất.
-                            </p>
-                            <!-- <a href="" class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Đặt bàn</a> -->
+                <% if (typeof session !=='undefined' && session && Object.keys(session).length> 0 && session.userId != undefined) { %>  
+                    <input type="hidden" id="customer-id-token" value="<%= session.userId %>">
+                    <% } %>
+                        <div class="container-fluid py-5 bg-dark hero-header mb-5">
+                            <div class="container-fluid my-5 py-5">
+                                <div class="row align-items-center g-5">
+                                    <div class="col-lg-6 text-center text-lg-start">
+                                        <h1 class="display-3 text-white animated slideInLeft">
+                                            Thưởng thức bữa ăn ngon<br />của chúng tôi
+                                        </h1>
+                                        <p class="text-white animated slideInLeft mb-4 pb-2">
+                                            Chúng tôi tự hào mang đến trải nghiệm ẩm thực đỉnh cao của Pháp. Nguồn
+                                            nguyên liệu
+                                            của chúng tôi được tuyển chọn cẩn thận, đảm bảo độ tươi sạch và an toàn
+                                            vệ sinh thực phẩm theo tiêu chuẩn cao nhất.
+                                        </p>
+                                        <!-- <a href="" class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Đặt bàn</a> -->
+                                    </div>
+                                    <div class="col-lg-6 text-center text-lg-end overflow-hidden">
+                                        <img class="img-fluid" src="/img/hero.png" alt="" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-lg-6 text-center text-lg-end overflow-hidden">
                             <img class="img-fluid" src="/img/hero.png" alt="" />
@@ -379,6 +385,7 @@
                             </h5>
                             <h1 class="mb-5">Danh mục món ăn</h1>
                         </div>
+<!-- 
                         <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
                             <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
                                 <% loaiSpList.forEach(loaiSp=> { %>
@@ -441,7 +448,65 @@
                                     </div>
                                 </div>
                             </div>
+                        </div> -->
+
+                        <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
+                            <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
+                                <% loaiSpList.forEach(loaiSp => { %>
+                                    <li class="nav-item">
+                                        <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3" data-bs-toggle="pill" href="#tab-<%= loaiSp.LoaiSP %>">
+                                            <i class="fa fa-coffee fa-2x text-primary"></i>
+                                            <div class="ps-3">
+                                                <h6 class="mt-n1 mb-0"><%= loaiSp.TenLoai %></h6>
+                                            </div>
+                                        </a>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                            <div class="tab-content">
+                                <% loaiSpList.forEach((loaiSp, index) => { %>
+                                    <div id="tab-<%= loaiSp.LoaiSP %>" class="tab-pane fade p-0<%= index===0 ? " active show": "" %>">
+                                        <div class="row g-4">
+                                            <%
+                                                let monAnList = loaiSp.monAnList;
+                                                monAnList.forEach((monAn) => { %>
+                                                <div class="col-12">
+                                                    <div class="d-flex align-items-center">
+                                                        <img class="flex-shrink-0 img-fluid rounded" src="/img/<%= monAn.Anh %>" alt=""
+                                                             style="width: 80px"/>
+                                                        <div class="w-100 d-flex flex-column text-start ps-4">
+                                                            <h5 class="d-flex justify-content-between border-bottom pb-2">
+                                                                <span><%= monAn.TenSP %></span>
+                                                                <span class="text-primary"><%= parseInt(monAn.GiaBan).toLocaleString("en-US") %> đồng</span>
+                                                            </h5>
+                                                            <small class="fst-italic"><%= monAn.GioiThieuSP %></small>
+                                                        </div>
+                                                        <a href="#">
+                                                            <button type="button" class="btn btn-success" style="margin-left: 15px">
+                                                                +
+                                                            </button>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            <%
+                                            })
+                                            %>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                            <div class="mt-4">
+                                <div class="row justify-content-center">
+                                    <div class="col-4">
+                                        <a href="/danh-sach-mon-an" class="btn btn-primary w-100 py-3">
+                                            Xem tất cả
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                   
+
                     </div>
                 </div>
             </div>
@@ -714,6 +779,8 @@
                 </div>
             </div>
         </section>
+
+        <% if (typeof session !=='undefined' && session && Object.keys(session).length> 0 && session.userId != undefined) { %>  
         <div id="chat-circle" class="btn btn-raised" style="margin: auto;
         align-items: center;
         align-content: center;
@@ -731,6 +798,8 @@
                 height: 30px;
                 border-radius: 100px;"></p>
         </div>
+        <% } %>  
+
         <form action="" id="send_form">
             <div class="chat-box" id="chat-box">
                 <div class="chat-box-header">
@@ -803,7 +872,8 @@
             });
 
             var idUser = $("#customer-id-token").val();
-            if (idUser != '') {
+            if (idUser != undefined) {
+                console.log(idUser);
                 var INDEX = 0;
 
                 const socket = io.connect('http://localhost:3000', { transports: ['websocket'] });

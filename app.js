@@ -57,7 +57,7 @@ app.use((req, res, next) => {
         req.session.session.cart = req.session.session.cart || [];
     }
     res.locals.session = req.session.session;
-    //console.log('session'+ JSON.stringify(res.locals.session));
+    console.log('session'+ JSON.stringify(res.locals.session));
     next();
 });
 
