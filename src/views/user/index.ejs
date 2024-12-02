@@ -2,454 +2,943 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
     <title>Nhà hàng</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <meta content="" name="keywords"/>
-    <meta content="" name="description"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="" name="keywords" />
+    <meta content="" name="description" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.16.1/echo.js"></script>
     <!-- Favicon -->
-    <link href="/img/favicon.ico" rel="icon"/>
+    <link href="/img/favicon.ico" rel="icon" />
     <%- include('../partials/user/css-libraries') %>
-    <style>
-        .d-flex.align-items-center img {
-            transition: transform 0.3s ease;
-        }
+        <style>
+            .d-flex.align-items-center img {
+                transition: transform 0.3s ease;
+            }
 
-        .d-flex.align-items-center:hover img {
-            transform: scale(1.8);
-        }
-    </style>
+            .d-flex.align-items-center:hover img {
+                transform: scale(1.8);
+            }
+
+            #chat-circle {
+                justify-items: center;
+                width: 55px;
+                height: 55px;
+                position: fixed;
+                bottom: 85px;
+                right: 20px;
+                z-index: 999;
+                display: block;
+                text-align: center;
+                cursor: pointer;
+                background-color: #25D366;
+                /* Màu xanh của WhatsApp */
+                border-radius: 100%;
+                padding: 20px;
+            }
+
+            /* Định dạng cho icon */
+            #chat-circle i {
+                /* font-size: 24px; */
+                color: white;
+            }
+
+            /* Định dạng cho thông báo số tin nhắn mới */
+            .text-num-chat {
+                background: red;
+                width: 30px;
+                color: white;
+                position: absolute;
+                display: none;
+                right: -5px;
+                top: 0px;
+                height: 30px;
+                border-radius: 100%;
+                font-size: 16px;
+                text-align: center;
+                line-height: 30px;
+            }
+
+            /* Mở hiển thị thông báo khi có tin nhắn */
+            .text-num-chat.show {
+                display: block;
+            }
+
+            /* Định dạng cho chat box */
+            #chat-box {
+                position: fixed;
+                bottom: 0;
+                right: 20px;
+                width: 300px;
+                background-color: #fff;
+                border-radius: 10px;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+                z-index: 9999;
+                display: none;
+                /* Mặc định ẩn, sẽ hiển thị khi nhấn nút chat */
+                overflow: hidden;
+                /* height: 400px; */
+                transition: all 0.3s ease-in-out;
+            }
+
+            /* Định dạng cho phần tiêu đề */
+            .chat-box-header {
+                background-color: #25D366;
+                /* Màu WhatsApp */
+                color: white;
+                padding: 10px;
+                font-weight: bold;
+                text-align: center;
+                position: relative;
+                font-size: 16px;
+            }
+
+            /* Nút đóng chat */
+            .chat-box-toggle {
+                position: absolute;
+                top: 50%;
+                right: 10px;
+                transform: translateY(-50%);
+                cursor: pointer;
+            }
+
+            /* Định dạng cho phần nội dung */
+            .chat-box-body {
+                padding: 15px;
+                height: 250px;
+                overflow-y: auto;
+                background-color: #f5f5f5;
+                border-bottom: 2px solid #ddd;
+                position: relative;
+            }
+
+            /* Overlay bên dưới */
+            .chat-box-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.6);
+                display: none;
+                /* Hiển thị overlay khi đang chờ phản hồi */
+            }
+
+            /* Định dạng cho chat log */
+            .chat-logs {
+                max-height: 200px;
+                /* overflow-y: scroll; */
+                padding-bottom: 10px;
+            }
+
+            /* Định dạng cho ô nhập tin nhắn */
+            .chat-input {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+                background-color: #fff;
+                border-top: 2px solid #ddd;
+            }
+
+            /* Ô input */
+            #chat-input {
+                width: 80%;
+                padding: 10px;
+                border-radius: 25px;
+                border: 1px solid #ddd;
+                outline: none;
+                font-size: 14px;
+            }
+
+            /* Nút gửi */
+            .chat-submit {
+                background-color: #25D366;
+                /* Màu WhatsApp */
+                border: none;
+                padding: 10px 15px;
+                border-radius: 50%;
+                cursor: pointer;
+                font-size: 18px;
+                color: white;
+            }
+
+            .chat-submit:hover {
+                background-color: #128C7E;
+                /* Màu xanh đậm */
+            }
+
+            /* Hiển thị chat box khi nút chat được nhấn */
+            #chat-box.show {
+                display: block;
+            }
+
+            /* Hiệu ứng khi chat box được mở hoặc đóng */
+            @media screen and (max-width: 600px) {
+                #chat-box {
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 0;
+                }
+
+                .chat-box-header {
+                    font-size: 14px;
+                }
+                
+            }
+            .chat-logs {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  max-height: 500px;
+  /* overflow-y: auto;  */
+}
+
+/* Kiểu cho mỗi tin nhắn */
+.chat-msg {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+/* Tin nhắn của người dùng (ngược lại với bạn) */
+.chat-msg.user {
+  justify-content: flex-start; /* Tin nhắn người dùng bên trái */
+}
+
+/* Tin nhắn của bạn */
+.chat-msg.self {
+  justify-content: flex-end; /* Tin nhắn của bạn bên phải */
+}
+
+/* Kiểu cho avatar của người gửi */
+.msg-avatar {
+  margin-right: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.msg-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Kiểu cho nội dung tin nhắn */
+.cm-msg-text {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+/* Kiểu cho tin nhắn của người dùng */
+.chat-msg.user .cm-msg-text {
+  background-color: #e5e5e5;
+  color: #333;
+}
+
+/* Kiểu cho tin nhắn của bạn */
+.chat-msg.self .cm-msg-text {
+  background-color: #007bff;
+  color: white;
+}
+        </style>
 </head>
 
 <body>
-<div class="container-fluid bg-white p-0">
-    <div class="container-fluid position-relative p-0">
-        <%- include('../partials/user/navbar') %>
-        <div class="container-fluid py-5 bg-dark hero-header mb-5">
-            <div class="container-fluid my-5 py-5">
-                <div class="row align-items-center g-5">
-                    <div class="col-lg-6 text-center text-lg-start">
-                        <h1 class="display-3 text-white animated slideInLeft">
-                            Thưởng thức bữa ăn ngon<br/>của chúng tôi
-                        </h1>
-                        <p class="text-white animated slideInLeft mb-4 pb-2">
-                            Chúng tôi tự hào mang đến trải nghiệm ẩm thực đỉnh cao của Pháp. Nguồn nguyên liệu
-                            của chúng tôi được tuyển chọn cẩn thận, đảm bảo độ tươi sạch và an toàn
-                            vệ sinh thực phẩm theo tiêu chuẩn cao nhất.
-                        </p>
-                        <!-- <a href="" class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Đặt bàn</a> -->
-                    </div>
-                    <div class="col-lg-6 text-center text-lg-end overflow-hidden">
-                        <img class="img-fluid" src="/img/hero.png" alt=""/>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Navbar & Hero End -->
-    <!-- Hero Section Start -->
-    <section class="hero-header" style="padding: 100px 0;">
-        <div class="container text-center">
-            <h1 class="text-light">Chào mừng đến với Nhà hàng Pháp sang trọng</h1>
-            <p class="text-light">Trải nghiệm ẩm thực đẳng cấp với các món Pháp đặc sắc</p>
-        </div>
-    </section>
-    <!-- Hero Section End -->
-
-    <!-- Service Start -->
-    <section id="service" style="padding: 60px 0;">
-        <div class="container">
-            <div class="text-center">
-                <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s">Dịch Vụ</h2>
-            </div>
-            <div class="container-xxl py-5">
-                <div class="container">
-                    <div class="row g-4">
-                        <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
-                            <div class="service-item rounded pt-3">
-                                <div class="p-4">
-                                    <i class="fa fa-3x fa-user-tie text-primary mb-4"></i>
-                                    <h5>Đầu bếp</h5>
-                                    <p>
-                                        Là những đầu bếp được tuyển đến từ nhiều
-                                        nơi trên thế giới
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
-                            <div class="service-item rounded pt-3">
-                                <div class="p-4">
-                                    <i class="fa fa-3x fa-utensils text-primary mb-4"></i>
-                                    <h5>Thực phẩm</h5>
-                                    <p>
-                                        Thực phẩm chất lượng, tươi ngon, được bảo quản tốt
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
-                            <div class="service-item rounded pt-3">
-                                <div class="p-4">
-                                    <i class="fa fa-3x fa-cart-plus text-primary mb-4"></i>
-                                    <h5>Đặt hàng trực tuyến</h5>
-                                    <p>
-                                        Bạn có thể mua hàng ở bất kỳ đâu, bất kỳ địa điểm nào
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
-                            <div class="service-item rounded pt-3">
-                                <div class="p-4">
-                                    <i class="fa fa-3x fa-headset text-primary mb-4"></i>
-                                    <h5>Dịch vụ 24/7</h5>
-                                    <p>
-                                        Chúng tôi đảm bảo phục vụ quý khác mọi lúc, mọi nơi
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Service End -->
-
-    <!-- About Start -->
-    <section id="about" style="padding: 60px 0; background-color: var(--light);">
-        <div class="container text-center">
-            <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s">Về Chúng Tôi</h2>
-            <p>Tìm hiểu về hành trình và cam kết của chúng tôi trong việc mang đến trải nghiệm ẩm thực hoàn hảo cho
-                bạn.</p>
-            <a href="#reservation" class="btn btn-primary mt-4">Đặt Bàn Ngay</a>
-        </div>
-    </section>
-    <!-- About End -->
-
-    <!-- Menu Start -->
-    <section id="menu" style="padding: 60px 0;">
-        <div class="container">
-            <div class="text-center">
-                <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s">Thực Đơn</h2>
-            </div>
-            <div class="container-xxl py-5">
-                <div class="container">
-                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                        <h5 class="section-title ff-secondary text-center text-primary fw-normal">
-                            Food Menu
-                        </h5>
-                        <h1 class="mb-5">Danh mục món ăn</h1>
-                    </div>
-                    <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
-                        <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
-                            <% loaiSpList.forEach(loaiSp => { %>
-                                <li class="nav-item">
-                                    <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3" data-bs-toggle="pill" href="#tab-<%= loaiSp.LoaiSP %>">
-                                        <i class="fa fa-coffee fa-2x text-primary"></i>
-                                        <div class="ps-3">
-                                            <h6 class="mt-n1 mb-0"><%= loaiSp.TenLoai %></h6>
-                                        </div>
-                                    </a>
-                                </li>
-                            <% }) %>
-                        </ul>
-                        <div class="tab-content">
-                            <% loaiSpList.forEach((loaiSp, index) => { %>
-                                <div id="tab-<%= loaiSp.LoaiSP %>" class="tab-pane fade p-0<%= index===0 ? " active show": "" %>">
-                                    <div class="row g-4">
-                                        <%
-                                            let monAnList = loaiSp.monAnList;
-                                            monAnList.forEach((monAn) => { %>
-                                            <div class="col-12">
-                                                <div class="d-flex align-items-center">
-                                                    <img class="flex-shrink-0 img-fluid rounded" src="/img/<%= monAn.Anh %>" alt=""
-                                                         style="width: 80px"/>
-                                                    <div class="w-100 d-flex flex-column text-start ps-4">
-                                                        <h5 class="d-flex justify-content-between border-bottom pb-2">
-                                                            <span><%= monAn.TenSP %></span>
-                                                            <span class="text-primary"><%= parseInt(monAn.GiaBan).toLocaleString("en-US") %> đồng</span>
-                                                        </h5>
-                                                        <small class="fst-italic"><%= monAn.GioiThieuSP %></small>
-                                                    </div>
-                                                    <a href="#">
-                                                        <button type="button" class="btn btn-success" style="margin-left: 15px">
-                                                            +
-                                                        </button>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        <%
-                                        })
-                                        %>
+    <div class="container-fluid bg-white p-0">
+        <div class="container-fluid position-relative p-0">
+            <%- include('../partials/user/navbar') %>
+                <% if (typeof session !=='undefined' && session && Object.keys(session).length> 0) { %>
+                    <input type="hidden" id="customer-id-token" value="<%= session.userId %>">
+                    <% } %>
+                        <div class="container-fluid py-5 bg-dark hero-header mb-5">
+                            <div class="container-fluid my-5 py-5">
+                                <div class="row align-items-center g-5">
+                                    <div class="col-lg-6 text-center text-lg-start">
+                                        <h1 class="display-3 text-white animated slideInLeft">
+                                            Thưởng thức bữa ăn ngon<br />của chúng tôi
+                                        </h1>
+                                        <p class="text-white animated slideInLeft mb-4 pb-2">
+                                            Chúng tôi tự hào mang đến trải nghiệm ẩm thực đỉnh cao của Pháp. Nguồn
+                                            nguyên liệu
+                                            của chúng tôi được tuyển chọn cẩn thận, đảm bảo độ tươi sạch và an toàn
+                                            vệ sinh thực phẩm theo tiêu chuẩn cao nhất.
+                                        </p>
+                                        <!-- <a href="" class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Đặt bàn</a> -->
+                                    </div>
+                                    <div class="col-lg-6 text-center text-lg-end overflow-hidden">
+                                        <img class="img-fluid" src="/img/hero.png" alt="" />
                                     </div>
                                 </div>
-                            <% }) %>
+                            </div>
                         </div>
-                        <div class="mt-4">
-                            <div class="row justify-content-center">
-                                <div class="col-4">
-                                    <a href="/danh-sach-mon-an" class="btn btn-primary w-100 py-3">
-                                        Xem tất cả
-                                    </a>
+        </div>
+        <!-- Navbar & Hero End -->
+        <!-- Hero Section Start -->
+        <section class="hero-header" style="padding: 100px 0;">
+            <div class="container text-center">
+                <h1 class="text-light">Chào mừng đến với Nhà hàng Pháp sang trọng</h1>
+                <p class="text-light">Trải nghiệm ẩm thực đẳng cấp với các món Pháp đặc sắc</p>
+            </div>
+        </section>
+        <!-- Hero Section End -->
+
+        <!-- Service Start -->
+        <section id="service" style="padding: 60px 0;">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s">Dịch Vụ</h2>
+                </div>
+                <div class="container-xxl py-5">
+                    <div class="container">
+                        <div class="row g-4">
+                            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                                <div class="service-item rounded pt-3">
+                                    <div class="p-4">
+                                        <i class="fa fa-3x fa-user-tie text-primary mb-4"></i>
+                                        <h5>Đầu bếp</h5>
+                                        <p>
+                                            Là những đầu bếp được tuyển đến từ nhiều
+                                            nơi trên thế giới
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                                <div class="service-item rounded pt-3">
+                                    <div class="p-4">
+                                        <i class="fa fa-3x fa-utensils text-primary mb-4"></i>
+                                        <h5>Thực phẩm</h5>
+                                        <p>
+                                            Thực phẩm chất lượng, tươi ngon, được bảo quản tốt
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+                                <div class="service-item rounded pt-3">
+                                    <div class="p-4">
+                                        <i class="fa fa-3x fa-cart-plus text-primary mb-4"></i>
+                                        <h5>Đặt hàng trực tuyến</h5>
+                                        <p>
+                                            Bạn có thể mua hàng ở bất kỳ đâu, bất kỳ địa điểm nào
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
+                                <div class="service-item rounded pt-3">
+                                    <div class="p-4">
+                                        <i class="fa fa-3x fa-headset text-primary mb-4"></i>
+                                        <h5>Dịch vụ 24/7</h5>
+                                        <p>
+                                            Chúng tôi đảm bảo phục vụ quý khác mọi lúc, mọi nơi
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+        <!-- Service End -->
 
-    <!-- Menu End -->
-
-    <!-- Reservation Start -->
-    <section id="reservation" style="padding: 60px 0; background-color: var(--dark);">
-        <div class="container">
-            <div class="text-center">
-                <h2 class="section-title text-white wow fadeInUp" data-wow-delay="0.1s">Đặt Bàn</h2>
+        <!-- About Start -->
+        <section id="about" style="padding: 60px 0; background-color: var(--light);">
+            <div class="container text-center">
+                <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s">Về Chúng Tôi</h2>
+                <p>Tìm hiểu về hành trình và cam kết của chúng tôi trong việc mang đến trải nghiệm ẩm thực hoàn hảo cho
+                    bạn.</p>
+                <a href="#reservation" class="btn btn-primary mt-4">Đặt Bàn Ngay</a>
             </div>
-            <div class="container-xxl py-5 px-0 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="row g-0">
-                    <div class="col-md-6">
-                        <div class="video">
-                            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/cfIcvPKKvkU?si=ENdoe0Tr5uk9lHg6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                        </div>
-                    </div>
-                    <div class="col-md-6 bg-dark d-flex align-items-center">
-                        <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
-                            <h5 class="section-title ff-secondary text-start text-primary fw-normal">
-                                Đặt chỗ
+        </section>
+        <!-- About End -->
+
+        <!-- Menu Start -->
+        <section id="menu" style="padding: 60px 0;">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s">Thực Đơn</h2>
+                </div>
+                <div class="container-xxl py-5">
+                    <div class="container">
+                        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                            <h5 class="section-title ff-secondary text-center text-primary fw-normal">
+                                Food Menu
                             </h5>
-                            <h1 class="text-white mb-4">Đặt bàn trực tuyến</h1>
-                            <form action="/dat-ban" method="POST">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <input type="text" class="form-control" id="name" placeholder="Your Name" name="ten" required/>
-                                            <label for="name">Tên của bạn</label>
+                            <h1 class="mb-5">Danh mục món ăn</h1>
+                        </div>
+                        <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
+                            <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
+                                <% loaiSpList.forEach(loaiSp=> { %>
+                                    <li class="nav-item">
+                                        <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3"
+                                            data-bs-toggle="pill" href="#tab-<%= loaiSp.LoaiSP %>">
+                                            <i class="fa fa-coffee fa-2x text-primary"></i>
+                                            <div class="ps-3">
+                                                <h6 class="mt-n1 mb-0">
+                                                    <%= loaiSp.TenLoai %>
+                                                </h6>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <% }) %>
+                            </ul>
+                            <div class="tab-content">
+                                <% loaiSpList.forEach((loaiSp, index)=> { %>
+                                    <div id="tab-<%= loaiSp.LoaiSP %>" class="tab-pane fade p-0<%= index===0 ? "activeshow": "" %>">
+                                        <div class="row g-4">
+                                            <% let monAnList=loaiSp.monAnList; monAnList.forEach((monAn)=> { %>
+                                                <div class="col-12">
+                                                    <div class="d-flex align-items-center">
+                                                        <img class="flex-shrink-0 img-fluid rounded"
+                                                            src="/img/<%= monAn.Anh %>" alt="" style="width: 80px" />
+                                                        <div class="w-100 d-flex flex-column text-start ps-4">
+                                                            <h5
+                                                                class="d-flex justify-content-between border-bottom pb-2">
+                                                                <span>
+                                                                    <%= monAn.TenSP %>
+                                                                </span>
+                                                                <span class="text-primary">
+                                                                    <%= parseInt(monAn.GiaBan).toLocaleString("en-US")
+                                                                        %> đồng
+                                                                </span>
+                                                            </h5>
+                                                            <small class="fst-italic">
+                                                                <%= monAn.GioiThieuSP %>
+                                                            </small>
+                                                        </div>
+                                                        <a href="#">
+                                                            <button type="button" class="btn btn-success"
+                                                                style="margin-left: 15px">
+                                                                +
+                                                            </button>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <% }) %>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <input type="tel" class="form-control" id="phone" placeholder="Your Email" name="phone" required/>
-                                            <label for="phone">SĐT của bạn</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-floating date" id="date3" data-target-input="nearest">
-                                            <input type="datetime-local" class="form-control datetimepicker-input" id="datetime" placeholder="Date & Time" data-target="#date3" data-toggle="datetimepicker" name="thoiGian" required/>
-                                            <label for="datetime">Thời gian</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <select class="form-select" id="select1" name="soNguoi">
-                                                <option value="1-2 người">1-2 người</option>
-                                                <option value="3-4 người">3-4 người</option>
-                                                <option value="4-6 người">4-6 người</option>
-                                                <option value=">6 người"> >6 người</option>
-                                            </select>
-                                            <label for="select1">Số người</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="form-floating">
-                                            <textarea class="form-control" placeholder="Special Request" id="message" style="height: 100px" name="yeuCau"></textarea>
-                                            <label for="message">Yêu cầu đặc biệt</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <button class="btn btn-primary w-100 py-3" type="submit" name="submit">
-                                            Đặt ngay
-                                        </button>
+                                    <% }) %>
+                            </div>
+                            <div class="mt-4">
+                                <div class="row justify-content-center">
+                                    <div class="col-4">
+                                        <a href="/danh-sach-mon-an" class="btn btn-primary w-100 py-3">
+                                            Xem tất cả
+                                        </a>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content rounded-0">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Youtube Video</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- 16:9 aspect ratio -->
-                            <div class="ratio ratio-16x9">
-                                <iframe class="embed-responsive-item" src="" id="video" allowfullscreen allowscriptaccess="always" allow="autoplay"></iframe>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Reservation End -->
+        <!-- Menu End -->
 
-    <!-- Team Start -->
-    <section id="team" style="padding: 60px 0;">
-        <div class="container">
-            <div class="text-center">
-                <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s">Đội Ngũ</h2>
-            </div>
-            <div class="container-xxl pt-5 pb-3">
-                <div class="container">
-                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                        <h5 class="section-title ff-secondary text-center text-primary fw-normal">
-                            Đội ngũ đầu bếp
-                        </h5>
-                        <h1 class="mb-5">Đầu bếp của chúng tôi</h1>
-                    </div>
-                    <div class="row g-4">
-                        <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                            <div class="team-item text-center rounded overflow-hidden">
-                                <div class="rounded-circle overflow-hidden m-4">
-                                    <img class="img-fluid" src="/img/team-1.jpg" alt="" />
-                                </div>
-                                <h5 class="mb-0">Nguyễn Hoàng Minh Tuấn</h5>
-                                <small>Bếp trưởng</small>
-                                <div class="d-flex justify-content-center mt-3">
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                                </div>
+        <!-- Reservation Start -->
+        <section id="reservation" style="padding: 60px 0; background-color: var(--dark);">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-title text-white wow fadeInUp" data-wow-delay="0.1s">Đặt Bàn</h2>
+                </div>
+                <div class="container-xxl py-5 px-0 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="row g-0">
+                        <div class="col-md-6">
+                            <div class="video">
+                                <iframe width="100%" height="100%"
+                                    src="https://www.youtube.com/embed/cfIcvPKKvkU?si=ENdoe0Tr5uk9lHg6"
+                                    title="YouTube video player" frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                            <div class="team-item text-center rounded overflow-hidden">
-                                <div class="rounded-circle overflow-hidden m-4">
-                                    <img class="img-fluid" src="/img/team-2.jpg" alt="" />
-                                </div>
-                                <h5 class="mb-0">Trần Thanh Lâm</h5>
-                                <small>Bếp phó</small>
-                                <div class="d-flex justify-content-center mt-3">
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                            <div class="team-item text-center rounded overflow-hidden">
-                                <div class="rounded-circle overflow-hidden m-4">
-                                    <img class="img-fluid" src="/img/team-3.jpg" alt="" />
-                                </div>
-                                <h5 class="mb-0">Nguyễn Trần Hưng</h5>
-                                <small>Nhân viên bếp</small>
-                                <div class="d-flex justify-content-center mt-3">
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
-                            <div class="team-item text-center rounded overflow-hidden">
-                                <div class="rounded-circle overflow-hidden m-4">
-                                    <img class="img-fluid" src="/img/team-4.jpg" alt="" />
-                                </div>
-                                <h5 class="mb-0">Trần Quốc Huy</h5>
-                                <small>Phụ bếp</small>
-                                <div class="d-flex justify-content-center mt-3">
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                                </div>
+                        <div class="col-md-6 bg-dark d-flex align-items-center">
+                            <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
+                                <h5 class="section-title ff-secondary text-start text-primary fw-normal">
+                                    Đặt chỗ
+                                </h5>
+                                <h1 class="text-white mb-4">Đặt bàn trực tuyến</h1>
+                                <form action="/dat-ban" method="POST">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="name"
+                                                    placeholder="Your Name" name="ten" required />
+                                                <label for="name">Tên của bạn</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="tel" class="form-control" id="phone"
+                                                    placeholder="Your Email" name="phone" required />
+                                                <label for="phone">SĐT của bạn</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating date" id="date3" data-target-input="nearest">
+                                                <input type="datetime-local" class="form-control datetimepicker-input"
+                                                    id="datetime" placeholder="Date & Time" data-target="#date3"
+                                                    data-toggle="datetimepicker" name="thoiGian" required />
+                                                <label for="datetime">Thời gian</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <select class="form-select" id="select1" name="soNguoi">
+                                                    <option value="1-2 người">1-2 người</option>
+                                                    <option value="3-4 người">3-4 người</option>
+                                                    <option value="4-6 người">4-6 người</option>
+                                                    <option value=">6 người"> >6 người</option>
+                                                </select>
+                                                <label for="select1">Số người</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-floating">
+                                                <textarea class="form-control" placeholder="Special Request"
+                                                    id="message" style="height: 100px" name="yeuCau"></textarea>
+                                                <label for="message">Yêu cầu đặc biệt</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <button class="btn btn-primary w-100 py-3" type="submit" name="submit">
+                                                Đặt ngay
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-    <!-- Team End -->
 
-    <!-- Testimonial Start -->
-    <section id="testimonial" style="padding: 60px 0; background-color: var(--light);">
-        <div class="container">
-            <div class="text-center">
-                <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s">Phản Hồi Khách Hàng</h2>
-            </div>
-            <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="container">
-                    <div class="text-center">
-                        <h5 class="section-title ff-secondary text-center text-primary fw-normal">
-                            Đánh giá
-                        </h5>
-                        <h1 class="mb-5">Phản hồi từ khách hàng!!!</h1>
-                    </div>
-                    <div class="owl-carousel testimonial-carousel">
-                        <div class="testimonial-item bg-transparent border rounded p-4">
-                            <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
-                            <p>
-                                Dồ ăn rất ngon, giá cả phải chăng
-                            </p>
-                            <div class="d-flex align-items-center">
-                                <img class="img-fluid flex-shrink-0 rounded-circle" src="/img/testimonial-1.jpg"
-                                     style="width: 50px; height: 50px"  alt=""/>
-                                <div class="ps-3">
-                                    <h5 class="mb-1">Trang</h5>
-                                    <small>Khách hàng</small>
-                                </div>
+                <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content rounded-0">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Youtube Video</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
-                        </div>
-                        <div class="testimonial-item bg-transparent border rounded p-4">
-                            <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
-                            <p>
-                                Quán đẹp, phục vụ tốt, đồ ăn rất vừa miệng
-                            </p>
-                            <div class="d-flex align-items-center">
-                                <img class="img-fluid flex-shrink-0 rounded-circle" src="/img/testimonial-2.jpg"
-                                     style="width: 50px; height: 50px"  alt=""/>
-                                <div class="ps-3">
-                                    <h5 class="mb-1">An</h5>
-                                    <small>Khách hàng</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="testimonial-item bg-transparent border rounded p-4">
-                            <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
-                            <p>
-                                Không có điểm gì để chê về cửa hàng từ đồ ăn đến thái độ phục vụ
-                            </p>
-                            <div class="d-flex align-items-center">
-                                <img class="img-fluid flex-shrink-0 rounded-circle" src="/img/testimonial-3.jpg"
-                                     style="width: 50px; height: 50px"  alt=""/>
-                                <div class="ps-3">
-                                    <h5 class="mb-1">Hải</h5>
-                                    <small>Khách hàng</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="testimonial-item bg-transparent border rounded p-4">
-                            <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
-                            <p>
-                                Đây là lần đầu tôi ăn ở đây, tôi rất hài lòng về quán
-                            </p>
-                            <div class="d-flex align-items-center">
-                                <img class="img-fluid flex-shrink-0 rounded-circle" src="/img/testimonial-2.jpg"
-                                     style="width: 50px; height: 50px"  alt=""/>
-                                <div class="ps-3">
-                                    <h5 class="mb-1">Phúc</h5>
-                                    <small>Khách hàng</small>
+                            <div class="modal-body">
+                                <!-- 16:9 aspect ratio -->
+                                <div class="ratio ratio-16x9">
+                                    <iframe class="embed-responsive-item" src="" id="video" allowfullscreen
+                                        allowscriptaccess="always" allow="autoplay"></iframe>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </section>
+        <!-- Reservation End -->
+
+        <!-- Team Start -->
+        <section id="team" style="padding: 60px 0;">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s">Đội Ngũ</h2>
+                </div>
+                <div class="container-xxl pt-5 pb-3">
+                    <div class="container">
+                        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                            <h5 class="section-title ff-secondary text-center text-primary fw-normal">
+                                Đội ngũ đầu bếp
+                            </h5>
+                            <h1 class="mb-5">Đầu bếp của chúng tôi</h1>
+                        </div>
+                        <div class="row g-4">
+                            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                                <div class="team-item text-center rounded overflow-hidden">
+                                    <div class="rounded-circle overflow-hidden m-4">
+                                        <img class="img-fluid" src="/img/team-1.jpg" alt="" />
+                                    </div>
+                                    <h5 class="mb-0">Nguyễn Hoàng Minh Tuấn</h5>
+                                    <small>Bếp trưởng</small>
+                                    <div class="d-flex justify-content-center mt-3">
+                                        <a class="btn btn-square btn-primary mx-1" href=""><i
+                                                class="fab fa-facebook-f"></i></a>
+                                        <a class="btn btn-square btn-primary mx-1" href=""><i
+                                                class="fab fa-twitter"></i></a>
+                                        <a class="btn btn-square btn-primary mx-1" href=""><i
+                                                class="fab fa-instagram"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                                <div class="team-item text-center rounded overflow-hidden">
+                                    <div class="rounded-circle overflow-hidden m-4">
+                                        <img class="img-fluid" src="/img/team-2.jpg" alt="" />
+                                    </div>
+                                    <h5 class="mb-0">Trần Thanh Lâm</h5>
+                                    <small>Bếp phó</small>
+                                    <div class="d-flex justify-content-center mt-3">
+                                        <a class="btn btn-square btn-primary mx-1" href=""><i
+                                                class="fab fa-facebook-f"></i></a>
+                                        <a class="btn btn-square btn-primary mx-1" href=""><i
+                                                class="fab fa-twitter"></i></a>
+                                        <a class="btn btn-square btn-primary mx-1" href=""><i
+                                                class="fab fa-instagram"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                                <div class="team-item text-center rounded overflow-hidden">
+                                    <div class="rounded-circle overflow-hidden m-4">
+                                        <img class="img-fluid" src="/img/team-3.jpg" alt="" />
+                                    </div>
+                                    <h5 class="mb-0">Nguyễn Trần Hưng</h5>
+                                    <small>Nhân viên bếp</small>
+                                    <div class="d-flex justify-content-center mt-3">
+                                        <a class="btn btn-square btn-primary mx-1" href=""><i
+                                                class="fab fa-facebook-f"></i></a>
+                                        <a class="btn btn-square btn-primary mx-1" href=""><i
+                                                class="fab fa-twitter"></i></a>
+                                        <a class="btn btn-square btn-primary mx-1" href=""><i
+                                                class="fab fa-instagram"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
+                                <div class="team-item text-center rounded overflow-hidden">
+                                    <div class="rounded-circle overflow-hidden m-4">
+                                        <img class="img-fluid" src="/img/team-4.jpg" alt="" />
+                                    </div>
+                                    <h5 class="mb-0">Trần Quốc Huy</h5>
+                                    <small>Phụ bếp</small>
+                                    <div class="d-flex justify-content-center mt-3">
+                                        <a class="btn btn-square btn-primary mx-1" href=""><i
+                                                class="fab fa-facebook-f"></i></a>
+                                        <a class="btn btn-square btn-primary mx-1" href=""><i
+                                                class="fab fa-twitter"></i></a>
+                                        <a class="btn btn-square btn-primary mx-1" href=""><i
+                                                class="fab fa-instagram"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Team End -->
+
+        <!-- Testimonial Start -->
+        <section id="testimonial" style="padding: 60px 0; background-color: var(--light);">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s">Phản Hồi Khách Hàng</h2>
+                </div>
+                <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="container">
+                        <div class="text-center">
+                            <h5 class="section-title ff-secondary text-center text-primary fw-normal">
+                                Đánh giá
+                            </h5>
+                            <h1 class="mb-5">Phản hồi từ khách hàng!!!</h1>
+                        </div>
+                        <div class="owl-carousel testimonial-carousel">
+                            <div class="testimonial-item bg-transparent border rounded p-4">
+                                <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
+                                <p>
+                                    Dồ ăn rất ngon, giá cả phải chăng
+                                </p>
+                                <div class="d-flex align-items-center">
+                                    <img class="img-fluid flex-shrink-0 rounded-circle" src="/img/testimonial-1.jpg"
+                                        style="width: 50px; height: 50px" alt="" />
+                                    <div class="ps-3">
+                                        <h5 class="mb-1">Trang</h5>
+                                        <small>Khách hàng</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="testimonial-item bg-transparent border rounded p-4">
+                                <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
+                                <p>
+                                    Quán đẹp, phục vụ tốt, đồ ăn rất vừa miệng
+                                </p>
+                                <div class="d-flex align-items-center">
+                                    <img class="img-fluid flex-shrink-0 rounded-circle" src="/img/testimonial-2.jpg"
+                                        style="width: 50px; height: 50px" alt="" />
+                                    <div class="ps-3">
+                                        <h5 class="mb-1">An</h5>
+                                        <small>Khách hàng</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="testimonial-item bg-transparent border rounded p-4">
+                                <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
+                                <p>
+                                    Không có điểm gì để chê về cửa hàng từ đồ ăn đến thái độ phục vụ
+                                </p>
+                                <div class="d-flex align-items-center">
+                                    <img class="img-fluid flex-shrink-0 rounded-circle" src="/img/testimonial-3.jpg"
+                                        style="width: 50px; height: 50px" alt="" />
+                                    <div class="ps-3">
+                                        <h5 class="mb-1">Hải</h5>
+                                        <small>Khách hàng</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="testimonial-item bg-transparent border rounded p-4">
+                                <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
+                                <p>
+                                    Đây là lần đầu tôi ăn ở đây, tôi rất hài lòng về quán
+                                </p>
+                                <div class="d-flex align-items-center">
+                                    <img class="img-fluid flex-shrink-0 rounded-circle" src="/img/testimonial-2.jpg"
+                                        style="width: 50px; height: 50px" alt="" />
+                                    <div class="ps-3">
+                                        <h5 class="mb-1">Phúc</h5>
+                                        <small>Khách hàng</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="chat-circle" class="btn btn-raised" style="margin: auto;
+        align-items: center;
+        align-content: center;
+        display: block;">
+            <div id="chat-overlay">
+            </div>
+            <i class="fa-solid fa-headset" style="    position: relative;"></i>
+            <p class="text-num-chat" style="background: red;
+                width: 30px;
+                color: white;
+                position: absolute;
+                display:none;
+                right:-5px;
+                top: 0px;
+                height: 30px;
+                border-radius: 100px;"></p>
         </div>
-    </section>
-    <%- include('../partials/user/footer') %>
-</div>
-<%- include('../partials/user/js-libraries') %>
-<%- include('../partials/user/ai-chat') %>
+
+        <form action="" id="send_form">
+            <div class="chat-box" id="chat-box">
+                <div class="chat-box-header">
+                    Nhắn tin với hỗ trợ
+                    <span class="chat-box-toggle"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                </div>
+                <div class="chat-box-body">
+                    <div class="chat-box-overlay"></div>
+                    <div class="chat-logs"></div> <!--chat-log -->
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="chat-input" placeholder="Bạn muốn làm gì?" />
+                    <button type="submit" class="chat-submit" id="chat-submit"><i
+                            class="fa-regular fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </form>
+
+
+        <%- include('../partials/user/footer') %>
+    </div>
+
+    <!-- <%- include('../partials/user/js-libraries') %>
+    <%- include('../partials/user/ai-chat') %> -->
+
+    <script>
+        $(function () {
+            // Xử lý sự kiện click trên nút chat
+            $(document).on("click", ".chat-btn", function () {
+                var value = $(this).attr("chat-value");
+                var name = $(this).html();
+                $("#chat-input").attr("disabled", false);
+                // generate_message(name, 'self'); // Uncomment nếu có chức năng generate_message
+            });
+
+            // Hiển thị hoặc ẩn chat box khi click vào chat circle
+            $("#chat-circle").click(function () {
+                $("#chat-circle").toggle('scale');
+                $(".chat-box").toggle('scale');
+                console.log($(".chat-logs")[0].scrollHeight);
+                // Đảm bảo cuộn xuống cuối phần chat logs
+                setTimeout(function () {
+                    requestAnimationFrame(function() {
+                        $(".chat-box-body").scrollTop($(".chat-box-body")[0].scrollHeight);
+                    });
+                }, 200);
+                guest_has_seen_message();
+            });
+
+            // Đóng chat box khi click vào biểu tượng đóng
+            $(".chat-box-toggle").click(function () {
+                $("#chat-circle").toggle('scale');
+                $(".chat-box").toggle('scale');
+            });
+
+            var idUser = $("#customer-id-token").val();
+            if (idUser != '') {
+                var INDEX = 0;
+
+                const socket = io.connect('http://localhost:3000', { transports: ['websocket'] });
+                socket.emit('sendIdUser', {
+                    idUser
+                });
+
+                socket.emit('getNumbleMessage', {
+                    idUser
+                });
+
+                getMessageRequest();
+
+                //Get message
+                function getMessageRequest() {
+                    fetch('/chat/get_message', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ userId: idUser })
+                    })
+                        .then(data => data.json())
+                        .then(response => {
+                            let message = "";
+
+                                // Duyệt qua từng phần tử trong mảng response
+
+                                type = '';
+                                // Chuyển đổi response sang một đối tượng JSON hoặc một mảng JavaScript
+                                // var data = JSON.parse(response);
+                                $data_ = response.reverse();
+                                // Kiểm tra data đã được chuyển đổi chưa
+                                // console.log(data);
+                                $data_.forEach(function (item) {
+                                    //message += 'idSend: ' + item.idSend + ', idReceive: ' + item.idReceive + ', message: ' + item.message + '\n';
+                                    INDEX++;
+                                    img_avt = '';
+                                    if (item.idSend == idUser) {
+                                        type = 'self';
+                                        img_avt = '';
+                                    } else {
+                                        type = 'user';
+                                        img_avt = '<img src="/img/avatar_user.jpg" + " alt="" />';
+                                    }
+                                    var str = "";
+                                    str += "<div id='cm-msg-" + INDEX + "' class=\"chat-msg " + type + "\">";
+                                    str += "          <span class=\"msg-avatar\">";
+                                    str += img_avt;
+                                    str += "          <\/span>";
+                                    str += "          <div class=\"cm-msg-text\">";
+                                    str += item.message;
+                                    str += "          <\/div>";
+                                    str += "        <\/div>";
+                                    $(".chat-logs").append(str);
+
+                                    //alert(message);
+                                    })
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                
+                }
+
+                //send msg
+                $("#send_form").submit(function (e) {
+                    e.preventDefault();
+                    INDEX++;
+                    let msg = $("#chat-input").val();
+                    //add to mess in client
+                    var str = "";
+                    str += "<div id='cm-msg-" + INDEX + "' class=\"chat-msg self\">";
+                    str += "          <span class=\"msg-avatar\">";
+                    str += "            ";
+                    str += "          <\/span>";
+                    str += "          <div class=\"cm-msg-text\">";
+                    str += msg;
+                    str += "          <\/div>";
+                    str += "        <\/div>";
+                    $(".chat-logs").append(str);
+                    $("#chat-input").val(null);
+                    setTimeout(function () {
+                        requestAnimationFrame(function() {
+                            $(".chat-box-body").scrollTop($(".chat-box-body")[0].scrollHeight);
+                        });
+                    }, 200);   
+                    const idReceiveClick = 1;
+                    socket.emit('send_msg', {
+                        msg,
+                        idUser,
+                        idReceiveClick
+                    });
+                })
+           
+                //Recieve message
+                socket.on('receive_msg', data => {
+                    INDEX++;
+                    var str="";
+                    str += "<div id='cm-msg-" + INDEX + "' class=\"chat-msg user\">";
+                    str += "          <span class=\"msg-avatar\">";
+                    str += '    <img src="/img/avatar_user.jpg" alt="" />';
+                    str += "          <\/span>";
+                    str += "          <div class=\"cm-msg-text\">";
+                    str +=          data.message;
+                    str += "          <\/div>";
+                    str += "        <\/div>";
+                    $(".chat-logs").append(str);
+                    //Check display chat-box
+                    guest_has_seen_message();
+                });
+
+                function guest_has_seen_message(){
+                    var chatBoxDisplayStyle = $("#chat-box").css("display");
+                    if(chatBoxDisplayStyle != 'none'){
+                        fetch('/chat/guest_has_seen_message', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ userId: idUser })
+                    })
+                        .then(data => data.json())
+                        .then(response => {
+                            $(".text-num-chat").css("display", "none"); 
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    }
+                }
+            
+                //Recieve numble message
+                socket.on('receive_number_msg', data => {
+                    const numMessages = data.numMessages;
+                    if(numMessages > 0){
+                        $(".text-num-chat").css("display", "block"); 
+                    }else{
+                        $(".text-num-chat").css("display", "none"); 
+                    }
+                
+                    $(".text-num-chat").text(numMessages); 
+                    
+                });
+            }
+        });
+    </script>
+
 </body>
+
 </html>

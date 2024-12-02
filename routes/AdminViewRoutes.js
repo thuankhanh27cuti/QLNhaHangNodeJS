@@ -75,4 +75,8 @@ router.get('/chart/year',
     [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewSelectController.chartYear);
 
+router.post('/chat/admin_get_has_seen_message', adminViewSelectController.admin_get_has_seen_message);
+router.post('/chat/get_all_user_message', adminViewSelectController.get_all_user_message);
+router.post('/chat/get_details_message', adminViewSelectController.get_details_message);
+router.post('/chat/has_seen_message', adminViewSelectController.has_seen_message);
 module.exports = router;

@@ -3,19 +3,28 @@ const { sendEmail } = require("../sendEmail");
 const crypto = require("crypto");
 const configVnPay = require("../config/vnpay-setup");
 const dayjs = require("dayjs");
-const querystring = require('qs');
-const moment = require('moment-timezone');
+const querystring = require("qs");
+const moment = require("moment-timezone");
+const mysql = require("mysql2");
+
+// Tạo kết nối với cơ sở dữ liệu
+const connection = mysql.createConnection({
+    host: "localhost",
+    user: "root", // Thay bằng user của bạn
+    password: "", // Thay bằng password của bạn
+    database: "qlnhahangv3", // Thay bằng tên cơ sở dữ liệu của bạn
+});
 
 function sortObject(obj) {
-	let sorted = {};
-	let str = [];
-	let key;
-	for (key in obj){
-		if (obj.hasOwnProperty(key)) {
-		str.push(encodeURIComponent(key));
-		}
-	}
-	str.sort();
+    let sorted = {};
+    let str = [];
+    let key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            str.push(encodeURIComponent(key));
+        }
+    }
+    str.sort();
     for (key = 0; key < str.length; key++) {
         sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
     }
@@ -34,6 +43,7 @@ exports.index = async (req, res) => {
         let sql = "SELECT MaSP, TenSP, GiaBan, GioiThieuSP, Anh FROM danhmucsp WHERE MaLoai = ? LIMIT 5";
         element.monAnList = await query.selectAllWithParams(sql, [id]);
     }
+    // console.log(loaiSpList);
 
     res.render("user/index", { loaiSpList: loaiSpList });
 };
@@ -246,12 +256,12 @@ exports.handleCreateVNPayPayment = async (req, res) => {
     let orderInfo = JSON.parse(req.body.orderInfo);
     // console.log(orderInfo);
     /*
-      {
-          products: [ { id: 3, quantity: 2 }, { id: 4, quantity: 3 } ],
-          discount: 111,
-          note: '123'
-      }
-       */
+          {
+              products: [ { id: 3, quantity: 2 }, { id: 4, quantity: 3 } ],
+              discount: 111,
+              note: '123'
+          }
+           */
 
     let products = orderInfo.products;
     let discount = orderInfo.discount;
@@ -304,16 +314,16 @@ exports.handleCreateVNPayPayment = async (req, res) => {
         const returnUrl = configVnPay.vnp_ReturnUrl;
 
         // Lấy thời gian hiện tại
-        const createDate = moment().tz('Asia/Ho_Chi_Minh').format("YYYYMMDDHHmmss"); // Thời gian tạo đơn hàng (yyyy phải là YYYY)
+        const createDate = moment().tz("Asia/Ho_Chi_Minh").format("YYYYMMDDHHmmss"); // Thời gian tạo đơn hàng (yyyy phải là YYYY)
         //const orderId = moment().tz('Asia/Ho_Chi_Minh').format("HHmmss"); // Mã đơn hàng tham chiếu (sử dụng giờ, phút, giây)
 
         const amount = totalPrice; // Số tiền thanh toán
         const bankCode = "NCB"; // Mã ngân hàng (nếu có)
-        const orderInfo = JSON.stringify({"discount":discount,"note":note}); // Mô tả đơn hàng
+        const orderInfo = JSON.stringify({ discount: discount, note: note }); // Mô tả đơn hàng
         const orderType = "other"; // Loại đơn hàng
         let locale = "vn"; // Ngôn ngữ (mặc định là 'vn')
         const currCode = "VND"; // Mã tiền tệ (VND)
-        const idR = rand(1,10000);
+        const idR = rand(1, 10000);
         // Tạo các tham số yêu cầu gửi lên VNPAY
         let vnp_Params = {
             vnp_Version: "2.1.0", // Phiên bản của API VNPAY
@@ -350,7 +360,7 @@ exports.handleCreateVNPayPayment = async (req, res) => {
 
         // Tạo URL hoàn chỉnh để chuyển hướng đến VNPAY
         const fullUrl = vnpUrl + "?" + querystring.stringify(vnp_Params, { encode: false });
-        
+
         req.session.session.vnpay_TxnRef = idR;
         // Chuyển hướng người dùng đến URL VNPAY
         res.redirect(fullUrl);
@@ -364,14 +374,14 @@ exports.handleCreateVNPayPayment = async (req, res) => {
 
 exports.resultVNPayPayment = async (req, res) => {
     if (!req.session.session || req.session.session.vnpay_TxnRef === undefined) {
-        return res.redirect("/"); 
+        return res.redirect("/");
     }
 
     if (req.session.session.cart.length > 0) {
         //console.log(req.session.session.cart);
 
         // Lấy danh sách ID sản phẩm từ giỏ hàng
-        const arrID = req.session.session.cart.map(item => item.id);
+        const arrID = req.session.session.cart.map((item) => item.id);
         const orderInfo = JSON.parse(req.query.vnp_OrderInfo); // Mã hóa thông tin đơn hàng
         console.log(orderInfo);
         const userId = req.session.session.userId; // ID người dùng
@@ -382,11 +392,11 @@ exports.resultVNPayPayment = async (req, res) => {
 
         //console.log('arrayId: ' + arrID);
 
-        const arrayId = arrID.join(','); // Danh sách sản phẩm tham gia thanh toán
+        const arrayId = arrID.join(","); // Danh sách sản phẩm tham gia thanh toán
         //console.log('arrayId sau khi join: ' + arrayId);
 
         // Xây dựng câu truy vấn SQL để thêm hóa đơn
-        let sqlInsertInvoice = '';
+        let sqlInsertInvoice = "";
         if (!discountCode) {
             sqlInsertInvoice = `INSERT INTO hoadonban (NgayLap, userId, PhuongThucTT, GhiChu, trangthai) 
                                  VALUES (NOW(), ?, ?, ?, ?)`;
@@ -410,7 +420,7 @@ exports.resultVNPayPayment = async (req, res) => {
         for (const product of products) {
             const productId = product.MaSP;
             const productPrice = product.GiaBan;
-            const quantity = req.session.session.cart.find(item => item.id === productId)?.quantity || 0;
+            const quantity = req.session.session.cart.find((item) => item.id === productId)?.quantity || 0;
 
             let totalPrice = 0;
             //console.log(`SoLuong: ${quantity}, MaSP: ${productId}`);
@@ -420,7 +430,7 @@ exports.resultVNPayPayment = async (req, res) => {
                 const sqlDiscount = `SELECT GiamGia FROM giamgia WHERE MaGiamGia = ?`;
                 const discount = await query.selectAllWithParams(sqlDiscount, [discountCode]);
                 const discountValue = discount[0]?.GiamGia || 0;
-                totalPrice = productPrice * quantity * (100 - discountValue) / 100;
+                totalPrice = (productPrice * quantity * (100 - discountValue)) / 100;
                 totalAmount += totalPrice;
 
                 // Chèn chi tiết hóa đơn vào bảng chitiethoadon
@@ -451,10 +461,9 @@ exports.resultVNPayPayment = async (req, res) => {
 
         return res.redirect("/");
     } else {
-        return res.redirect("/"); 
+        return res.redirect("/");
     }
 };
-
 
 exports.donHang = async (req, res) => {
     let userId = req.session.session.userId;
@@ -724,4 +733,75 @@ exports.xacNhanDoiMatKhauKhiDaCheckOtp = async (req, res) => {
     } else {
         res.redirect("/");
     }
+};
+
+//user get message
+exports.get_message = async (req, res) => {
+    const userId = req.body.userId;
+    console.log("userId: " + userId);
+
+    try {
+        // Lấy tin nhắn từ bảng chat_realtime
+        const sqlMessages = `
+      SELECT * FROM chat_realtime
+      WHERE (idSend = ? AND idReceive = 1)
+         OR (idSend = 1 AND idReceive = ?)
+      ORDER BY id DESC
+      LIMIT 10
+    `;
+
+        connection.execute(sqlMessages, [userId, userId], (err, dataMessages) => {
+            if (err) {
+                console.error("Error fetching messages:", err);
+                return res.status(500).send("Error fetching messages");
+            }
+
+            console.log(dataMessages);
+
+            // Trả về dữ liệu tin nhắn
+            res.json(dataMessages);
+        });
+    } catch (error) {
+        console.error("Error fetching messages:", error);
+        res.status(500).send("Server error");
+    }
+};
+
+exports.guest_has_seen_message = async (req, res) => {
+    const idSee = req.body.userId;
+
+    // Lấy tin nhắn
+    const sqlSelect = `SELECT * FROM chat_realtime WHERE idSend = 1 AND idReceive = ? LIMIT 20`;
+    connection.query(sqlSelect, [idSee], (err, dataMessages) => {
+        if (err) {
+            console.error('Error fetching messages:', err);
+            return res.status(500).send('Server error');
+        }
+
+        if (dataMessages.length > 0) {
+            // Cập nhật trạng thái state = 1
+            const messageIds = dataMessages.map(message => message.id);
+            const sqlUpdate = `UPDATE chat_realtime SET state = 1 WHERE id IN (?)`;
+            console.log(messageIds);
+            connection.query(sqlUpdate, [messageIds], (err) => {
+                if (err) {
+                    console.error('Error updating messages:', err);
+                    return res.status(500).send('Server error');
+                }
+
+                // Lấy lại dữ liệu đã cập nhật
+                const sqlUpdated = `SELECT * FROM chat_realtime WHERE id IN (?)`;
+                connection.query(sqlUpdated, [messageIds], (err, dataUpdated) => {
+                    if (err) {
+                        console.error('Error fetching updated messages:', err);
+                        return res.status(500).send('Server error');
+                    }
+                    
+                    res.json(dataUpdated);
+                });
+            });
+        } else {
+            res.json([]); // Không có tin nhắn
+        }
+    });
 };

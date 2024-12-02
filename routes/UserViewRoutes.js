@@ -32,4 +32,7 @@ router.get("/dat-ban", [isUserMiddleware], userViewController.datBan);
 router.get("/blog", [isUserMiddleware], userViewController.blog);
 router.get("/blog-info", [isUserMiddleware], userViewController.blogInfo);
 
+router.post("/chat/get_message", userViewController.get_message);
+router.post("/chat/guest_has_seen_message", userViewController.guest_has_seen_message);
+
 module.exports = router;
