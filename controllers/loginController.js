@@ -128,7 +128,7 @@ exports.loginWithGmail = async (req, res) => {
 };
 
 exports.confirmOTPForgetPassword = async (req, res) => {
-    if(req.session.session.otp){
+    if(req.session.session && req.session.session.otp){
         res.render("user/otpConfirm");
     }else{
         res.redirect("/");

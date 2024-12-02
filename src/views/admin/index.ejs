@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -8,23 +9,767 @@
     <meta name="author" content="" />
     <title>Dashtreme Admin</title>
     <link rel="icon" href="/admin/assets/images/favicon.ico" type="image/x-icon">
-    <%- include('../partials/admin/css-libraries') %>
-</head>
-<body class="bg-theme bg-theme1">
-<div id="wrapper">
-    <%- include('../partials/admin/navigation') %>
-    <%- include('../partials/admin/header') %>
-    <div class="clearfix">
-        <div class="content-wrapper">
-            <div class="container-fluid">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.16.1/echo.js"></script>
+    <%- include('../partials/admin/css-libraries') %>
+        <style>
+            #chat-circle {
+                justify-items: center;
+                width: 55px;
+                height: 55px;
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 999;
+                display: block;
+                text-align: center;
+                cursor: pointer;
+                background-color: #25D366;
+                /* Màu xanh của WhatsApp */
+                border-radius: 100%;
+                padding: 20px;
+            }
+
+            /* Định dạng cho icon */
+            #chat-circle i {
+                /* font-size: 24px; */
+                color: white;
+            }
+
+            /* Định dạng cho thông báo số tin nhắn mới */
+            .text-num-chat {
+                background: red;
+                width: 30px;
+                color: white;
+                position: absolute;
+                display: none;
+                right: -5px;
+                top: 0px;
+                height: 30px;
+                border-radius: 100%;
+                font-size: 16px;
+                text-align: center;
+                line-height: 30px;
+            }
+
+            /* Mở hiển thị thông báo khi có tin nhắn */
+            .text-num-chat.show {
+                display: block;
+            }
+
+            /* Tổng thể của chat box */
+            .wrapper {
+                position: fixed;
+                z-index: 9999;
+                right: 20px;
+                bottom: 20px;
+                width: 1000px;
+                display: none;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+                background-color: #fff;
+                transition: all 0.3s ease-in-out;
+            }
+
+            /* Container */
+            .container_chat {
+                display: flex;
+                height: 500px;
+                border-radius: 10px;
+            }
+
+            /* Cột bên trái - danh sách user */
+            .left {
+                width: 40%;
+                background-color: #5A5EB9;
+                color: white;
+                /* padding: 15px; */
+                overflow-y: auto;
+            }
+
+            .left .top {
+                padding: 10px;
+                text-align: center;
+                font-weight: bold;
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+
+            /* Danh sách user */
+            .people {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .person {
+                display: flex;
+                align-items: center;
+                padding: 10px;
+                margin-bottom: 10px;
+                cursor: pointer;
+                transition: background 0.3s;
+            }
+
+            .person:hover {
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+
+            .person img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 10px;
+            }
+
+            .person .name {
+                font-weight: bold;
+            }
+
+            /* Cột bên phải - khu vực chat */
+            .right {
+                width: 60%;
+                display: flex;
+                flex-direction: column;
+                position: relative;
+                background-color: #fff;
+            }
+
+            /* Phần tiêu đề */
+            .right .top {
+                background-color: #f5f5f5;
+                padding: 15px;
+                font-weight: bold;
+                text-align: center;
+                position: relative;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .chat-box-toggle {
+                position: absolute;
+                top: 50%;
+                right: 15px;
+                transform: translateY(-50%);
+                cursor: pointer;
+                font-size: 20px;
+            }
+
+            /* Khu vực hiển thị chat */
+            .chat {
+                flex: 1;
+                padding: 15px;
+                overflow-y: auto;
+            }
+
+            .conversation-start {
+                text-align: center;
+                font-size: 16px;
+                font-weight: bold;
+                color: black;
+                margin-bottom: 10px;
+            }
+
+            .chat.active-chat {
+                width: 100%;
+                display: flex;
+                /* flex-wrap: wrap; */
+                flex-direction: column;
+                align-content: space-between;
+                /* Sắp xếp tin nhắn theo chiều dọc */
+                gap: 10px;
+                /* Khoảng cách giữa các tin nhắn */
+                max-height: 400px;
+                /* Chiều cao tối đa của container (tuỳ chỉnh) */
+                overflow-y: auto;
+                /* Cho phép cuộn khi có nhiều tin nhắn */
+                padding: 10px;
+            }
+
+            /* Tin nhắn */
+            /* Định dạng chung cho tất cả các bubble */
+            .bubble {
+                display: inline;
+                padding: 10px 15px;
+                /* Khoảng cách giữa chữ và viền */
+                background-color: #0084ff;
+                /* Màu nền */
+                color: white;
+                /* Màu chữ */
+                border-radius: 20px;
+                /* Tạo góc bo tròn */
+                max-width: 200px;
+                /* Giới hạn chiều rộng tối đa */
+                word-wrap: break-word;
+                /* Đảm bảo text không bị tràn ra ngoài */
+                margin: 5px;
+                /* Khoảng cách giữa các tin nhắn */
+            }
+
+            /* Tin nhắn của người khác (bên trái) */
+            .bubble.me {
+                background-color: #c1b0b0;
+                /* Màu nền cho tin nhắn người khác */
+                text-align: left;
+                /* Căn chỉnh tin nhắn về bên trái */
+                border-radius: 20px 20px 20px 0;
+                /* Góc bo tròn cho phần tin nhắn bên trái */
+                margin-left: 10px;
+                /* Để có khoảng cách từ phía bên trái */
+            }
+
+            /* Tin nhắn của bạn (bên phải) */
+            .bubble.you {
+                background-color: #0084ff;
+                /* Màu nền cho tin nhắn của bạn */
+                text-align: right;
+                /* Căn chỉnh tin nhắn về bên phải */
+                border-radius: 20px 20px 0 20px;
+                /* Góc bo tròn cho phần tin nhắn bên phải */
+                margin-right: 10px;
+                /* Để có khoảng cách từ phía bên phải */
+            }
+
+            .chat {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            .conversation-start {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .conversation-title {
+                color: black;
+                font-size: larger;
+                font-weight: bold;
+            }
+
+            .bubble {
+                max-width: 60%;
+                padding: 10px 15px;
+                border-radius: 20px;
+                font-size: 16px;
+                line-height: 1.5;
+                position: relative;
+            }
+
+            .bubble.you {
+                align-self: flex-start;
+                background-color: #c1b0b0;
+                border-radius: 20px 20px 20px 5px;
+            }
+
+            .bubble.me {
+                align-self: flex-end;
+                background-color: #0084ff;
+                color: white;
+                border-radius: 20px 20px 5px 20px;
+            }
+
+            /* Căn chỉnh tin nhắn đều nhau */
+            .chat.active-chat {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+            }
+
+            .chat .bubble::before {
+                content: "";
+                position: absolute;
+                width: 0;
+                height: 0;
+                border-style: solid;
+            }
+
+            .bubble.you::before {
+                left: -10px;
+                top: 15px;
+                border-width: 10px 10px 10px 0;
+                border-color: transparent #c1b0b0 transparent transparent;
+            }
+
+            .bubble.me::before {
+                right: -10px;
+                top: 15px;
+                border-width: 10px 0 10px 10px;
+                border-color: transparent transparent transparent #0084ff;
+            }
+
+            /* Định dạng cho nút đóng (close button) */
+            .close-btn {
+                position: absolute;
+                right: 10px;
+                /* Đặt nút đóng ở góc phải */
+                top: 0px;
+                /* Đặt nút đóng ở góc trên cùng */
+                font-size: 2em;
+                /* Tăng kích thước của icon */
+                color: #e01e14;
+                /* Màu icon là trắng */
+                cursor: pointer;
+                /* Thêm hiệu ứng con trỏ để chỉ ra đây là nút có thể nhấn */
+                transition: color 0.3s;
+                /* Thêm hiệu ứng khi hover */
+            }
+
+            /* Thay đổi màu khi hover */
+            .close-btn:hover {
+                color: red;
+                /* Đổi màu icon khi hover */
+            }
+
+            /* Form nhập tin nhắn */
+            form#send_form {
+                padding: 10px;
+                border-top: 1px solid #ddd;
+                background-color: #f9f9f9;
+                display: flex;
+                align-items: center;
+            }
+
+            .write {
+                display: flex;
+                width: 100%;
+            }
+
+            #chat-input {
+                width: 90%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 20px;
+                outline: none;
+                font-size: 14px;
+            }
+
+            .write-link {
+                margin-left: 10px;
+                background-color: #5A5EB9;
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: background 0.3s;
+            }
+
+            .write-link:hover {
+                background-color: #3f49a1;
+            }
+
+            .person.active {
+                background-color: #024c9a; /* Màu nền khi được chọn */
+            }
+
+            /* Responsive */
+            @media (max-width: 600px) {
+                .wrapper {
+                    width: 100%;
+                    height: 100%;
+                    bottom: 0;
+                    right: 0;
+                }
+
+                .container {
+                    flex-direction: column;
+                }
+
+                .left,
+                .right {
+                    width: 100%;
+                    height: 50%;
+                }
+
+            }
+        </style>
+</head>
+
+<body class="bg-theme bg-theme1">
+    <% if (typeof session !=='undefined' && session && Object.keys(session).length> 0) { %>
+        <input type="hidden" id="admin-id-token" value="<%= session.userId %>">
+        <% } %>
+            <div id="wrapper">
+                <%- include('../partials/admin/navigation') %>
+                    <%- include('../partials/admin/header') %>
+                        <div class="clearfix">
+                            <div class="content-wrapper">
+                                <div class="container-fluid">
+
+                                </div>
+                            </div>
+                            <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
+                        </div>
+                        <%- include('../partials/admin/footer') %>
+                            <%- include('../partials/admin/right-sidebar') %>
+                                <%- include('../partials/admin/js-libraries') %>
             </div>
-        </div>
-        <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
-    </div>
-    <%- include('../partials/admin/footer') %>
-    <%- include('../partials/admin/right-sidebar') %>
-    <%- include('../partials/admin/js-libraries') %>
-</div>
+
+            <div id="chat-circle" class="btn btn-raised" style="margin: auto;
+        align-items: center;
+        align-content: center;
+        display: block;">
+                <div id="chat-overlay">
+                </div>
+                <i class="fa-solid fa-headset" style="    position: relative;"></i>
+                <p class="text-num-chat" style="background: red;
+                width: 30px;
+                color: white;
+                position: absolute;
+                display:none;
+                right:-5px;
+                top: 0px;
+                height: 30px;
+                border-radius: 100px;"></p>
+            </div>
+
+            <div class="wrapper">
+                <div class="container_chat" style="box-shadow: 0px 0px 10px 0px rgb(28 63 170);">
+                    <div class="left" style="background-color: #5A5EB9">
+                        <div class="top"
+                            style="font-size:larger;align-content: center;;text-align: center;font-weight:bold;">
+                            <span style="color: white">
+                                DANH SÁCH USER
+                                <!-- {{-- <img alt="Midone Tailwind HTML Admin Template" class="-intro-x w-1/2 -mt-16" src="{{asset('public/frontend/assets/images/logo_light.png')}}" style="width: 200px;"> --}} -->
+                            </span>
+                        </div>
+                        <ul class="people">
+                            <!-- {{-- <li class="person" data-chat="person1">
+                            <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/thomas.jpg" alt="" />
+                            <span class="name">Thomas Bangalter</span>
+                            <span class="time">2:09 PM</span>
+                            <span class="preview">I was wondering...</span>
+                            <span class="preview" style="display: inline"><i class="fa-solid fa-exclamation"></i></span>
+                        </li> --}}
+                        {{-- <li class="person" data-chat="person2">
+                            <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/dog.png" alt="" />
+                            <span class="name">Dog Woofson</span>
+                            <span class="time">1:44 PM</span>
+                            <span class="preview">I've forgotten how it felt before</span>
+                        </li>
+                        
+                         --}} -->
+                        </ul>
+                    </div>
+                    <div class="right">
+                        <div class="top">
+                            <span class="chat-box-toggle"
+                                style="display: block;text-align: center;align-content: center;"><span
+                                    class="name-user-to"></span>
+                                <!-- <i class="fa fa-times-circle fa-3" aria-hidden="true"
+                                    style="position: absolute;right: 10px;top:10px;font-size:2em"></i> -->
+                            </span>
+                            <i class="fa fa-times-circle close-btn" aria-hidden="true"></i>
+                        </div>
+
+                        <div class="chat active-chat">
+                            <div class="conversation-start">
+                                <span style="color: black;
+                            font-size: larger;
+                            font-weight: bold;">Hãy chọn user để nhắn tin</span>
+                            </div>
+
+                            <!-- {{-- <div class="bubble you">
+                            Hello, can you hear me?
+                        </div>
+                        
+                        <div class="bubble me">
+                            ... about who we used to be.
+                        </div>                    --}} -->
+                        </div>
+
+                        <form action="" id="send_form" style="display: none">
+                            <div class="write">
+                                <input type="text" id="chat-input" placeholder="Bạn muốn nhắn gì?" style="width:90%" />
+                                <button type="submit" class="write-link send" id="write-link send" style="width: 50; height: 50;">
+                                    <i class="fas fa-comments"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <script>
+                //click mở chat
+                $("#chat-circle").click(function () {
+                    $(".wrapper").toggle('scale');
+                    $("#chat-circle").toggle('scale');
+                    admin_get_has_seen_message();
+                })
+
+                const idUser = $("#admin-id-token").val();
+
+                let idReceiveClick = 0;
+                if (idUser != '') {
+                    getMessageRequest();
+                    socket = io.connect('http://localhost:3000', { transports: ['websocket'] });
+                    socket.emit('sendIdUser', {
+                        idUser
+                    })
+                    //get numble in message 
+                    socket.emit('adminGetNumbleMessage', {
+                        idUser
+                    });
+
+                    //Recieve number message
+                    socket.on('admin_receive_number_msg', data => {
+                        const numMessages = data.numMessages;
+                        console.log('nhan duoc' + numMessages);
+                        if (numMessages > 0) {
+                            $(".text-num-chat").css("display", "block");
+                        } else {
+                            $(".text-num-chat").css("display", "none");
+                        }
+
+                        $(".text-num-chat").text(numMessages);
+
+                    });
+
+                    //Recieve message
+                    socket.on('receive_msg', (data) => {
+                        console.log('data' + data);
+                        // console.log('idReceiveClick:', idReceiveClick);
+                        // console.log('idSend:', data.idSend);
+                        //Move on top
+                        $(".people li.person").each(function () {
+                            // get value data-chat
+                            var dataChatValue = $(this).data("chat");
+                            if (dataChatValue == data.idSend) {
+                                //move to top
+                                $(this).prependTo($(".people"));
+                                //find class preview
+                                var $previewSpan = $(this).find(".preview");
+                                $previewSpan.text(data.message);
+                                $(this).append('<span class="preview-1" style="display: inline;color: red;"><i class="fa-solid fa-exclamation"></i></span>');
+                                // Dừng vòng lặp
+                                return false;
+                            }
+                        });
+                        var chatBoxDisplayStyle = $("#chat-box").css("display");
+                        //nếu đang chọn đúng user
+                        if (idReceiveClick == data.idSend && chatBoxDisplayStyle != 'none') {
+                            var str = "";
+                            str += '<div class="bubble me">';
+                            str += data.message
+                            str += '</div>'
+                            $(".chat.active-chat").append(str);
+                            fetch('/admin/chat/has_seen_message', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ idSee: idReceiveClick })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    $(".person.active .preview-1").remove();
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                });
+                        }
+                        admin_get_has_seen_message();
+                    });
+
+                    function admin_get_has_seen_message() {
+                        var chatBoxDisplayStyle = $("#chat-box").css("display");
+                        if (chatBoxDisplayStyle != 'none') {
+                            fetch('/admin/chat/admin_get_has_seen_message', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ userId: idUser })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.length == 0) {
+                                        $(".text-num-chat").css("display", "none");
+                                    } else {
+                                        $(".text-num-chat").css("display", "block");
+                                        $(".text-num-chat").text(data.length);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                });
+                        }
+
+                    }
+
+                    // Bắt sự kiện click 
+                    $(".people").on("click", ".person", function () {
+                        //get value name
+                        var nameText = $(this).find('.name').text();
+                        //get value
+                        var dataChat = $(this).data("chat");
+                        //add name to top
+                        $(".name-user-to").empty();
+                        $(".name-user-to").append("Tới: " + nameText);
+                        $(".person").removeClass("active");
+                        $(this).addClass("active");
+                        idReceiveClick = dataChat;
+                        console.log(idReceiveClick);
+                        getDetailsMessageRequest(dataChat);
+                        //remove !
+                        $(this).find(".preview-1").remove();
+                        $('#send_form').css('display', 'block');
+                    });
+
+                    //Get all-user from server
+                    function getMessageRequest() {
+                        fetch('/admin/chat/get_all_user_message', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ userId: idUser })
+                        })
+                            .then(data => data.json())
+                            .then(response => {
+                                console.log(response);
+                                // // Đảo ngược thứ tự các phần tử trong mảng
+                                $data_ = response.reverse();
+
+                                //In ra từng phần tử của mảng
+                                $data_.forEach(function (item) {
+                                    var date = new Date(item.date_chat);
+
+                                    // Chuyển đổi sang định dạng: Giờ:Phút - Ngày/Tháng/Năm
+                                    var formattedDate = date.toLocaleString('vi-VN', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric',
+                                    });
+                                    var str = '';
+                                    str += '<li class="person" data-chat="' + item.customer_user + '">';
+                                    str += '    <div class="avatar-container">';
+                                    str += '        <img src="/img/avatar_user.jpg" alt="Avatar" class="avatar" />';
+                                    str += '    </div>';
+                                    str += '    <div class="info-container">';
+                                    str += '        <span class="name">' + item.customer_name + '</span>';
+                                    str += '        <div class="message-info">';
+
+                                    if (item.message != undefined) {
+                                        str += '            <span class="preview">' + item.message + '</span>';
+                                        if (item.state == 0 && item.idSend != 1) {
+                                            str += '            <span class="preview-1" style="color: red;"><i class="fa-solid fa-exclamation"></i></span>';
+                                        }
+                                    } else {
+                                        str += '            <span class="preview">Hiện chưa có tin nhắn</span>';
+                                    }
+                                    //ngày
+                                    if (item.date_chat != undefined) {
+                                        str += '            <span class="time">' + formattedDate + '</span>';
+                                    } else {
+                                        str += '            <span class="time"> </span>';
+                                    }
+
+                                    str += '        </div>';
+                                    str += '    </div>';
+                                    str += '</li>';
+                                    $(".people").append(str);
+                                });
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+
+                    }
+
+                    //Get details message
+                    function getDetailsMessageRequest(id_) {
+                        fetch('/admin/chat/get_details_message', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ idUser: id_ })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                $('.chat.active-chat').empty();
+                                console.log(data);
+                                data.forEach(function (item) {
+                                    var str = '';
+                                    if (item.idSend == 1) {
+                                        str += '<div class="bubble you">';
+                                        str += item.message
+                                        str += '</div>'
+                                    } else {
+                                        str += '<div class="bubble me">';
+                                        str += item.message
+                                        str += '</div>'
+                                    }
+
+                                    $(".chat.active-chat").append(str);
+                                });
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+
+
+                    }
+
+                    //click đóng chat
+                    $('.close-btn').on('click', function () {
+                        $(".wrapper").toggle('scale');
+                        $("#chat-circle").toggle('scale');
+                    });
+
+                    //
+                    //send msg
+                    $("#send_form").submit(function (e) {
+                        e.preventDefault();
+
+                        let msg = $("#chat-input").val();
+
+                        //add to mess in client
+                        var str = "";
+                        str += '<div class="bubble you">';
+                        str += msg
+                        str += '</div>'
+                        $(".chat.active-chat").append(str);
+                        $("#chat-input").val(null);
+
+                        //foreach li in person
+                        $(".people li.person").each(function () {
+                            // get value data-chat
+                            var dataChatValue = $(this).data("chat");
+                            if (dataChatValue == idReceiveClick) {
+                                //move to top
+                                $(this).prependTo($(".people"));
+                                //find class preview
+                                var $previewSpan = $(this).find(".preview");
+                                $previewSpan.text(msg);
+                                // Dừng vòng lặp
+                                return false;
+                            }
+                        });
+
+                        socket.emit('send_msg', {
+                            msg,
+                            idUser,
+                            idReceiveClick
+                        });
+                    })
+                }
+            </script>
+
 </body>
+
 </html>

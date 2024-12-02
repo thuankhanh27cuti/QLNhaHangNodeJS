@@ -25,4 +25,8 @@ router.get("/thanh-toan", [isUserMiddleware], userViewController.thanhToan);
 router.post("/thanh-toan", [isUserMiddleware], userViewController.handleUpdateCartAndThanhToan);
 router.post("/vn-pay/create-payment", [isUserMiddleware], userViewController.handleCreateVNPayPayment);
 router.get("/vn-pay/result-payment", [isUserMiddleware], userViewController.resultVNPayPayment);
+
+router.post("/chat/get_message", userViewController.get_message);
+router.post("/chat/guest_has_seen_message", userViewController.guest_has_seen_message);
+
 module.exports = router;
