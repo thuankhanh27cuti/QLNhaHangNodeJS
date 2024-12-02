@@ -43,10 +43,10 @@ exports.index = async (req, res) => {
         let sql = "SELECT MaSP, TenSP, GiaBan, GioiThieuSP, Anh FROM danhmucsp WHERE MaLoai = ? LIMIT 5";
         element.monAnList = await query.selectAllWithParams(sql, [id]);
     }
-    // console.log(loaiSpList);
 
     res.render("user/index", { loaiSpList: loaiSpList });
 };
+
 
 exports.danhSachMonAn = async (req, res) => {
     let { maLoai, sort, page } = req.query;

@@ -83,7 +83,9 @@
                                     </div>
                                     <div class="py-2">
                                         <h5 class="mb-1"><%= monAn.TenSP %></h5>
-                                        <small class="mb-2 d-block"><%= monAn.GioiThieuSP %></small>
+                                        <small class="mb-2 d-block">
+                                            <%= monAn.GioiThieuSP ? monAn.GioiThieuSP.split(' ').slice(0, 5).join(' ') : '' %>...
+                                        </small>
                                         <p><%= parseInt(monAn.GiaBan).toLocaleString("en-US") %> đồng</p>
                                         <div class="row">
                                             <div class="pe-0 me-1" style="flex-basis: min-content">
