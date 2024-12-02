@@ -57,9 +57,11 @@
                             <p class="fw-bold mb-0"><%= row.UserName %></p>
                             <p class="mb-0"><%= row.comment_text %></p>
                             <p class="mb-0 small"><%= row.comment_time.toLocaleString() %></p>
+                            <% if (row.user_id === session.userId){ %>
                             <div class="d-flex">
                                 <a class="d-block me-2" href="/delete/binh-luan-blog?id=<%= row.blog_id %>">Xoá đánh giá</a>
                             </div>
+                            <% } %>
                         </div>
                         <% if (row.replyComment) {
                             let replyComment = row.replyComment;
@@ -74,7 +76,9 @@
                     <% }) %>
                 </div>
                 <div class="pagination">
-                    <a type="btn" href="?id=1&comment_page=1" class="bg-main px-3 py-2 me-2 cursor-pointer text-white mb-0 fw-bold fs-5">1</a>
+                    <% for (let i = 0; i < pages; i++) { %>
+                    <a type="btn" href="?id=<%= data.MaSP %>&comment_page=<%= i + 1 %>" class="bg-main px-3 py-2 me-2 cursor-pointer text-white mb-0 fw-bold fs-5"><%= i + 1 %></a>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -86,7 +90,6 @@
     let urlSearchParams = new URLSearchParams(window.location.search);
     let pageId = parseInt(urlSearchParams.get("id"));
 
-    // Gửi đánh giá với SweetAlert
     document.getElementById("submitDanhGia").onclick = (e) => {
         e.preventDefault();
         let reviewContent = document.getElementById("review").value;
@@ -97,8 +100,8 @@
             form.action = `/add/binh-luan-blog?id=${pageId}`;
 
             const input = document.createElement("input");
-            input.name = "rating";
-            input.value = JSON.stringify({noidung: reviewContent});
+            input.name = "noiDung";
+            input.value = reviewContent;
 
             form.appendChild(input);
             document.body.appendChild(form);

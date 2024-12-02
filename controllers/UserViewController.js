@@ -43,7 +43,6 @@ exports.index = async (req, res) => {
         let sql = "SELECT MaSP, TenSP, GiaBan, GioiThieuSP, Anh FROM danhmucsp WHERE MaLoai = ? LIMIT 5";
         element.monAnList = await query.selectAllWithParams(sql, [id]);
     }
-    // console.log(loaiSpList);
 
     res.render("user/index", { loaiSpList: loaiSpList });
 };
@@ -495,7 +494,11 @@ exports.donHang = async (req, res) => {
         }
     }
 
-    res.render("user/donHang", {data: dataDonHang});
+    let sqlCountDonHang = "SELECT COUNT(*) AS count FROM hoadonban WHERE userId = ?";
+    let dataCountDonHang = await query.selectAllWithParams(sqlCountDonHang, [userId]);
+    let count = dataCountDonHang[0].count;
+
+    res.render("user/donHang", {data: dataDonHang, count: count});
 }
 
 exports.thongTinDonHang = async (req, res) => {
@@ -553,6 +556,7 @@ exports.blogInfo = async (req, res) => {
     let id = parseInt(req.query.id);
     let {comment_page: commentPage} = req.query;
     let currentPage = 1;
+    let commentSize = 3;
 
     let parsePage = parseInt(commentPage);
     if (!isNaN(parsePage)) {
@@ -567,10 +571,10 @@ exports.blogInfo = async (req, res) => {
     let dataSelectMonAn = await query.selectAllWithParams(sqlSelectMonAn, [id]);
     let monAn = dataSelectMonAn[0];
 
-    let start = (currentPage - 1) * 3;
+    let start = (currentPage - 1) * commentSize;
 
-    let sqlSelectComment = "SELECT blog_id, user_id, comment_text, comment_time, UserName FROM binhluanbaiviet bc LEFT JOIN user u on u.userId = bc.user_id WHERE bc.blog_id = ? ORDER BY comment_time DESC, user_id LIMIT ?, 3";
-    let dataSelectComment = await query.selectAllWithParams(sqlSelectComment, [id, start]);
+    let sqlSelectComment = "SELECT blog_id, user_id, comment_text, comment_time, UserName FROM binhluanbaiviet bc LEFT JOIN user u on u.userId = bc.user_id WHERE bc.blog_id = ? ORDER BY comment_time DESC, user_id LIMIT ?, ?";
+    let dataSelectComment = await query.selectAllWithParams(sqlSelectComment, [id, start, commentSize]);
 
     let sqlSelectReplyComment = "SELECT reply_text, reply_time FROM traloibinhluan WHERE user_id = ? AND blog_id = ?";
 
@@ -587,9 +591,38 @@ exports.blogInfo = async (req, res) => {
 
     dataSelectComment = await Promise.all(promises);
 
-    console.log(dataSelectComment);
+    let sqlCountComment = "SELECT COUNT(*) AS count FROM binhluanbaiviet WHERE blog_id = ?";
+    let dataCountComment = await query.selectAllWithParams(sqlCountComment, [id]);
+    let countComment = dataCountComment[0].count;
+    let pages = Math.ceil(countComment / commentSize);
 
-    res.render("user/blogInfo", {data: blog, monAn: monAn, comment: dataSelectComment});
+    res.render("user/blogInfo", {data: blog, monAn: monAn, comment: dataSelectComment, pages: pages});
+};
+
+exports.handleAddBinhLuanBlog = async (req, res) => {
+    let id = parseInt(req.query.id);
+    const userId = req.session.session.userId;
+    let { noiDung } = req.body;
+
+    let sqlCount = "SELECT COUNT(*) AS count FROM binhluanbaiviet WHERE blog_id = ? AND user_id = ?";
+    let dataCount = await query.selectAllWithParams(sqlCount, [id, userId]);
+    let count = dataCount[0].count;
+
+    if (count === 0) {
+        let sqlInsert = "INSERT INTO binhluanbaiviet(blog_id, user_id, comment_text, comment_time) VALUES (?, ?, ?, NOW())";
+        await query.queryWithParams(sqlInsert, [id, userId, noiDung]);
+    }
+    res.redirect(`/blog-info?id=${id}`);
+};
+
+exports.handleDeleteBinhLuanBlog = async (req, res) => {
+    let id = parseInt(req.query.id);
+    const userId = req.session.session.userId;
+
+    let sql = "DELETE FROM binhluanbaiviet WHERE user_id = ? AND blog_id = ?";
+    await query.queryWithParams(sql, [userId, id]);
+
+    res.redirect(`/blog-info?id=${id}`);
 };
 
 exports.thongTinNguoiDung = async (req, res) => {
@@ -616,6 +649,48 @@ exports.thongTinNguoiDung = async (req, res) => {
         res.redirect("/some-error-page"); // Redirect đến trang lỗi
     }
 };
+
+exports.capNhatThongTin = async (req, res) => {
+    const userId = req.session.session.userId;
+
+    let sql = "SELECT userId, Ho, Ten, DiaChi, SDT, NgaySinh, email FROM user WHERE userId = ?";
+    let dataUser = await query.selectAllWithParams(sql, [userId]);
+    let user = dataUser[0];
+    if (user.NgaySinh) {
+        let ngaySinh = new Date(user.NgaySinh);
+        user.NgaySinh = `${ngaySinh.getFullYear()}-${padStart(ngaySinh.getMonth() + 1)}-${padStart(ngaySinh.getDate())}`;
+    }
+
+    res.render("user/capNhatThongTin", {data: user});
+}
+
+exports.handleCapNhatThongTin = async (req, res) => {
+    const userId = req.session.session.userId;
+    let {Ho, Ten, email, SDT, DiaChi, NgaySinh} = req.body;
+
+    let isUpdate = true;
+
+    if (email !== "") {
+        let sqlCount = "SELECT COUNT(*) AS count FROM user WHERE email = ? AND userId != ?";
+        let dataCount = await query.selectAllWithParams(sqlCount, [email, userId]);
+        let count = dataCount[0].count;
+
+        isUpdate = count === 0;
+    }
+
+    if (isUpdate) {
+        if (NgaySinh !== "") {
+            let sqlUpdate = "UPDATE user SET email = ?, Ho = ?, Ten = ?, DiaChi = ?, SDT = ?, NgaySinh = ? WHERE userId = ?";
+            await query.queryWithParams(sqlUpdate, [email, Ho, Ten, DiaChi, SDT, NgaySinh,  userId]);
+        }
+        else {
+            let sqlUpdate = "UPDATE user SET email = ?, Ho = ?, Ten = ?, DiaChi = ?, SDT = ?, NgaySinh = NULL WHERE userId = ?";
+            await query.queryWithParams(sqlUpdate, [email, Ho, Ten, DiaChi, SDT, userId]);
+        }
+    }
+
+    res.redirect("/thong-tin-nguoi-dung");
+}
 
 exports.doiMatKhauDaDangNhap = async (req, res) => {
     res.render("user/changePassword/changePasswordWithLogin");
@@ -804,4 +879,8 @@ exports.guest_has_seen_message = async (req, res) => {
             res.json([]); // Không có tin nhắn
         }
     });
+};
+
+const padStart = (number) => {
+    return number.toString().padStart(2, "0");
 };

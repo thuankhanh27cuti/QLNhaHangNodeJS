@@ -1,13 +1,13 @@
 const query = require('../query');
 
 exports.date = async (req, res) => {
-    let sql = "SELECT HOUR(NgayLap) AS hour, SUM(TongTienHD) AS revenue FROM baocaodoanhthu LEFT JOIN chitiethoadon c on baocaodoanhthu.MaHoaDon = c.MaHoaDon WHERE CAST(NgayLap AS DATE ) = CURDATE() GROUP BY hour";
+    let sql = "SELECT HOUR(NgayLap) AS hour, SUM(TongTienHD) AS revenue FROM hoadonban LEFT JOIN chitiethoadon c on hoadonban.MaHoaDon = c.MaHoaDon WHERE CAST(NgayLap AS DATE) = CURDATE() AND trangthai = 1 GROUP BY hour";
     let data = await query.selectAll(sql);
     return res.status(200).json(data);
 }
 
 exports.month = async (req, res) => {
-    let sql = "SELECT CAST(NgayLap AS DATE ) AS date, SUM(TongTienHD) as revenue FROM baocaodoanhthu LEFT JOIN chitiethoadon c on baocaodoanhthu.MaHoaDon = c.MaHoaDon WHERE MONTH(NgayLap) = MONTH(CURDATE()) AND YEAR(NgayLap) = YEAR(CURDATE()) GROUP BY date";
+    let sql = "SELECT CAST(NgayLap AS DATE) AS date, COALESCE(SUM(TongTienHD), 0) as revenue FROM hoadonban LEFT JOIN chitiethoadon c on hoadonban.MaHoaDon = c.MaHoaDon WHERE MONTH(NgayLap) = MONTH(CURDATE()) AND YEAR(NgayLap) = YEAR(CURDATE()) AND trangthai = 1 GROUP BY date";
     let data = await query.selectAll(sql);
     data = data.map((element) => {
         let date = new Date(element.date);
@@ -29,7 +29,7 @@ exports.year = async (req, res) => {
         yearParams = new Date().getFullYear();
     }
 
-    let sql = "SELECT MONTH(NgayLap) AS date , SUM(TongTienHD) AS revenue FROM baocaodoanhthu LEFT JOIN chitiethoadon c on baocaodoanhthu.MaHoaDon = c.MaHoaDon WHERE YEAR(NgayLap) = ? GROUP BY date"
+    let sql = "SELECT MONTH(NgayLap) AS date , SUM(TongTienHD) AS revenue FROM hoadonban LEFT JOIN chitiethoadon c on hoadonban.MaHoaDon = c.MaHoaDon WHERE YEAR(NgayLap) = ? AND trangthai = 1 GROUP BY date"
     let data = await query.selectAllWithParams(sql, [yearParams]);
     return res.status(200).json(data);
 }

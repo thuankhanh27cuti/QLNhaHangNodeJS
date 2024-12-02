@@ -1,7 +1,7 @@
 let urlSearchParams = new URLSearchParams(window.location.search);
 let yearParam = urlSearchParams.get("year");
 
-let selectYear = 0;
+let selectYear;
 
 let url = "/api/v1/chart/year";
 if (yearParam !== "" && yearParam !== null) {
@@ -11,6 +11,8 @@ if (yearParam !== "" && yearParam !== null) {
 
 let revenueByYear = await fetch(url)
     .then(res => res.json());
+
+console.log(revenueByYear);
 
 const parseDate = (date) => {
     const padStart = (number) => {

@@ -38,8 +38,9 @@ exports.updateUser = async (req, res) => {
     let sql = "SELECT * FROM user WHERE userId = ?";
     let data = await query.selectAllWithParams(sql, [id]);
     let user = data[0];
-    let ngaySinh = new Date(user.NgaySinh);
-    if (ngaySinh) {
+
+    if (user.NgaySinh) {
+        let ngaySinh = new Date(user.NgaySinh);
         user.NgaySinh = `${ngaySinh.getFullYear()}-${padStart(ngaySinh.getMonth() + 1)}-${padStart(ngaySinh.getDate())}`;
     }
     res.render('admin/update/user', {data: user});

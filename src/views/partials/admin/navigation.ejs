@@ -17,6 +17,7 @@
                 <i class="zmdi zmdi-view-dashboard"></i> <span>Quản lý bài viết</span>
             </a>
         </li>
+        <% if (session.LoaiUser === 0) { %>
         <li>
             <a href="/admin/tai-khoan">
                 <i class="zmdi zmdi-view-dashboard"></i> <span>Quản lý tài khoản</span>
@@ -27,11 +28,13 @@
                 <i class="zmdi zmdi-view-dashboard"></i> <span>Quản lý nguyên liệu</span>
             </a>
         </li>
+        <% } %>
         <li>
             <a href="/admin/hoa-don-ban">
                 <i class="zmdi zmdi-view-dashboard"></i> <span>Quản lý hóa đơn bán</span>
             </a>
         </li>
+        <% if (session.LoaiUser === 0) { %>
         <li>
             <a href="/admin/nhap-hang">
                 <i class="zmdi zmdi-view-dashboard"></i> <span>Quản lý nhập hàng</span>
@@ -52,6 +55,7 @@
                 <i class="zmdi zmdi-view-dashboard"></i> <span>Quản lý nhà cung cấp</span>
             </a>
         </li>
+        <% } %>
         <li>
             <a href="/admin/dat-ban">
                 <i class="zmdi zmdi-view-dashboard"></i> <span>Quản lý đặt bàn</span>
@@ -62,6 +66,7 @@
                 <i class="zmdi zmdi-view-dashboard"></i> <span>Quản lý đơn hàng</span>
             </a>
         </li>
+        <% if (session.LoaiUser === 0) { %>
         <li>
             <a href="/admin/cong-thuc-mon">
                 <i class="zmdi zmdi-view-dashboard"></i> <span>Quản lý công thức món</span>
@@ -72,5 +77,6 @@
                 <i class="zmdi zmdi-view-dashboard"></i> <span>Lịch sử trừ nguyên liệu</span>
             </a>
         </li>
+        <% } %>
     </ul>
 </div>

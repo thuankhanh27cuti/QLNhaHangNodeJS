@@ -3,6 +3,27 @@ let sortElement = document.querySelector("#sort");
 let maLoai = urlSearchParams.get("maLoai");
 let paginationElements = document.querySelectorAll(".pagination > div");
 
+let addToCartElements = document.querySelectorAll(".addToCart");
+addToCartElements.forEach((element) => {
+    element.onclick = () => {
+        let parentElement = element.parentElement.parentElement.parentElement;
+        let idElement = parentElement.querySelector(".idMonAn");
+        let id = parseInt(idElement.innerHTML);
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/add-to-cart";
+
+        const idField = document.createElement("input");
+        idField.name = "id";
+        idField.value = `${id}`;
+        form.appendChild(idField);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+});
+
 const createUrl = (loaisp, page, sort) => {
     let href = "/danh-sach-mon-an";
     let array = [];

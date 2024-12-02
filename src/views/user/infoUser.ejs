@@ -22,7 +22,7 @@
     </style>
 </head>
 <body>
-<div class="container-fluid position-relative p-0">
+<div class="container-fluid bg-white position-relative p-0">
 <%- include('../partials/user/navbar') %>
 <section id="menu py-5">
     <div class="container">
@@ -32,10 +32,10 @@
         <div>
             <div class="row mb-5">
                 <div class="col-3">
-                    <nav class="shadow-lg">
+                    <nav class="shadow-lg bg-white">
                         <ul class="d-flex flex-column list-unstyled">
                             <li class="nav-item">
-                                <a class="py-2 nav-link position-relative" href="./user.php">
+                                <a class="py-2 nav-link position-relative" href="/thong-tin-nguoi-dung">
                                     <i class="me-2 nav-icon fas fa-user"></i>
                                     <p class="d-inline">User</p>
                                 </a>
@@ -47,9 +47,9 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="py-2 nav-link position-relative" href="../controller/index.php?page_layout=logout">
+                                <a class="py-2 nav-link position-relative" href="/logout">
                                     <i class="me-2 nav-icon fas fa-arrow-right"></i>
-                                    <p class="d-inline">Log Out</p>
+                                    <p class="d-inline">Đăng xuất</p>
                                 </a>
                             </li>
                         </ul>
@@ -59,8 +59,8 @@
                     <div class="user-card card border-0 shadow">
                         <div class="card-header bg-orange bg-gradient">
                             <p class="card-title mb-0">
-                                <i class="me-2 fa-light fa-user"></i>
-                                User Info
+                                <i class="me-2 fas fa-user"></i>
+                                Thông tin người dùng
                             </p>
                         </div>
                         <div class="card-body">
@@ -73,7 +73,7 @@
                                         </p>
                                         <p>
                                             <i class="me-2 fas fa-signature"></i>
-                                            <span id="user__full-name"><%= user.Ho ? user.Ho : '' + ' ' + user.Ten %></span>
+                                            <span id="user__full-name"><%= ((user.Ho ? user.Ho : "") + " " + (user.Ten ? user.Ten: "")).trim() %></span>
                                         </p>
                                         <p>
                                             <i class="me-2 fas fa-phone"></i>
@@ -81,7 +81,7 @@
                                         </p>
                                         <p>
                                             <i class="me-2 fas fa-pen"></i>
-                                            <a href="./edit-info.php">Edit info</a>
+                                            <a href="/cap-nhat-thong-tin">Cập nhật thông tin</a>
                                         </p>
                                         <p>
                                             <i class="me-2 fas fa-lock"></i>

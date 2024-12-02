@@ -7,6 +7,8 @@ router.get('/',
     [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewSelectController.home);
 
+// Admin: Tài khoản, nguyên liệu, nhập hàng, giảm giá, loại sản phẩm, nhà cung cấp, công thức món, trừ nguyên liệu
+
 router.get('/mon-an',
     [rolesMiddleware.isAdminAndNhanVienMiddleware],
     adminViewSelectController.allMonAn);
@@ -20,11 +22,11 @@ router.get('/binh-luan-bai-viet',
     adminViewSelectController.allBinhLuanBaiViet);
 
 router.get('/tai-khoan',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewSelectController.allTaiKhoan);
 
 router.get('/nguyen-lieu',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewSelectController.allNguyenLieu);
 
 router.get('/hoa-don-ban',
@@ -32,19 +34,19 @@ router.get('/hoa-don-ban',
     adminViewSelectController.allHoaDonBan);
 
 router.get('/nhap-hang',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewSelectController.allNhapHang);
 
 router.get('/giam-gia',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewSelectController.allGiamGia);
 
 router.get('/loai-san-pham',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewSelectController.allLoaiSanPham);
 
 router.get('/nha-cung-cap',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewSelectController.allNhaCungCap);
 
 router.get('/dat-ban',
@@ -56,11 +58,11 @@ router.get('/don-hang',
     adminViewSelectController.allDonHang);
 
 router.get('/cong-thuc-mon',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewSelectController.allCongThucMon);
 
 router.get('/tru-nguyen-lieu',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewSelectController.allTruNguyenLieu);
 
 router.get('/chart/date',

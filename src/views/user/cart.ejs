@@ -35,7 +35,7 @@
                     <div class="pb-3">
                         <div class="px-5 py-3 border-bottom">
                             <div class="d-flex justify-content-end">
-                                <p class="fw-bold mb-0 me-3" id="cart__cart-count">Số lượng: 2</p>
+                                <p class="fw-bold mb-0 me-3" id="cart__cart-count">Số lượng: <%= session.cart.length %></p>
                             </div>
                         </div>
                         <div class="border-bottom px-5 py-3">
@@ -95,9 +95,9 @@
                         </div>
                         <div class="my-2 d-flex justify-content-end">
                             <div class="px-5 w-auto">
-                                <button class="btn btn-primary me-3 px-3 py-2 transition text-white bg-gradient" id="cart__clear-all" type="button">Clear</button>
-                                <button class="btn btn-primary me-3 px-3 py-2 transition text-white bg-gradient" id="cart__save" type="button">Save</button>
-                                <button class="btn btn-primary me-3 px-3 py-2 transition text-white bg-gradient" id="cart__checkout" type="button">Save & Check Out</button>
+                                <button class="btn btn-primary me-3 px-3 py-2 text-white bg-gradient" id="cart__clear-all" type="button">Xoá giỏ hàng</button>
+                                <button class="btn btn-primary me-3 px-3 py-2 text-white bg-gradient" id="cart__save" type="button">Lưu giỏ hàng</button>
+                                <button class="btn btn-primary me-3 px-3 py-2 text-white bg-gradient" id="cart__checkout" type="button">Lưu giỏ hàng & Thanh toán</button>
                             </div>
                         </div>
                     </div>

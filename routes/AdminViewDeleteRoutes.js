@@ -8,23 +8,23 @@ router.get('/mon-an',
     adminViewDeleteController.handleDeleteMonAn);
 
 router.get('/user',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewDeleteController.handleDeleteUser);
 
 router.get('/nguyen-lieu',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewDeleteController.handleDeleteNguyenLieu);
 
 router.get('/giam-gia',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewDeleteController.handleDeleteGiamGia);
 
 router.get('/loai-san-pham',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewDeleteController.handleDeleteLoaiSanPham);
 
 router.get('/nha-cung-cap',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewDeleteController.handleDeleteNhaCungCap)
 
 router.get('/dat-ban',

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>Nhà hàng</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="" name="keywords"/>
+    <meta content="" name="description"/>
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
+    <%- include('../partials/user/css-libraries') %>
+    <style>
+        .d-flex.align-items-center img {
+            transition: transform 0.3s ease;
+        }
+
+        .d-flex.align-items-center:hover img {
+            transform: scale(1.8);
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid bg-white position-relative p-0">
+    <%- include('../partials/user/navbar') %>
+    <section id="menu py-5">
+        <div class="container">
+            <div class="text-center my-3">
+                <h2 class="section-title wow fadeInUp" data-wow-delay="0.1s">User</h2>
+            </div>
+            <div>
+                <div class="row mb-5">
+                    <div class="col-3">
+                        <nav class="shadow-lg bg-white">
+                            <ul class="d-flex flex-column list-unstyled">
+                                <li class="nav-item">
+                                    <a class="py-2 nav-link position-relative" href="/thong-tin-nguoi-dung">
+                                        <i class="me-2 nav-icon fas fa-user"></i>
+                                        <p class="d-inline">User</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="py-2 nav-link position-relative" href="/thong-tin-nguoi-dung/doi-mat-khau">
+                                        <i class="me-2 nav-icon fas fa-receipt"></i>
+                                        <p class="d-inline">Đổi mật khẩu</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="py-2 nav-link position-relative" href="/logout">
+                                        <i class="me-2 nav-icon fas fa-arrow-right"></i>
+                                        <p class="d-inline">Đăng xuất</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="col-9">
+                        <div class="user-card card border-0 shadow">
+                            <div class="card-header bg-orange bg-gradient">
+                                <p class="card-title mb-0">
+                                    <i class="me-2 fas fa-user"></i>
+                                    Cập nhật thông tin
+                                </p>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <form method="post" action="/cap-nhat-thong-tin">
+                                            <div class="form-group">
+                                                <label for="Ho">Họ</label>
+                                                <input name="Ho" value="<%= data.Ho %>" type="text" class="form-control" id="Ho" placeholder="Enter Your Họ" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Ten">Tên</label>
+                                                <input name="Ten" value="<%= data.Ten %>" type="text" class="form-control" id="Ten" placeholder="Enter Your Tên" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="email">Email</label>
+                                                <input name="email" value="<%= data.email %>" type="email" class="form-control" id="email" placeholder="Enter Your Email" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="SDT">SDT</label>
+                                                <input name="SDT" value="<%= data.SDT %>" type="text" class="form-control" id="SDT" placeholder="Enter Your SDT" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="DiaChi">Địa Chỉ</label>
+                                                <input name="DiaChi" value="<%= data.DiaChi %>" type="text" class="form-control" id="DiaChi" placeholder="Enter Your Địa Chỉ" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="NgaySinh">Ngày Sinh</label>
+                                                <input name="NgaySinh" value="<%= data.NgaySinh %>" class="form-control" id="NgaySinh" type="date">
+                                            </div>
+                                            <div class="mb-3 row">
+                                                <div class="col-lg-6 col-12">
+                                                    <button type="submit" class="btn-primary text-white w-100 border-0 py-2 px-4 my-2 transition bg-orange bg-gradient">
+                                                        Lưu thông tin
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include('../partials/user/footer') %>
+    </section>
+</div>
+</body>

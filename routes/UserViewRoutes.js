@@ -5,6 +5,8 @@ const {isUserMiddleware, isUserOrUnauthenticatedMiddleware} = require("../middle
 
 router.get("/", [isUserOrUnauthenticatedMiddleware], userViewController.index);
 router.get("/thong-tin-nguoi-dung", [isUserMiddleware], userViewController.thongTinNguoiDung);
+router.get("/cap-nhat-thong-tin", [isUserMiddleware], userViewController.capNhatThongTin);
+router.post("/cap-nhat-thong-tin", [isUserMiddleware], userViewController.handleCapNhatThongTin);
 
 router.get("/thong-tin-nguoi-dung/doi-mat-khau", [isUserMiddleware], userViewController.doiMatKhauDaDangNhap);
 router.post("/thong-tin-nguoi-dung/doi-mat-khau", [isUserMiddleware], userViewController.xacNhanEmailDoiMatKhau);
@@ -31,6 +33,8 @@ router.get("/huy-don-hang", [isUserMiddleware], userViewController.handleHuyDonH
 router.get("/dat-ban", [isUserMiddleware], userViewController.datBan);
 router.get("/blog", [isUserMiddleware], userViewController.blog);
 router.get("/blog-info", [isUserMiddleware], userViewController.blogInfo);
+router.post("/add/binh-luan-blog", [isUserMiddleware], userViewController.handleAddBinhLuanBlog);
+router.get("/delete/binh-luan-blog", [isUserMiddleware], userViewController.handleDeleteBinhLuanBlog);
 
 router.post("/chat/get_message", userViewController.get_message);
 router.post("/chat/guest_has_seen_message", userViewController.guest_has_seen_message);

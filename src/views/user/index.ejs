@@ -17,271 +17,271 @@
     <!-- Favicon -->
     <link href="/img/favicon.ico" rel="icon" />
     <%- include('../partials/user/css-libraries') %>
-        <style>
-            .d-flex.align-items-center img {
-                transition: transform 0.3s ease;
-            }
+    <style>
+        .d-flex.align-items-center img {
+            transition: transform 0.3s ease;
+        }
 
-            .d-flex.align-items-center:hover img {
-                transform: scale(1.8);
-            }
+        .d-flex.align-items-center:hover img {
+            transform: scale(1.8);
+        }
 
-            #chat-circle {
-                justify-items: center;
-                width: 55px;
-                height: 55px;
-                position: fixed;
-                bottom: 85px;
-                right: 20px;
-                z-index: 999;
-                display: block;
-                text-align: center;
-                cursor: pointer;
-                background-color: #25D366;
-                /* Màu xanh của WhatsApp */
-                border-radius: 100%;
-                padding: 20px;
-            }
+        #chat-circle {
+            justify-items: center;
+            width: 55px;
+            height: 55px;
+            position: fixed;
+            bottom: 85px;
+            right: 20px;
+            z-index: 999;
+            display: block;
+            text-align: center;
+            cursor: pointer;
+            background-color: #25D366;
+            /* Màu xanh của WhatsApp */
+            border-radius: 100%;
+            padding: 20px;
+        }
 
-            /* Định dạng cho icon */
-            #chat-circle i {
-                /* font-size: 24px; */
-                color: white;
-            }
+        /* Định dạng cho icon */
+        #chat-circle i {
+            /* font-size: 24px; */
+            color: white;
+        }
 
-            /* Định dạng cho thông báo số tin nhắn mới */
-            .text-num-chat {
-                background: red;
-                width: 30px;
-                color: white;
-                position: absolute;
-                display: none;
-                right: -5px;
-                top: 0px;
-                height: 30px;
-                border-radius: 100%;
-                font-size: 16px;
-                text-align: center;
-                line-height: 30px;
-            }
+        /* Định dạng cho thông báo số tin nhắn mới */
+        .text-num-chat {
+            background: red;
+            width: 30px;
+            color: white;
+            position: absolute;
+            display: none;
+            right: -5px;
+            top: 0px;
+            height: 30px;
+            border-radius: 100%;
+            font-size: 16px;
+            text-align: center;
+            line-height: 30px;
+        }
 
-            /* Mở hiển thị thông báo khi có tin nhắn */
-            .text-num-chat.show {
-                display: block;
-            }
+        /* Mở hiển thị thông báo khi có tin nhắn */
+        .text-num-chat.show {
+            display: block;
+        }
 
-            /* Định dạng cho chat box */
+        /* Định dạng cho chat box */
+        #chat-box {
+            position: fixed;
+            bottom: 0;
+            right: 20px;
+            width: 300px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            display: none;
+            /* Mặc định ẩn, sẽ hiển thị khi nhấn nút chat */
+            overflow: hidden;
+            /* height: 400px; */
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Định dạng cho phần tiêu đề */
+        .chat-box-header {
+            background-color: #25D366;
+            /* Màu WhatsApp */
+            color: white;
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+            position: relative;
+            font-size: 16px;
+        }
+
+        /* Nút đóng chat */
+        .chat-box-toggle {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        /* Định dạng cho phần nội dung */
+        .chat-box-body {
+            padding: 15px;
+            height: 250px;
+            overflow-y: auto;
+            background-color: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+            position: relative;
+        }
+
+        /* Overlay bên dưới */
+        .chat-box-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            display: none;
+            /* Hiển thị overlay khi đang chờ phản hồi */
+        }
+
+        /* Định dạng cho chat log */
+        .chat-logs {
+            max-height: 200px;
+            /* overflow-y: scroll; */
+            padding-bottom: 10px;
+        }
+
+        /* Định dạng cho ô nhập tin nhắn */
+        .chat-input {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #fff;
+            border-top: 2px solid #ddd;
+        }
+
+        /* Ô input */
+        #chat-input {
+            width: 80%;
+            padding: 10px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+            outline: none;
+            font-size: 14px;
+        }
+
+        /* Nút gửi */
+        .chat-submit {
+            background-color: #25D366;
+            /* Màu WhatsApp */
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            color: white;
+        }
+
+        .chat-submit:hover {
+            background-color: #128C7E;
+            /* Màu xanh đậm */
+        }
+
+        /* Hiển thị chat box khi nút chat được nhấn */
+        #chat-box.show {
+            display: block;
+        }
+
+        /* Hiệu ứng khi chat box được mở hoặc đóng */
+        @media screen and (max-width: 600px) {
             #chat-box {
-                position: fixed;
-                bottom: 0;
-                right: 20px;
-                width: 300px;
-                background-color: #fff;
-                border-radius: 10px;
-                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-                z-index: 9999;
-                display: none;
-                /* Mặc định ẩn, sẽ hiển thị khi nhấn nút chat */
-                overflow: hidden;
-                /* height: 400px; */
-                transition: all 0.3s ease-in-out;
-            }
-
-            /* Định dạng cho phần tiêu đề */
-            .chat-box-header {
-                background-color: #25D366;
-                /* Màu WhatsApp */
-                color: white;
-                padding: 10px;
-                font-weight: bold;
-                text-align: center;
-                position: relative;
-                font-size: 16px;
-            }
-
-            /* Nút đóng chat */
-            .chat-box-toggle {
-                position: absolute;
-                top: 50%;
-                right: 10px;
-                transform: translateY(-50%);
-                cursor: pointer;
-            }
-
-            /* Định dạng cho phần nội dung */
-            .chat-box-body {
-                padding: 15px;
-                height: 250px;
-                overflow-y: auto;
-                background-color: #f5f5f5;
-                border-bottom: 2px solid #ddd;
-                position: relative;
-            }
-
-            /* Overlay bên dưới */
-            .chat-box-overlay {
-                position: absolute;
-                top: 0;
-                left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(255, 255, 255, 0.6);
-                display: none;
-                /* Hiển thị overlay khi đang chờ phản hồi */
+                border-radius: 0;
             }
 
-            /* Định dạng cho chat log */
-            .chat-logs {
-                max-height: 200px;
-                /* overflow-y: scroll; */
-                padding-bottom: 10px;
-            }
-
-            /* Định dạng cho ô nhập tin nhắn */
-            .chat-input {
-                display: flex;
-                justify-content: space-between;
-                padding: 10px;
-                background-color: #fff;
-                border-top: 2px solid #ddd;
-            }
-
-            /* Ô input */
-            #chat-input {
-                width: 80%;
-                padding: 10px;
-                border-radius: 25px;
-                border: 1px solid #ddd;
-                outline: none;
+            .chat-box-header {
                 font-size: 14px;
             }
 
-            /* Nút gửi */
-            .chat-submit {
-                background-color: #25D366;
-                /* Màu WhatsApp */
-                border: none;
-                padding: 10px 15px;
-                border-radius: 50%;
-                cursor: pointer;
-                font-size: 18px;
-                color: white;
-            }
+        }
+        .chat-logs {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            max-height: 500px;
+            /* overflow-y: auto;  */
+        }
 
-            .chat-submit:hover {
-                background-color: #128C7E;
-                /* Màu xanh đậm */
-            }
+        /* Kiểu cho mỗi tin nhắn */
+        .chat-msg {
+            display: flex;
+            align-items: flex-end;
+            margin-bottom: 10px;
+        }
 
-            /* Hiển thị chat box khi nút chat được nhấn */
-            #chat-box.show {
-                display: block;
-            }
+        /* Tin nhắn của người dùng (ngược lại với bạn) */
+        .chat-msg.user {
+            justify-content: flex-start; /* Tin nhắn người dùng bên trái */
+        }
 
-            /* Hiệu ứng khi chat box được mở hoặc đóng */
-            @media screen and (max-width: 600px) {
-                #chat-box {
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 0;
-                }
+        /* Tin nhắn của bạn */
+        .chat-msg.self {
+            justify-content: flex-end; /* Tin nhắn của bạn bên phải */
+        }
 
-                .chat-box-header {
-                    font-size: 14px;
-                }
-                
-            }
-            .chat-logs {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  max-height: 500px;
-  /* overflow-y: auto;  */
-}
+        /* Kiểu cho avatar của người gửi */
+        .msg-avatar {
+            margin-right: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
 
-/* Kiểu cho mỗi tin nhắn */
-.chat-msg {
-  display: flex;
-  align-items: flex-end;
-  margin-bottom: 10px;
-}
+        .msg-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-/* Tin nhắn của người dùng (ngược lại với bạn) */
-.chat-msg.user {
-  justify-content: flex-start; /* Tin nhắn người dùng bên trái */
-}
+        /* Kiểu cho nội dung tin nhắn */
+        .cm-msg-text {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
 
-/* Tin nhắn của bạn */
-.chat-msg.self {
-  justify-content: flex-end; /* Tin nhắn của bạn bên phải */
-}
+        /* Kiểu cho tin nhắn của người dùng */
+        .chat-msg.user .cm-msg-text {
+            background-color: #e5e5e5;
+            color: #333;
+        }
 
-/* Kiểu cho avatar của người gửi */
-.msg-avatar {
-  margin-right: 10px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-.msg-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Kiểu cho nội dung tin nhắn */
-.cm-msg-text {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 10px;
-  max-width: 70%;
-  word-wrap: break-word;
-}
-
-/* Kiểu cho tin nhắn của người dùng */
-.chat-msg.user .cm-msg-text {
-  background-color: #e5e5e5;
-  color: #333;
-}
-
-/* Kiểu cho tin nhắn của bạn */
-.chat-msg.self .cm-msg-text {
-  background-color: #007bff;
-  color: white;
-}
-        </style>
+        /* Kiểu cho tin nhắn của bạn */
+        .chat-msg.self .cm-msg-text {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container-fluid bg-white p-0">
         <div class="container-fluid position-relative p-0">
             <%- include('../partials/user/navbar') %>
-                <% if (typeof session !=='undefined' && session && Object.keys(session).length> 0) { %>
-                    <input type="hidden" id="customer-id-token" value="<%= session.userId %>">
-                    <% } %>
-                        <div class="container-fluid py-5 bg-dark hero-header mb-5">
-                            <div class="container-fluid my-5 py-5">
-                                <div class="row align-items-center g-5">
-                                    <div class="col-lg-6 text-center text-lg-start">
-                                        <h1 class="display-3 text-white animated slideInLeft">
-                                            Thưởng thức bữa ăn ngon<br />của chúng tôi
-                                        </h1>
-                                        <p class="text-white animated slideInLeft mb-4 pb-2">
-                                            Chúng tôi tự hào mang đến trải nghiệm ẩm thực đỉnh cao của Pháp. Nguồn
-                                            nguyên liệu
-                                            của chúng tôi được tuyển chọn cẩn thận, đảm bảo độ tươi sạch và an toàn
-                                            vệ sinh thực phẩm theo tiêu chuẩn cao nhất.
-                                        </p>
-                                        <!-- <a href="" class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Đặt bàn</a> -->
-                                    </div>
-                                    <div class="col-lg-6 text-center text-lg-end overflow-hidden">
-                                        <img class="img-fluid" src="/img/hero.png" alt="" />
-                                    </div>
-                                </div>
-                            </div>
+            <% if (typeof session !=='undefined' && session && Object.keys(session).length> 0) { %>
+            <input type="hidden" id="customer-id-token" value="<%= session.userId %>">
+            <% } %>
+            <div class="container-fluid py-5 bg-dark hero-header mb-5">
+                <div class="container-fluid my-5 py-5">
+                    <div class="row align-items-center g-5">
+                        <div class="col-lg-6 text-center text-lg-start">
+                            <h1 class="display-3 text-white animated slideInLeft">
+                                Thưởng thức bữa ăn ngon<br />của chúng tôi
+                            </h1>
+                            <p class="text-white animated slideInLeft mb-4 pb-2">
+                                Chúng tôi tự hào mang đến trải nghiệm ẩm thực đỉnh cao của Pháp. Nguồn
+                                nguyên liệu
+                                của chúng tôi được tuyển chọn cẩn thận, đảm bảo độ tươi sạch và an toàn
+                                vệ sinh thực phẩm theo tiêu chuẩn cao nhất.
+                            </p>
+                            <!-- <a href="" class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Đặt bàn</a> -->
                         </div>
+                        <div class="col-lg-6 text-center text-lg-end overflow-hidden">
+                            <img class="img-fluid" src="/img/hero.png" alt="" />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- Navbar & Hero End -->
         <!-- Hero Section Start -->
@@ -382,55 +382,55 @@
                         <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
                             <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
                                 <% loaiSpList.forEach(loaiSp=> { %>
-                                    <li class="nav-item">
-                                        <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3"
-                                            data-bs-toggle="pill" href="#tab-<%= loaiSp.LoaiSP %>">
-                                            <i class="fa fa-coffee fa-2x text-primary"></i>
-                                            <div class="ps-3">
-                                                <h6 class="mt-n1 mb-0">
-                                                    <%= loaiSp.TenLoai %>
-                                                </h6>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <% }) %>
+                                <li class="nav-item">
+                                    <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3"
+                                        data-bs-toggle="pill" href="#tab-<%= loaiSp.LoaiSP %>">
+                                        <i class="fa fa-coffee fa-2x text-primary"></i>
+                                        <div class="ps-3">
+                                            <h6 class="mt-n1 mb-0">
+                                                <%= loaiSp.TenLoai %>
+                                            </h6>
+                                        </div>
+                                    </a>
+                                </li>
+                                <% }) %>
                             </ul>
                             <div class="tab-content">
                                 <% loaiSpList.forEach((loaiSp, index)=> { %>
-                                    <div id="tab-<%= loaiSp.LoaiSP %>" class="tab-pane fade p-0<%= index===0 ? "activeshow": "" %>">
-                                        <div class="row g-4">
-                                            <% let monAnList=loaiSp.monAnList; monAnList.forEach((monAn)=> { %>
-                                                <div class="col-12">
-                                                    <div class="d-flex align-items-center">
-                                                        <img class="flex-shrink-0 img-fluid rounded"
-                                                            src="/img/<%= monAn.Anh %>" alt="" style="width: 80px" />
-                                                        <div class="w-100 d-flex flex-column text-start ps-4">
-                                                            <h5
-                                                                class="d-flex justify-content-between border-bottom pb-2">
-                                                                <span>
-                                                                    <%= monAn.TenSP %>
-                                                                </span>
-                                                                <span class="text-primary">
-                                                                    <%= parseInt(monAn.GiaBan).toLocaleString("en-US")
-                                                                        %> đồng
-                                                                </span>
-                                                            </h5>
-                                                            <small class="fst-italic">
-                                                                <%= monAn.GioiThieuSP %>
-                                                            </small>
-                                                        </div>
-                                                        <a href="#">
-                                                            <button type="button" class="btn btn-success"
-                                                                style="margin-left: 15px">
-                                                                +
-                                                            </button>
-                                                        </a>
-                                                    </div>
+                                <div id="tab-<%= loaiSp.LoaiSP %>" class="tab-pane fade p-0<%= index===0 ? " active show": "" %>">
+                                    <div class="row g-4">
+                                        <% let monAnList = loaiSp.monAnList;
+                                        monAnList.forEach((monAn)=> { %>
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center">
+                                                <span class="d-none idMonAn"><%= monAn.MaSP %></span>
+                                                <img class="flex-shrink-0 img-fluid rounded"
+                                                    src="/img/<%= monAn.Anh %>" alt="" style="width: 80px" />
+                                                <div class="w-100 d-flex flex-column text-start ps-4">
+                                                    <h5
+                                                        class="d-flex justify-content-between border-bottom pb-2">
+                                                        <span>
+                                                            <%= monAn.TenSP %>
+                                                        </span>
+                                                        <span class="text-primary">
+                                                            <%= parseInt(monAn.GiaBan).toLocaleString("en-US")
+                                                                %> đồng
+                                                        </span>
+                                                    </h5>
+                                                    <small class="fst-italic">
+                                                        <%= monAn.GioiThieuSP %>
+                                                    </small>
                                                 </div>
-                                                <% }) %>
+                                                <button type="button" class="btn btn-success addToCart"
+                                                        style="margin-left: 15px">
+                                                    +
+                                                </button>
+                                            </div>
                                         </div>
+                                        <% }) %>
                                     </div>
-                                    <% }) %>
+                                </div>
+                                <% }) %>
                             </div>
                             <div class="mt-4">
                                 <div class="row justify-content-center">
@@ -446,7 +446,6 @@
                 </div>
             </div>
         </section>
-
         <!-- Menu End -->
 
         <!-- Reservation Start -->
@@ -715,7 +714,6 @@
                 </div>
             </div>
         </section>
-
         <div id="chat-circle" class="btn btn-raised" style="margin: auto;
         align-items: center;
         align-content: center;
@@ -733,7 +731,6 @@
                 height: 30px;
                 border-radius: 100px;"></p>
         </div>
-
         <form action="" id="send_form">
             <div class="chat-box" id="chat-box">
                 <div class="chat-box-header">
@@ -751,15 +748,31 @@
                 </div>
             </div>
         </form>
-
-
         <%- include('../partials/user/footer') %>
     </div>
-
-    <!-- <%- include('../partials/user/js-libraries') %>
-    <%- include('../partials/user/ai-chat') %> -->
-
+    <%- include('../partials/user/js-libraries') %>
+    <%- include('../partials/user/ai-chat') %>
     <script>
+        let addToCartElements = document.querySelectorAll(".addToCart");
+        addToCartElements.forEach((element) => {
+            element.onclick = () => {
+                let parentElement = element.parentElement;
+                let idElement = parentElement.querySelector(".idMonAn");
+                let id = parseInt(idElement.innerHTML);
+
+                const form = document.createElement("form");
+                form.method = "POST";
+                form.action = "/add-to-cart";
+
+                const idField = document.createElement("input");
+                idField.name = "id";
+                idField.value = `${id}`;
+                form.appendChild(idField);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
         $(function () {
             // Xử lý sự kiện click trên nút chat
             $(document).on("click", ".chat-btn", function () {

@@ -13,51 +13,51 @@ router.post('/mon-an',
     adminViewUpdateController.handleUpdateMonAn);
 
 router.get('/user',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.updateUser);
 
 router.post('/user',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.handleUpdateUser);
 
 router.get('/nguyen-lieu',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.updateNguyenLieu);
 
 router.post('/nguyen-lieu',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.handleUpdateNguyenLieu);
 
 router.get('/so-luong-nguyen-lieu',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.updateSoLuongNguyenLieu);
 
 router.post('/so-luong-nguyen-lieu',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.handleUpdateSoLuongNguyenLieu);
 
 router.get('/giam-gia',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.updateGiamGia);
 
 router.post('/giam-gia',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.handleUpdateGiamGia);
 
 router.get('/loai-san-pham',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.updateLoaiSanPham);
 
 router.post('/loai-san-pham',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.handleUpdateLoaiSanPham);
 
 router.get('/nha-cung-cap',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.updateNhaCungCap);
 
 router.post('/nha-cung-cap',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.handleUpdateNhaCungCap);
 
 router.get('/dat-ban',
@@ -77,11 +77,11 @@ router.post('/don-hang',
     adminViewUpdateController.handleUpdateDonHang);
 
 router.get('/cong-thuc-mon',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.updateCongThucMon);
 
 router.post('/cong-thuc-mon',
-    [rolesMiddleware.isAdminAndNhanVienMiddleware],
+    [rolesMiddleware.isAdminMiddleware],
     adminViewUpdateController.handleUpdateCongThucMon);
 
 router.get('/bai-viet',
